@@ -163,6 +163,8 @@ namespace polaris
 {
 	Renderer::Renderer()
 	{
+		Console::Log("Initializing Renderer");
+
 		if (gpRenderer)
 		{
 			MessageBox(0, L"Renderer is already initialized.", L"Error", MB_ICONERROR);

@@ -3,6 +3,7 @@
 #include "common.h"
 #include "renderer.h"
 #include "ui.h"
+#include "frontendmanager.h"
 
 #include <cstdio>
 
@@ -19,8 +20,10 @@ DWORD WINAPI Main(LPVOID lpParam)
         ExitProcess(EXIT_FAILURE);
     }
 
+    polaris::Console::LogRaw("Welcome to Polaris!", 11);
     new polaris::Renderer; // Initialize renderer.
     //new polaris::Ui; // Initialize UI.
+    //new polaris::FrontendManager; // Initialize Frontend Manager. ([irma] UNFINISHED!)
 
     return FALSE;
 }
