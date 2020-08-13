@@ -78,6 +78,7 @@
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -97,16 +98,22 @@
     <ClCompile Include="imgui\imgui.cpp" />
     <ClCompile Include="imgui\imgui_draw.cpp" />
     <ClCompile Include="imgui\imgui_widgets.cpp" />
+    <ClCompile Include="mainwindow.cpp" />
     <ClCompile Include="renderer.cpp" />
     <ClCompile Include="ui.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="common.h" />
     <ClInclude Include="console.h" />
-    <ClInclude Include="dllmain.h" />
     <ClInclude Include="frontendmanager.h" />
+    <ClInclude Include="mainwindow.h" />
     <ClInclude Include="renderer.h" />
     <ClInclude Include="ui.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <Font Include="..\..\..\Roboto-Regular.ttf">
+      <DeploymentContent>true</DeploymentContent>
+    </Font>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

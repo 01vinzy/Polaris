@@ -45,6 +45,9 @@
     <ClCompile Include="console.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="mainwindow.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ui.h">
@@ -62,8 +65,13 @@
     <ClInclude Include="console.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="dllmain.h">
+    <ClInclude Include="mainwindow.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <Font Include="..\..\..\Roboto-Regular.ttf">
+      <Filter>Resource Files</Filter>
+    </Font>
   </ItemGroup>
 </Project>

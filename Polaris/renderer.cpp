@@ -1,4 +1,5 @@
 #include "renderer.h"
+#include "common.h"
 
 #include <windows.h>
 
@@ -7,11 +8,16 @@
 #include <imgui_impl_win32.h>
 #include <imgui_internal.h>
 
+#include <tchar.h>
+#include <stdio.h>
+
 WNDPROC lpPrevWndFunc;
-
 bool bShowMenu;
+static HWND hWnd = 0;
+std::list<polaris::Ui*> polaris::Renderer::pUiInstances;
 
-extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT Msg, WPARAM wParam, LPARAM lParam);
+// Forward declare message handler from imgui_impl_win32.cpp
+extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
 
 __declspec(dllexport) LRESULT CALLBACK WndProcHook(HWND hWnd, UINT Msg, WPARAM wParam, LPARAM lParam) {
 	// Handle application-specific workload.
@@ -32,33 +38,6 @@ __declspec(dllexport) LRESULT CALLBACK WndProcHook(HWND hWnd, UINT Msg, WPARAM w
 	return CallWindowProc(lpPrevWndFunc, hWnd, Msg, wParam, lParam);
 }
 
-ImGuiWindow& BeginScene()
-{
-	ImGui_ImplDX11_NewFrame();
-	ImGui_ImplWin32_NewFrame();
-
-	ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0);
-	ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0, 0));
-	ImGui::PushStyleColor(ImGuiCol_WindowBg, ImVec4(0, 0, 0, 0));
-
-	ImGui::Begin(("##scene"), nullptr, ImGuiWindowFlags_NoInputs | ImGuiWindowFlags_NoTitleBar);
-
-	auto& io = ImGui::GetIO();
-
-	ImGui::SetWindowPos(ImVec2(0, 0), ImGuiCond_Always);
-	ImGui::SetWindowSize(ImVec2(io.DisplaySize.x, io.DisplaySize.y), ImGuiCond_Always);
-
-	return *ImGui::GetCurrentWindow();
-}
-
-VOID EndScene(ImGuiWindow& window) {
-	window.DrawList->PushClipRectFullScreen();
-
-	ImGui::PopStyleColor();
-	ImGui::PopStyleVar(2);
-	ImGui::Render();
-}
-
 HRESULT(*Present)(IDXGISwapChain* pInstance, UINT SyncInterval, UINT Flags) = nullptr;
 
 __declspec(dllexport) HRESULT PresentHook(IDXGISwapChain* pInstance, UINT SyncInterval, UINT Flags)
@@ -66,7 +45,14 @@ __declspec(dllexport) HRESULT PresentHook(IDXGISwapChain* pInstance, UINT SyncIn
 	static float fWidth = 0;
 	static float fHeight = 0;
 
-	static HWND hWnd = 0;
+	// Poll and handle messages (inputs, window resize, etc)
+	static MSG msg;
+	ZeroMemory(&msg, sizeof(msg));
+	if (::PeekMessage(&msg, hWnd, 0U, 0U, PM_REMOVE))
+	{
+		::TranslateMessage(&msg);
+		::DispatchMessage(&msg);
+	}
 
 	// Jesus fucking christ.
 	if (!gpRenderer->pCurrentDevice)
@@ -87,8 +73,6 @@ __declspec(dllexport) HRESULT PresentHook(IDXGISwapChain* pInstance, UINT SyncIn
 		D3D11_TEXTURE2D_DESC desc = { };
 		pBuffer->GetDesc(&desc);
 
-		hWnd = FindWindow(L"UnrealWindow", L"Fortnite  ");
-
 		if (!fWidth)
 			lpPrevWndFunc = reinterpret_cast<WNDPROC>(SetWindowLongPtr(hWnd, GWLP_WNDPROC, reinterpret_cast<LONG_PTR>(WndProcHook)));
 
@@ -98,46 +82,27 @@ __declspec(dllexport) HRESULT PresentHook(IDXGISwapChain* pInstance, UINT SyncIn
 		pBuffer->Release();
 
 		// Handle application-specific workload.
-
+		ImGui_ImplWin32_Init(hWnd);
 		ImGui_ImplDX11_Init(gpRenderer->pCurrentDevice, gpRenderer->pCurrentContext);
 		ImGui_ImplDX11_CreateDeviceObjects();
 	}
 
-	gpRenderer->pCurrentContext->OMSetRenderTargets(1, &gpRenderer->pCurrentView, nullptr);
-
-	// Handle application-specific workload.
-
-	auto& window = BeginScene();
-
 	if (bShowMenu)
 	{
-		ImGui::Begin("My First Tool", reinterpret_cast<bool*>(true), ImGuiWindowFlags_MenuBar);
-		if (ImGui::BeginMenuBar())
+		ImGui_ImplDX11_NewFrame();
+		ImGui_ImplWin32_NewFrame();
+		ImGui::NewFrame();
+		
+		// Invoke the Draw event on all subscribed Uis.
+		for (polaris::Ui* ui : polaris::Renderer::pUiInstances)
 		{
-			if (ImGui::BeginMenu("File"))
-			{
-				if (ImGui::MenuItem("Open..", "Ctrl+O")) { /* Do stuff */ }
-				if (ImGui::MenuItem("Save", "Ctrl+S")) { /* Do stuff */ }
-				if (ImGui::MenuItem("Close", "Ctrl+W")) { }
-				ImGui::EndMenu();
-			}
-			ImGui::EndMenuBar();
+			ui->Draw();
 		}
 
-		// Plot some values
-		const float my_values[] = { 0.2f, 0.1f, 1.0f, 0.5f, 0.9f, 2.2f };
-		ImGui::PlotLines("Frame Times", my_values, IM_ARRAYSIZE(my_values));
-
-		// Display contents in a scrolling region
-		ImGui::TextColored(ImVec4(1, 1, 0, 1), "Important Stuff");
-		ImGui::BeginChild("Scrolling");
-		for (int n = 0; n < 50; n++)
-			ImGui::Text("%04d: Some text", n);
-		ImGui::EndChild();
-		ImGui::End();
+		ImGui::Render();
+		gpRenderer->pCurrentContext->OMSetRenderTargets(1, &gpRenderer->pCurrentView, NULL);
+		ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
 	}
-
-	EndScene(window);
 
 	return Present(pInstance, SyncInterval, Flags);
 }
@@ -146,7 +111,11 @@ HRESULT(*ResizeBuffers)(IDXGISwapChain* pInstance, UINT BufferCount, UINT Width,
 
 __declspec(dllexport) HRESULT ResizeBuffersHook(IDXGISwapChain* pInstance, UINT BufferCount, UINT Width, UINT Height, DXGI_FORMAT NewFormat, UINT SwapChainFlags)
 {
-	// Handle application-specific workload.
+	// Invoke the Resize event on all subscribed Uis.
+	for (polaris::Ui* ui : polaris::Renderer::pUiInstances)
+	{
+		ui->Resize();
+	}
 
 	ImGui_ImplDX11_Shutdown();
 
@@ -165,6 +134,7 @@ namespace polaris
 	{
 		Console::Log("Initializing Renderer");
 
+		// Check if our renderer is already initialized.
 		if (gpRenderer)
 		{
 			MessageBox(0, L"Renderer is already initialized.", L"Error", MB_ICONERROR);
@@ -186,8 +156,12 @@ namespace polaris
 		desc.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
 		desc.BufferCount = 1;
 
-		desc.OutputWindow = FindWindow(L"UnrealWindow", L"Fortnite  ");
-		desc.Windowed = TRUE;
+		Console::Log("Attempting to find Fortnite window");
+
+		hWnd = FindWindow(L"UnrealWindow", L"Fortnite ");
+
+		desc.OutputWindow = hWnd;
+		desc.Windowed = true;
 
 		desc.Flags = DXGI_SWAP_CHAIN_FLAG_ALLOW_MODE_SWITCH;
 
@@ -203,6 +177,14 @@ namespace polaris
 
 		auto pPresent = pTable[8];
 		auto pResizeBuffers = pTable[13];
+
+		// Prepare ImGui.
+		ImGui::CreateContext();
+		ImGuiIO& io = ImGui::GetIO(); (void)io;
+
+		// Enable keyboard input and load Segoe UI as font.
+		io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;
+		io.Fonts->AddFontFromFileTTF("C:\\Windows\\Fonts\\segoeui.ttf", 18);
 
 		pSwapChain->Release();
 		pDevice->Release();

@@ -1,13 +1,18 @@
 #ifndef UI_H
 #define UI_H
 
+#include <string>
+
 namespace polaris
 {
 	class Ui
 	{
+	public:
+		Ui();
+		~Ui();
+		virtual void Draw();
+		virtual void Resize();
 	};
 }
-
-static polaris::Ui* gpUi;
 
 #endif // UI_H
