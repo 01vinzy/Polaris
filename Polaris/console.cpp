@@ -4,9 +4,7 @@ HANDLE hConsole;
 
 namespace polaris
 {
-	/// <summary>
-	/// log a message to console
-	/// </summary>
+	// log a message to console
 	void Console::Log(const char* msg)
 	{
 		if(!hConsole)
@@ -21,9 +19,7 @@ namespace polaris
 		std::cout << "Display: " << msg << std::endl;
 	}
 
-	/// <summary>
-	/// log an error to console
-	/// </summary>
+	// log an error to console
 	void Console::LogError(const char* msg)
 	{
 		if (!hConsole)
@@ -40,9 +36,7 @@ namespace polaris
 		SetConsoleTextAttribute(hConsole, 15);
 	}
 
-	/// <summary>
-	/// log a message to the console without the Polaris prefix.
-	/// </summary>
+	// log a message to the console without the Polaris prefix.
 	void Console::LogRaw(const char* msg, int color)
 	{
 		if (!hConsole)
