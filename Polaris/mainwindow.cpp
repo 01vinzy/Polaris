@@ -22,9 +22,16 @@ namespace polaris
 		{
 			if (ImGui::BeginMenu("File"))
 			{
-				if (ImGui::MenuItem("Open..", "Ctrl+O")) { /* Do stuff */ }
-				if (ImGui::MenuItem("Save", "Ctrl+S")) { /* Do stuff */ }
-				if (ImGui::MenuItem("Close", "Ctrl+W")) {}
+				if (ImGui::MenuItem("Exit Polaris", "Ctrl+W")) {}
+				ImGui::EndMenu();
+			}
+
+			if (ImGui::BeginMenu("Help"))
+			{
+				if (ImGui::MenuItem("Twitter")) 
+				{
+					Utils::OpenTwitter();
+				}
 				ImGui::EndMenu();
 			}
 			ImGui::EndMenuBar();

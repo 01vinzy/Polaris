@@ -9,6 +9,7 @@
 #include <d3d11.h>
 #pragma comment(lib, "d3d11.lib")
 
-#include "console.h";
+#include "console.h"
+#include "utils.h"
 
 #endif // COMMON_H
