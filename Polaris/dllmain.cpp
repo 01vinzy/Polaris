@@ -48,4 +48,3 @@ BOOL APIENTRY DllMain(HMODULE hModule, DWORD dwReason,
 
     return TRUE;
 }
-
