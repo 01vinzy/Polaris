@@ -5,7 +5,7 @@
 #ifndef FRONTENDMANAGER_H
 #define FRONTENDMANAGER_H
 
-#include "common.h";
+#include "common.h"
 
 namespace polaris 
 {

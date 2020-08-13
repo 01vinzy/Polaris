@@ -1,7 +1,7 @@
 #ifndef CONSOLE_H
 #define CONSOLE_H
 
-#include "common.h";
+#include "common.h"
 #include <string>
 #include <iostream>
 

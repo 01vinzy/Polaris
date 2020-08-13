@@ -1,5 +1,5 @@
 #include "ui.h"
-#include "renderer.h";
+#include "renderer.h"
 
 #include <imgui.h>
 #include <Windows.h>
