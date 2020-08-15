@@ -1,9 +1,10 @@
 #ifndef CONSOLE_H
 #define CONSOLE_H
 
-#include "common.h"
 #include <string>
 #include <iostream>
+
+#include "common.h"
 
 namespace polaris
 {
