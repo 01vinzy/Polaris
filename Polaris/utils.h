@@ -9,6 +9,7 @@ namespace polaris
 	{
 	public:
 		static void OpenTwitter();
+		static int Unload();
 	};
 }
 
