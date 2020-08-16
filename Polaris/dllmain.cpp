@@ -3,7 +3,7 @@
 #include "common.h"
 #include "renderer.h"
 #include "ui.h"
-#include "athenaloader.h"
+#include "frontendmanager.h"
 #include "mainwindow.h"
 
 #include <stdio.h>
@@ -28,7 +28,6 @@ DWORD WINAPI Main(LPVOID lpParam)
     polaris::Console::LogRaw("Welcome to Polaris!", 11);
     new polaris::Renderer; // Initialize renderer.
     new polaris::MainWindow; // Initialize UI.
-    new polaris::AthenaLoader; // Test. Remove later
 
     return FALSE;
 }
