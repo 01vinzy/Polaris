@@ -3,8 +3,6 @@
 
 #include <imgui.h>
 
-float* dummySlomo;
-
 namespace polaris
 {
 	MainWindow::MainWindow()
