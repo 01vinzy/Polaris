@@ -5,6 +5,7 @@
 #include "ui.h"
 #include "frontendmanager.h"
 #include "mainwindow.h"
+#include "SDK.hpp"
 
 #include <stdio.h>
 #include <fcntl.h>
