@@ -11,5 +11,6 @@
 
 #include "console.h"
 #include "utils.h"
+#include "SDK.hpp";
 
 #endif // COMMON_H

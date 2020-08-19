@@ -61,6 +61,7 @@
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
+      <LanguageStandard>Default</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -78,7 +79,9 @@
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
-      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>
+      </AdditionalIncludeDirectories>
+      <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -90,10 +93,10 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="athenaloader.cpp" />
     <ClCompile Include="console.cpp" />
     <ClCompile Include="creditswindow.cpp" />
     <ClCompile Include="dllmain.cpp" />
-    <ClCompile Include="frontendmanager.cpp" />
     <ClCompile Include="imgui\examples\imgui_impl_dx11.cpp" />
     <ClCompile Include="imgui\examples\imgui_impl_win32.cpp" />
     <ClCompile Include="imgui\imgui.cpp" />
@@ -101,6 +104,13 @@
     <ClCompile Include="imgui\imgui_widgets.cpp" />
     <ClCompile Include="mainwindow.cpp" />
     <ClCompile Include="renderer.cpp" />
+    <ClCompile Include="SDK\FN_Athena_PlayerController_functions.cpp" />
+    <ClCompile Include="SDK\FN_Basic.cpp" />
+    <ClCompile Include="SDK\FN_CoreUObject_functions.cpp" />
+    <ClCompile Include="SDK\FN_Engine_functions.cpp" />
+    <ClCompile Include="SDK\FN_FortniteGame_functions.cpp" />
+    <ClCompile Include="SDK\FN_PlayerPawn_Athena_functions.cpp" />
+    <ClCompile Include="SDK\FN_PlayerPawn_Athena_Generic_functions.cpp" />
     <ClCompile Include="ui.cpp" />
     <ClCompile Include="utils.cpp" />
   </ItemGroup>
@@ -108,9 +118,12 @@
     <ClInclude Include="common.h" />
     <ClInclude Include="console.h" />
     <ClInclude Include="creditswindow.h" />
-    <ClInclude Include="frontendmanager.h" />
+    <ClInclude Include="athenaloader.h" />
+    <ClInclude Include="globals.h" />
     <ClInclude Include="mainwindow.h" />
     <ClInclude Include="renderer.h" />
+    <ClInclude Include="SDK.hpp" />
+    <ClInclude Include="SDK\FN_Engine_classes.hpp" />
     <ClInclude Include="ui.h" />
     <ClInclude Include="utils.h" />
   </ItemGroup>
