@@ -3,7 +3,7 @@
 #include "common.h"
 #include "renderer.h"
 #include "ui.h"
-#include "athenaloader.h"
+#include "frontendmanager.h"
 #include "mainwindow.h"
 
 #include <stdio.h>
