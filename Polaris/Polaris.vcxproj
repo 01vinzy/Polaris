@@ -110,18 +110,18 @@
     <ClCompile Include="SDK\FN_PlayerPawn_Athena_Generic_functions.cpp" />
     <ClCompile Include="SDK\FN_PlayerPawn_Athena_Generic_Parent_functions.cpp" />
     <ClCompile Include="ui.cpp" />
-    <ClCompile Include="utils.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="common.h" />
     <ClInclude Include="console.h" />
+    <ClInclude Include="core.h" />
     <ClInclude Include="creditswindow.h" />
     <ClInclude Include="frontendmanager.h" />
     <ClInclude Include="mainwindow.h" />
     <ClInclude Include="renderer.h" />
     <ClInclude Include="SDK.hpp" />
     <ClInclude Include="ui.h" />
-    <ClInclude Include="utils.h" />
+    <ClInclude Include="util.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

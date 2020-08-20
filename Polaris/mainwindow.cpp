@@ -41,7 +41,7 @@ namespace polaris
 				}
 				if (ImGui::MenuItem("Twitter"))
 				{
-					Utils::OpenTwitter();
+					//Utils::OpenTwitter();
 				}
 				ImGui::EndMenu();
 			}

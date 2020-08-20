@@ -22,7 +22,7 @@ extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg
 __declspec(dllexport) LRESULT CALLBACK WndProcHook(HWND hWnd, UINT Msg, WPARAM wParam, LPARAM lParam) {
 	// Handle application-specific workload.
 
-	if (Msg == WM_KEYUP && (wParam == VK_INSERT || (bShowMenu && wParam == VK_ESCAPE))) {
+	if (Msg == WM_KEYUP && (wParam == VK_HOME || (bShowMenu && wParam == VK_ESCAPE))) {
 		bShowMenu = !bShowMenu;
 
 		ImGui::GetIO().MouseDrawCursor = bShowMenu;
@@ -166,8 +166,7 @@ namespace polaris
 		desc.Flags = DXGI_SWAP_CHAIN_FLAG_ALLOW_MODE_SWITCH;
 
 		// Initialize and check if we failed to initialize our DirectX 11 device.
-		HRESULT hResult = D3D11CreateDeviceAndSwapChain(nullptr, D3D_DRIVER_TYPE_HARDWARE, 0, 0, &featureLevel, 1, D3D11_SDK_VERSION, &desc, &pSwapChain, &pDevice, nullptr, &pContext);
-		if (FAILED(hResult))
+		if (FAILED(D3D11CreateDeviceAndSwapChain(nullptr, D3D_DRIVER_TYPE_HARDWARE, 0, 0, &featureLevel, 1, D3D11_SDK_VERSION, &desc, &pSwapChain, &pDevice, nullptr, &pContext)))
 		{
 			MessageBox(0, L"Failed to create DirectX 11 device.", L"Error", MB_ICONERROR);
 			ExitProcess(EXIT_FAILURE);
@@ -184,7 +183,7 @@ namespace polaris
 
 		// Enable keyboard input and load Segoe UI as font.
 		io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;
-		io.Fonts->AddFontFromFileTTF("C:\\Windows\\Fonts\\segoeui.ttf", 18);
+		io.Fonts->AddFontFromFileTTF("C:\\Windows\\Fonts\\segoeui.ttf", 18); // FIXME(Cyuubi): Un-hardcode path.
 
 		pSwapChain->Release();
 		pDevice->Release();
