@@ -1,3 +1,4 @@
+#include "core.h"
 #include "mainwindow.h"
 #include "creditswindow.h"
 
@@ -28,21 +29,14 @@ namespace polaris
 
 			if (ImGui::BeginMenu("World"))
 			{
-				if (ImGui::MenuItem("Actors")) { }
-				ImGui::SliderInt("Slomo", &slomo, 0, 100);
 				ImGui::EndMenu();
 			}
 
 			if (ImGui::BeginMenu("Help"))
 			{
 				if (ImGui::MenuItem("Credits"))
-				{
 					new polaris::CreditsWindow;
-				}
-				if (ImGui::MenuItem("Twitter"))
-				{
-					//Utils::OpenTwitter();
-				}
+
 				ImGui::EndMenu();
 			}
 
