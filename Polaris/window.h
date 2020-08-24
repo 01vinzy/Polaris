@@ -5,11 +5,13 @@
 
 namespace polaris
 {
-	class Ui
+	class Window
 	{
 	public:
-		Ui();
-		~Ui();
+		bool bShowWindow = false;
+
+		Window();
+		~Window();
 		virtual void Draw();
 		virtual void Resize();
 	};

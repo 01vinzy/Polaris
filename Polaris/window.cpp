@@ -1,4 +1,4 @@
-#include "ui.h"
+#include "window.h"
 #include "renderer.h"
 
 #include <imgui.h>
@@ -6,22 +6,21 @@
 
 namespace polaris
 {
-	Ui::Ui()
+	Window::Window()
 	{
 		polaris::Renderer::SubscribeUIToEvents(this);
 	}
 
-	Ui::~Ui()
+	Window::~Window()
 	{
 		//TODO: unload Ui
 	}
 
-	void Ui::Draw()
+	void Window::Draw()
 	{
-		ImGui::Begin("Test");
 	}
 
-	void Ui::Resize()
+	void Window::Resize()
 	{
 	}
 }

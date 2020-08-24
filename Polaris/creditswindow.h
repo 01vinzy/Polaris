@@ -2,11 +2,11 @@
 #define CREDITSWINDOW_H
 
 #include "common.h"
-#include "ui.h"
+#include "window.h"
 
 namespace polaris
 {
-	class CreditsWindow : public Ui
+	class CreditsWindow : public Window
 	{
 	public:
 		const char* credits[18] = {

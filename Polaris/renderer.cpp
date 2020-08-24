@@ -12,9 +12,9 @@
 #include <stdio.h>
 
 WNDPROC lpPrevWndFunc;
-bool bShowMenu;
+bool bLockFortInput;
 static HWND hWnd = 0;
-std::list<polaris::Ui*> polaris::Renderer::pUiInstances;
+std::list<polaris::Window*> polaris::Renderer::pUiInstances;
 
 // Forward declare message handler from imgui_impl_win32.cpp
 extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
@@ -22,13 +22,13 @@ extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg
 __declspec(dllexport) LRESULT CALLBACK WndProcHook(HWND hWnd, UINT Msg, WPARAM wParam, LPARAM lParam) {
 	// Handle application-specific workload.
 
-	if (Msg == WM_KEYUP && (wParam == VK_HOME || (bShowMenu && wParam == VK_ESCAPE))) {
-		bShowMenu = !bShowMenu;
+	if (Msg == WM_KEYUP && (wParam == VK_HOME || (bLockFortInput && wParam == VK_ESCAPE))) {
+		bLockFortInput = !bLockFortInput;
 
-		ImGui::GetIO().MouseDrawCursor = bShowMenu;
+		ImGui::GetIO().MouseDrawCursor = bLockFortInput;
 	}
 
-	if (bShowMenu)
+	if (bLockFortInput)
 	{
 		ImGui_ImplWin32_WndProcHandler(hWnd, Msg, wParam, lParam);
 
@@ -87,22 +87,20 @@ __declspec(dllexport) HRESULT PresentHook(IDXGISwapChain* pInstance, UINT SyncIn
 		ImGui_ImplDX11_CreateDeviceObjects();
 	}
 
-	if (bShowMenu)
-	{
-		ImGui_ImplDX11_NewFrame();
-		ImGui_ImplWin32_NewFrame();
-		ImGui::NewFrame();
-		
-		// Invoke the Draw event on all subscribed Uis.
-		for (polaris::Ui* ui : polaris::Renderer::pUiInstances)
-		{
-			ui->Draw();
-		}
+	ImGui_ImplDX11_NewFrame();
+	ImGui_ImplWin32_NewFrame();
+	ImGui::NewFrame();
 
-		ImGui::Render();
-		gpRenderer->pCurrentContext->OMSetRenderTargets(1, &gpRenderer->pCurrentView, NULL);
-		ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
+	// Invoke the Draw event on all subscribed Uis.
+	for (polaris::Window* ui : polaris::Renderer::pUiInstances)
+	{
+		if(ui->bShowWindow)
+			ui->Draw();
 	}
+
+	ImGui::Render();
+	gpRenderer->pCurrentContext->OMSetRenderTargets(1, &gpRenderer->pCurrentView, NULL);
+	ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
 
 	return Present(pInstance, SyncInterval, Flags);
 }
@@ -112,7 +110,7 @@ HRESULT(*ResizeBuffers)(IDXGISwapChain* pInstance, UINT BufferCount, UINT Width,
 __declspec(dllexport) HRESULT ResizeBuffersHook(IDXGISwapChain* pInstance, UINT BufferCount, UINT Width, UINT Height, DXGI_FORMAT NewFormat, UINT SwapChainFlags)
 {
 	// Invoke the Resize event on all subscribed Uis.
-	for (polaris::Ui* ui : polaris::Renderer::pUiInstances)
+	for (polaris::Window* ui : polaris::Renderer::pUiInstances)
 	{
 		ui->Resize();
 	}
