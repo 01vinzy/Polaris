@@ -3,8 +3,6 @@
 #include "creditswindow.h"
 #include "actorlist.h"
 #include "athena.h"
-#include "encryptedflags.h"
-#include "base64.h"
 #include "renderer.h"
 
 #include <imgui.h>
@@ -18,9 +16,10 @@ namespace polaris
 	{
 		Console::Log("Initializing MainWindow");
 
-		pActorList = new ActorList;
-		pCreditsWindow = new CreditsWindow;
-		bShowWindow = true;
+		// Create window instances we reuse.
+		// We want to reuse these to not hog up memory.
+		pActorList = new polaris::ActorList;
+		pCreditsWindow = new polaris::CreditsWindow;
 	}
 
 	MainWindow::~MainWindow()
@@ -30,40 +29,35 @@ namespace polaris
 
 	void MainWindow::Draw()
 	{
-		std::string decryptedTitle = base64_decode(ENCRYPTED_NAME).c_str();
-
-		ImGui::Begin(decryptedTitle.c_str());
+		ImGui::BeginMainMenuBar();
 		{
-			ImGui::TextWrapped("This window's title is encrypted!");
-			ImGui::Checkbox("Actor Inspector", &pActorList->bShowWindow);
-			ImGui::Checkbox("Credits", &pCreditsWindow->bShowWindow);
-			if (ImGui::Button("Athena Test"))
+			if (ImGui::BeginMenu("Player"))
 			{
-				new polaris::Athena;
-			}
+				if (ImGui::MenuItem("Exit", "Ctrl+W"))
+					ExitProcess(EXIT_SUCCESS);
 
-			/*if (ImGui::BeginMenu("Player"))
-			{
-				if (ImGui::MenuItem("Exit", "Ctrl+W")) { }
-				if(gpAthena == nullptr)
-					if (ImGui::MenuItem("Load Athena", "Ctrl+A")) { new polaris::Athena; }
 				ImGui::EndMenu();
 			}
 
 			if (ImGui::BeginMenu("World"))
 			{
 				if (ImGui::MenuItem("Actor Inspector"))
-					new polaris::ActorList;
+					pActorList->bShowWindow = true;
+
 				ImGui::EndMenu();
 			}
 
 			if (ImGui::BeginMenu("Help"))
 			{
 				if (ImGui::MenuItem("Credits"))
-					new polaris::CreditsWindow;
+					pCreditsWindow->bShowWindow = true;
+
+				// Get stickbugged LOL
+				if (ImGui::MenuItem("Irma Burger"))
+					system("start https://www.youtube.com/watch?v=fC7oUOUEEi4");
 
 				ImGui::EndMenu();
-			}*/
+			}
 
 			ImGui::End();
 		}

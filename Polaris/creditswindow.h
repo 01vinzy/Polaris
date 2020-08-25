@@ -9,25 +9,27 @@ namespace polaris
 	class CreditsWindow : public Window
 	{
 	public:
-		const char* credits[18] = {
-			"Polaris Lead:",
+		const char* credits[19] = {
+			"Owner:",
 			"Cyuubi",
 			"",
-			"Developers:",
-			"kanner",
-			"",
-			"Contributors:",
+			"Programming Assistance:",
 			"BigBoiTaj2005",
 			"Chase",
 			"irma",
+			"kanner",
 			"pivotman319",
 			"Samicc",
 			"wiktorwiktor12",
 			"",
-			"Relation:",
+			"Special Thanks:",
 			"Crush",
 			"Darkblade",
 			"Slushia"
+			"",
+			"",
+			"- HIGHLY UNFINISHED! -",
+			"Just thought this needed an update."
 		};
 
 		CreditsWindow();

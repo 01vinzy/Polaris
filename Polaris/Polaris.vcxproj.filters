@@ -42,12 +42,6 @@
     <Filter Include="Athena">
       <UniqueIdentifier>{01ebd5f5-7541-4a82-b70d-c7cea34539bd}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Utilities\Flags">
-      <UniqueIdentifier>{5e22c7bb-7df5-48d1-ab90-3821068f021f}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Utilities\Encryption">
-      <UniqueIdentifier>{8bb2d3e7-873e-4ff0-8eaf-047bbefcf0df}</UniqueIdentifier>
-    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="renderer.cpp">
@@ -151,12 +145,6 @@
     </ClInclude>
     <ClInclude Include="athena.h">
       <Filter>Athena</Filter>
-    </ClInclude>
-    <ClInclude Include="encryptedflags.h">
-      <Filter>Utilities\Flags</Filter>
-    </ClInclude>
-    <ClInclude Include="base64.h">
-      <Filter>Utilities\Encryption</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

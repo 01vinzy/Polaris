@@ -1,5 +1,6 @@
 #include "renderer.h"
 #include "common.h"
+#include "mainwindow.h"
 
 #include <windows.h>
 
@@ -11,10 +12,12 @@
 #include <tchar.h>
 #include <stdio.h>
 
-WNDPROC lpPrevWndFunc;
 bool bLockFortInput;
-static HWND hWnd = 0;
+polaris::MainWindow* pMainWindow;
 std::list<polaris::Window*> polaris::Renderer::pUiInstances;
+
+WNDPROC lpPrevWndFunc;
+static HWND hWnd = 0;
 
 // Forward declare message handler from imgui_impl_win32.cpp
 extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
@@ -26,6 +29,7 @@ __declspec(dllexport) LRESULT CALLBACK WndProcHook(HWND hWnd, UINT Msg, WPARAM w
 		bLockFortInput = !bLockFortInput;
 
 		ImGui::GetIO().MouseDrawCursor = bLockFortInput;
+		pMainWindow->bShowWindow = bLockFortInput;
 	}
 
 	if (bLockFortInput)
@@ -94,9 +98,16 @@ __declspec(dllexport) HRESULT PresentHook(IDXGISwapChain* pInstance, UINT SyncIn
 	// Invoke the Draw event on all subscribed Uis.
 	for (polaris::Window* ui : polaris::Renderer::pUiInstances)
 	{
-		if(ui->bShowWindow)
+		if (ui->bShowWindow)
+		{
+			if (!bLockFortInput)
+				ImGui::SetNextWindowBgAlpha(0.5f);
+
 			ui->Draw();
+		}
 	}
+
+	ImGui::SetNextWindowBgAlpha(1);
 
 	ImGui::Render();
 	gpRenderer->pCurrentContext->OMSetRenderTargets(1, &gpRenderer->pCurrentView, NULL);
@@ -131,6 +142,8 @@ namespace polaris
 	Renderer::Renderer()
 	{
 		Console::Log("Initializing Renderer");
+
+		pMainWindow = new polaris::MainWindow;
 
 		// Check if our renderer is already initialized.
 		if (gpRenderer)

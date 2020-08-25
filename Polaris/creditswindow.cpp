@@ -16,12 +16,12 @@ namespace polaris
 
 	void CreditsWindow::Draw()
 	{
-		ImGui::Begin("Credits", reinterpret_cast<bool*>(true), ImGuiWindowFlags_Modal);
+		ImGui::Begin("Credits", &bShowWindow, ImGuiWindowFlags_Modal);
 		{
 			for (const char* credit : credits)
 			{
 				ImGui::SetCursorPosX(ImGui::GetWindowWidth() / 2 - ImGui::CalcTextSize(credit).x / 2);
-				ImGui::Text(credit);
+				ImGui::TextWrapped(credit);
 			}
 
 			ImGui::End();

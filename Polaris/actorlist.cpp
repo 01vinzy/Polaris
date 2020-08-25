@@ -12,7 +12,7 @@ namespace polaris
 	void ActorList::Draw()
 	{
 		ImGui::SetNextWindowSize(ImVec2(820, 440), ImGuiCond_Appearing);
-		ImGui::Begin("Actors", reinterpret_cast<bool*>(true), ImGuiWindowFlags_Modal);
+		ImGui::Begin("Actors", &bShowWindow, ImGuiWindowFlags_Modal);
 		{
 			// Actor Hierarchy
 			static int selected = 0;
@@ -49,7 +49,7 @@ namespace polaris
 				{
 					if (ImGui::BeginTabItem("Properties"))
 					{
-						// Position field
+						// Position and Rotation field
 						ImGui::TextWrapped("Position: (%d, %d, %d)", selectedActor->K2_GetActorLocation().X, selectedActor->K2_GetActorLocation().Y, selectedActor->K2_GetActorLocation().Z);
 						ImGui::TextWrapped("Rotation: (%d, %d, %d)", selectedActor->K2_GetActorRotation().Pitch, selectedActor->K2_GetActorRotation().Roll, selectedActor->K2_GetActorRotation().Yaw);
 
