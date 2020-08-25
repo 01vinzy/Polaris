@@ -141,19 +141,6 @@ namespace polaris
 
                 auto pAuthorityGameMode = static_cast<SDK::AFortGameModeAthena*>((*Core::pWorld)->AuthorityGameMode);
                 pAuthorityGameMode->StartMatch();
-
-                Sleep(2000);
-
-                auto pQuickbars = static_cast<SDK::AFortQuickBars*>(Util::FindActor(SDK::AFortQuickBars::StaticClass()));
-
-                static_cast<SDK::AAthena_PlayerController_C*>(Core::pPlayerController)->Role = SDK::ENetRole::ROLE_None;
-                pQuickbars->Role = SDK::ENetRole::ROLE_None;
-                pQuickbars->EnableSlot(SDK::EFortQuickBars::Secondary, -3);
-                
-                static_cast<SDK::AAthena_PlayerController_C*>(Core::pPlayerController)->QuickBars = pQuickbars;
-                pQuickbars->OnRep_PrimaryQuickBar();
-                pQuickbars->OnRep_SecondaryQuickBar();
-                static_cast<SDK::AAthena_PlayerController_C*>(Core::pPlayerController)->OnRep_QuickBar();
             }
         }
 
