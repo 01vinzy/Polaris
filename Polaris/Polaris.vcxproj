@@ -104,6 +104,7 @@
     <ClCompile Include="imgui\imgui_draw.cpp" />
     <ClCompile Include="imgui\imgui_widgets.cpp" />
     <ClCompile Include="mainwindow.cpp" />
+    <ClCompile Include="objectcache.cpp" />
     <ClCompile Include="renderer.cpp" />
     <ClCompile Include="SDK\FN_Athena_PlayerController_functions.cpp" />
     <ClCompile Include="SDK\FN_Basic.cpp" />
@@ -124,6 +125,7 @@
     <ClInclude Include="creditswindow.h" />
     <ClInclude Include="frontendmanager.h" />
     <ClInclude Include="mainwindow.h" />
+    <ClInclude Include="objectcache.h" />
     <ClInclude Include="renderer.h" />
     <ClInclude Include="SDK.hpp" />
     <ClInclude Include="window.h" />

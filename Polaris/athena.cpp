@@ -6,8 +6,9 @@
 
 namespace polaris
 {
-    PVOID(*ProcessEvent)(SDK::UObject*, SDK::UFunction*, PVOID) = nullptr;
     SDK::APlayerPawn_Athena_C* pPlayerPawn_Athena_C;
+
+    PVOID(*ProcessEvent)(SDK::UObject*, SDK::UFunction*, PVOID) = nullptr;
 
     PVOID ProcessEventHook(SDK::UObject* pObject, SDK::UFunction* pFunction, PVOID pParams)
     {

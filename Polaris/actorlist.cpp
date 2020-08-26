@@ -49,6 +49,8 @@ namespace polaris
 				{
 					if (ImGui::BeginTabItem("Properties"))
 					{
+						ImGui::TextWrapped("ID: %s", selectedActor->GetFullName().c_str());
+
 						// Position and Rotation field
 						ImGui::TextWrapped("Position: (%d, %d, %d)", selectedActor->K2_GetActorLocation().X, selectedActor->K2_GetActorLocation().Y, selectedActor->K2_GetActorLocation().Z);
 						ImGui::TextWrapped("Rotation: (%d, %d, %d)", selectedActor->K2_GetActorRotation().Pitch, selectedActor->K2_GetActorRotation().Roll, selectedActor->K2_GetActorRotation().Yaw);
@@ -61,11 +63,6 @@ namespace polaris
 						auto authorityLabel = selectedActor->HasAuthority() ? "Yes" : "No";
 						ImGui::TextWrapped("Has Authority: %s", authorityLabel);
 
-						ImGui::EndTabItem();
-					}
-					if (ImGui::BeginTabItem("Info"))
-					{
-						ImGui::TextWrapped("ID: %s", selectedActor->GetFullName().c_str());
 						ImGui::EndTabItem();
 					}
 					ImGui::EndTabBar();

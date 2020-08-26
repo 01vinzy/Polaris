@@ -108,6 +108,9 @@
     <ClCompile Include="athena.cpp">
       <Filter>Athena</Filter>
     </ClCompile>
+    <ClCompile Include="objectcache.cpp">
+      <Filter>GUI\Windows\CPP</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="common.h">
@@ -145,6 +148,9 @@
     </ClInclude>
     <ClInclude Include="athena.h">
       <Filter>Athena</Filter>
+    </ClInclude>
+    <ClInclude Include="objectcache.h">
+      <Filter>GUI\Windows\H</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

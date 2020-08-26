@@ -4,6 +4,7 @@
 #include "actorlist.h"
 #include "athena.h"
 #include "renderer.h"
+#include "objectcache.h"
 
 #include <imgui.h>
 
@@ -11,6 +12,7 @@ namespace polaris
 {
 	ActorList* pActorList;
 	CreditsWindow* pCreditsWindow;
+	ObjectCache* pObjectCache;
 
 	MainWindow::MainWindow()
 	{
@@ -20,6 +22,7 @@ namespace polaris
 		// We want to reuse these to not hog up memory.
 		pActorList = new polaris::ActorList;
 		pCreditsWindow = new polaris::CreditsWindow;
+		pObjectCache = new polaris::ObjectCache;
 	}
 
 	MainWindow::~MainWindow()
@@ -33,8 +36,11 @@ namespace polaris
 		{
 			if (ImGui::BeginMenu("Player"))
 			{
-				if (ImGui::MenuItem("Exit", "Ctrl+W"))
+				if (ImGui::MenuItem("Exit"))
 					ExitProcess(EXIT_SUCCESS);
+
+				if (ImGui::MenuItem("Object Cache (Lags!)"))
+					pObjectCache->bShowWindow = true;
 
 				ImGui::EndMenu();
 			}
@@ -52,7 +58,6 @@ namespace polaris
 				if (ImGui::MenuItem("Credits"))
 					pCreditsWindow->bShowWindow = true;
 
-				// Get stickbugged LOL
 				if (ImGui::MenuItem("Irma Burger"))
 					system("start https://www.youtube.com/watch?v=fC7oUOUEEi4");
 
