@@ -141,6 +141,21 @@ public:
 
         return nullptr;
     }
+
+    template<typename T>
+    static T* SearchObject(const std::string& classname, const std::string& query)
+    {
+        for (int i = 0; i < SDK::UObject::GetGlobalObjects().Num(); ++i)
+        {
+            auto object = SDK::UObject::GetGlobalObjects().GetByIndex(i);
+
+            if (object == nullptr)
+                continue;
+
+            if (object->GetFullName().find(classname) != std::string::npos && object->GetFullName().find(query) != std::string::npos)
+                return static_cast<T*>(object);
+        }
+    }
 };
 
 #endif // UTIL_H

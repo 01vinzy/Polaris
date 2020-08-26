@@ -52,7 +52,7 @@ namespace polaris
 				{
 					if (ImGui::BeginTabItem("Properties"))
 					{
-						ImGui::TextWrapped("Address: %s %s.%s", selectedActor->Class->GetName(), selectedActor->GetName(), selectedActor->GetName());
+						ImGui::TextWrapped("Address: %s", selectedActor->GetFullName().c_str());
 						ImGui::EndTabItem();
 					}
 					ImGui::EndTabBar();
