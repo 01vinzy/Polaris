@@ -6,6 +6,7 @@
 #include "frontendmanager.h"
 #include "athena.h"
 #include "mainwindow.h"
+#include "watermark.h"
 
 #include <stdio.h>
 #include <fcntl.h>
@@ -16,6 +17,7 @@
 #include "SDK.hpp"
 #include "util.h"
 #include "core.h"
+#include "polarisflags.h"
 
 DWORD WINAPI Main(LPVOID lpParam)
 {

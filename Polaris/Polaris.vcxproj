@@ -114,6 +114,7 @@
     <ClCompile Include="SDK\FN_PlayerPawn_Athena_functions.cpp" />
     <ClCompile Include="SDK\FN_PlayerPawn_Athena_Generic_functions.cpp" />
     <ClCompile Include="SDK\FN_PlayerPawn_Athena_Generic_Parent_functions.cpp" />
+    <ClCompile Include="watermark.cpp" />
     <ClCompile Include="window.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -126,8 +127,10 @@
     <ClInclude Include="frontendmanager.h" />
     <ClInclude Include="mainwindow.h" />
     <ClInclude Include="objectcache.h" />
+    <ClInclude Include="polarisflags.h" />
     <ClInclude Include="renderer.h" />
     <ClInclude Include="SDK.hpp" />
+    <ClInclude Include="watermark.h" />
     <ClInclude Include="window.h" />
     <ClInclude Include="util.h" />
   </ItemGroup>

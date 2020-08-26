@@ -42,6 +42,9 @@
     <Filter Include="Athena">
       <UniqueIdentifier>{01ebd5f5-7541-4a82-b70d-c7cea34539bd}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Flags">
+      <UniqueIdentifier>{0a5255ae-7172-4ccd-85c0-30e4ffd75ffd}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="renderer.cpp">
@@ -111,6 +114,9 @@
     <ClCompile Include="objectcache.cpp">
       <Filter>GUI\Windows\CPP</Filter>
     </ClCompile>
+    <ClCompile Include="watermark.cpp">
+      <Filter>GUI\Windows\CPP</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="common.h">
@@ -151,6 +157,12 @@
     </ClInclude>
     <ClInclude Include="objectcache.h">
       <Filter>GUI\Windows\H</Filter>
+    </ClInclude>
+    <ClInclude Include="watermark.h">
+      <Filter>GUI\Windows\H</Filter>
+    </ClInclude>
+    <ClInclude Include="polarisflags.h">
+      <Filter>Flags</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
