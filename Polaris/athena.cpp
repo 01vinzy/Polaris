@@ -59,32 +59,33 @@ namespace polaris
     {
         while (1)
         {
-            // Keybind to jump (only run if not skydiving, might need to fix this more though):
-            if (GetKeyState(VK_SPACE) & 0x8000 && pPlayerPawn_Athena_C && !pPlayerPawn_Athena_C->IsSkydiving())
+            if (pPlayerPawn_Athena_C->HasAuthority())
             {
-                if (!pPlayerPawn_Athena_C->IsJumpProvidingForce())
-                    pPlayerPawn_Athena_C->Jump();
-            }
-
-            // Keybind to sprint (only run if not skydiving):
-            if (GetKeyState(VK_SHIFT) & 0x8000 && pPlayerPawn_Athena_C && !pPlayerPawn_Athena_C->IsSkydiving())
-                pPlayerPawn_Athena_C->CurrentMovementStyle = SDK::EFortMovementStyle::Sprinting;
-            else if (pPlayerPawn_Athena_C)
-                pPlayerPawn_Athena_C->CurrentMovementStyle = SDK::EFortMovementStyle::Running;
-
-            // Keybind to equip weapon:
-            if (GetKeyState(VK_END) & 0x8000 && pPlayerPawn_Athena_C)
-            {
-                static_cast<SDK::AFortPlayerStateAthena*>(Core::pPlayerController->PlayerState)->ClientReportKill(TEXT("France"));
-
-                auto pFortWeapon = static_cast<SDK::AFortWeapon*>(Util::FindActor(SDK::AFortWeapon::StaticClass()));
-                if (!pFortWeapon)
-                    printf("Finding FortWeapon has failed, bailing-out immediately!\n");
-                else
+                // Keybind to jump (only run if not skydiving, might need to fix this more though):
+                if (GetKeyState(VK_SPACE) & 0x8000 && pPlayerPawn_Athena_C && !pPlayerPawn_Athena_C->IsSkydiving())
                 {
-                    pFortWeapon->ClientGivenTo(pPlayerPawn_Athena_C);
+                    if (!pPlayerPawn_Athena_C->IsJumpProvidingForce())
+                        pPlayerPawn_Athena_C->Jump();
+                }
 
-                    pPlayerPawn_Athena_C->ClientInternalEquipWeapon(pFortWeapon);
+                // Keybind to sprint (only run if not skydiving):
+                if (GetKeyState(VK_SHIFT) & 0x8000 && pPlayerPawn_Athena_C && !pPlayerPawn_Athena_C->IsSkydiving())
+                    pPlayerPawn_Athena_C->CurrentMovementStyle = SDK::EFortMovementStyle::Sprinting;
+                else if (pPlayerPawn_Athena_C)
+                    pPlayerPawn_Athena_C->CurrentMovementStyle = SDK::EFortMovementStyle::Running;
+
+                // Keybind to equip weapon:
+                if (GetKeyState(VK_END) & 0x8000 && pPlayerPawn_Athena_C)
+                {
+                    auto pFortWeapon = static_cast<SDK::AFortWeapon*>(Util::FindActor(SDK::AFortWeapon::StaticClass()));
+                    if (!pFortWeapon)
+                        printf("Finding FortWeapon has failed, bailing-out immediately!\n");
+                    else
+                    {
+                        pFortWeapon->ClientGivenTo(pPlayerPawn_Athena_C);
+
+                        pPlayerPawn_Athena_C->ClientInternalEquipWeapon(pFortWeapon);
+                    }
                 }
             }
 
