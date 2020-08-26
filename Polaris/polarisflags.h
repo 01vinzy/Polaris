@@ -5,7 +5,7 @@
 
 namespace polaris
 {
-	static const std::string VERSION = "DEV.20w352";
+	static const std::string VERSION = "DEV.20w353";
 }
 
 #endif // POLARISFLAGS_H
