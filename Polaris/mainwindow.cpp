@@ -18,14 +18,18 @@ namespace polaris
 
 	MainWindow::MainWindow()
 	{
-		Console::Log("Initializing MainWindow");
+		Console::Log("Initializing UI");
 
-		// Create window instances we reuse.
-		// We want to reuse these to not hog up memory.
+		// Only enable these tools if debugging tools are enabled.
+		if (ENABLE_DEBUGGING_TOOLS)
+		{
+			pActorList = new polaris::ActorList;
+			pCreditsWindow = new polaris::CreditsWindow;
+			pObjectCache = new polaris::ObjectCache;
+		}
+
+		// Create window instances.
 		pWatermark = new polaris::Watermark;
-		pActorList = new polaris::ActorList;
-		pCreditsWindow = new polaris::CreditsWindow;
-		pObjectCache = new polaris::ObjectCache;
 	}
 
 	MainWindow::~MainWindow()
@@ -42,19 +46,22 @@ namespace polaris
 				if (ImGui::MenuItem("Exit"))
 					ExitProcess(EXIT_SUCCESS);
 
-				if (ImGui::MenuItem("Object Cache (Lags!)"))
-					pObjectCache->bShowWindow = true;
+				// Only give the user this option if experimental & debugging tools are enabled.
+				if (ENABLE_DEBUGGING_TOOLS && ENABLE_EXPERIMENTAL_DEBUGGING_TOOLS)
+					if (ImGui::MenuItem("Object Cache (Lags!)"))
+						pObjectCache->bShowWindow = true;
 
 				ImGui::EndMenu();
 			}
 
-			if (ImGui::BeginMenu("World"))
-			{
-				if (ImGui::MenuItem("Actor Inspector"))
-					pActorList->bShowWindow = true;
+			if(ENABLE_DEBUGGING_TOOLS)
+				if (ImGui::BeginMenu("World"))
+				{
+					if (ImGui::MenuItem("Actor Inspector"))
+						pActorList->bShowWindow = true;
 
-				ImGui::EndMenu();
-			}
+					ImGui::EndMenu();
+				}
 
 			if (ImGui::BeginMenu("Help"))
 			{

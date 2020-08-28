@@ -72,6 +72,16 @@ namespace polaris
 				if (ImGui::Button("Destroy")) 
 					selectedActor->K2_DestroyActor();
 
+				ImGui::SameLine();
+
+				if (ImGui::Button("Toggle Authority"))
+				{
+					if (selectedActor->Role == SDK::ENetRole::ROLE_Authority)
+						selectedActor->Role = SDK::ENetRole::ROLE_None;
+					else
+						selectedActor->Role = SDK::ENetRole::ROLE_Authority;
+				}
+
 				ImGui::EndGroup();
 			}
 		}
