@@ -45,6 +45,9 @@
     <Filter Include="Flags">
       <UniqueIdentifier>{0a5255ae-7172-4ccd-85c0-30e4ffd75ffd}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Player">
+      <UniqueIdentifier>{d2af352e-fc6f-4091-b2d4-d830f6735288}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="renderer.cpp">
@@ -117,6 +120,9 @@
     <ClCompile Include="watermark.cpp">
       <Filter>GUI\Windows\CPP</Filter>
     </ClCompile>
+    <ClCompile Include="playerpawn_polaris.cpp">
+      <Filter>Player</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="common.h">
@@ -163,6 +169,9 @@
     </ClInclude>
     <ClInclude Include="polarisflags.h">
       <Filter>Flags</Filter>
+    </ClInclude>
+    <ClInclude Include="playerpawn_polaris.h">
+      <Filter>Player</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

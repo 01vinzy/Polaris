@@ -149,12 +149,14 @@ public:
         {
             auto object = SDK::UObject::GetGlobalObjects().GetByIndex(i);
 
-            if (object == nullptr)
-                continue;
-
-            if (object->GetFullName().find(classname) != std::string::npos && object->GetFullName().find(query) != std::string::npos)
-                return static_cast<T*>(object);
+            if (object != nullptr && object->GetFullName().find("F_Med_Head1") == std::string::npos)
+            {
+                if (object->GetFullName().rfind(classname, 0) == 0 && object->GetFullName().find(query) != std::string::npos)
+                    return static_cast<T*>(object);
+            }
         }
+
+        return nullptr;
     }
 };
 

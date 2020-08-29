@@ -1,12 +1,13 @@
 #include "athena.h"
 #include "console.h"
 #include "util.h"
+#include "playerpawn_polaris.h"
 
 #include "SDK.hpp"
 
 namespace polaris
 {
-    SDK::APlayerPawn_Athena_C* pPlayerPawn_Athena_C;
+    PlayerPawnPolaris* pPlayerPawnPolaris;
 
     PVOID(*ProcessEvent)(SDK::UObject*, SDK::UFunction*, PVOID) = nullptr;
 
@@ -14,38 +15,33 @@ namespace polaris
     {
         if (pObject && pFunction)
         {
+            if (pFunction->GetName().find("StartMatch") != std::string::npos)
+            {
+                if (!pPlayerPawnPolaris)
+                {
+                    // Create a new Player Pawn.
+                    pPlayerPawnPolaris = new PlayerPawnPolaris;
+                    pPlayerPawnPolaris->InitializeHero();
+                    
+                    Sleep(2000); // Wait for everything to be ready.
+
+                    // Tell the client that we are ready to start the match, this allows the loading screen to drop.
+                    static_cast<SDK::AAthena_PlayerController_C*>(Core::pPlayerController)->ServerReadyToStartMatch();
+
+                    auto pAuthorityGameMode = static_cast<SDK::AFortGameModeAthena*>((*Core::pWorld)->AuthorityGameMode);
+                    pAuthorityGameMode->StartMatch();
+                }
+            }
+
             if (pFunction->GetName().find("ServerAttemptAircraftJump") != std::string::npos)
             {
                 // Use BugItGo, so that the PlayerPawn isn't messed up.
                 SDK::FVector actorLocation = Core::pPlayerController->K2_GetActorLocation();
                 Core::pPlayerController->CheatManager->BugItGo(actorLocation.X, actorLocation.Y, actorLocation.Z, 0, 0, 0);
 
-                // Summon a new PlayerPawn.
-                std::string sClassName = "PlayerPawn_Athena_C";
-                Core::pPlayerController->CheatManager->Summon(SDK::FString(std::wstring(sClassName.begin(), sClassName.end()).c_str()));
-
-                // Find our newly summoned PlayerPawn.
-                pPlayerPawn_Athena_C = static_cast<SDK::APlayerPawn_Athena_C*>(Util::FindActor(SDK::APlayerPawn_Athena_C::StaticClass()));
-                if (!pPlayerPawn_Athena_C)
-                    printf("Finding PlayerPawn_Athena_C has failed, bailing-out immediately!\n");
-                else
-                {
-                    // Find our CustomCharacterParts in UObject cache.
-                    auto pCustomCharacterPartBody = SDK::UObject::FindObject<SDK::UCustomCharacterPart>("CustomCharacterPart CP_001_Athena_Body.CP_001_Athena_Body");
-                    auto pCustomCharacterPartHead = SDK::UObject::FindObject<SDK::UCustomCharacterPart>("CustomCharacterPart F_Med_Head1_ATH.F_Med_Head1_ATH");
-                    if (!pCustomCharacterPartBody || !pCustomCharacterPartHead)
-                        printf("Finding pCustomCharacterPartBody/pCustomCharacterPartHead has failed, bailing-out immediately!\n");
-                    else
-                    {
-                        Util::Possess(pPlayerPawn_Athena_C); // Possess our PlayerPawn.
-
-                        Sleep(200);
-
-                        static_cast<SDK::AFortPlayerStateAthena*>(Core::pPlayerController->PlayerState)->CharacterParts[0] = pCustomCharacterPartHead;
-                        static_cast<SDK::AFortPlayerStateAthena*>(Core::pPlayerController->PlayerState)->CharacterParts[1] = pCustomCharacterPartBody;
-                        static_cast<SDK::AFortPlayerStateAthena*>(Core::pPlayerController->PlayerState)->OnRep_CharacterParts();
-                    }
-                }
+                // Create a new player pawn.
+                pPlayerPawnPolaris = new PlayerPawnPolaris;
+                pPlayerPawnPolaris->InitializeHero();
             }
 
             // HACK: This will probably cause a crash, but it's worth a try.
@@ -60,33 +56,29 @@ namespace polaris
     {
         while (1)
         {
-            if (pPlayerPawn_Athena_C->HasAuthority())
+            if (pPlayerPawnPolaris != nullptr)
             {
                 // Keybind to jump (only run if not skydiving, might need to fix this more though):
-                if (GetKeyState(VK_SPACE) & 0x8000 && pPlayerPawn_Athena_C && !pPlayerPawn_Athena_C->IsSkydiving())
+                if (GetKeyState(VK_SPACE) & 0x8000 && pPlayerPawnPolaris->pPawn && !pPlayerPawnPolaris->pPawn->IsSkydiving())
                 {
-                    if (!pPlayerPawn_Athena_C->IsJumpProvidingForce())
-                        pPlayerPawn_Athena_C->Jump();
+                    if (!pPlayerPawnPolaris->pPawn->IsJumpProvidingForce())
+                        pPlayerPawnPolaris->pPawn->Jump();
                 }
 
                 // Keybind to sprint (only run if not skydiving):
-                if (GetKeyState(VK_SHIFT) & 0x8000 && pPlayerPawn_Athena_C && !pPlayerPawn_Athena_C->IsSkydiving())
-                    pPlayerPawn_Athena_C->CurrentMovementStyle = SDK::EFortMovementStyle::Sprinting;
-                else if (pPlayerPawn_Athena_C)
-                    pPlayerPawn_Athena_C->CurrentMovementStyle = SDK::EFortMovementStyle::Running;
+                if (GetKeyState(VK_SHIFT) & 0x8000 && pPlayerPawnPolaris->pPawn && !pPlayerPawnPolaris->pPawn->IsSkydiving())
+                    pPlayerPawnPolaris->pPawn->CurrentMovementStyle = SDK::EFortMovementStyle::Sprinting;
+                else if (pPlayerPawnPolaris->pPawn)
+                    pPlayerPawnPolaris->pPawn->CurrentMovementStyle = SDK::EFortMovementStyle::Running;
 
                 // Keybind to equip weapon:
-                if (GetKeyState(VK_END) & 0x8000 && pPlayerPawn_Athena_C)
+                if (GetKeyState(VK_END) & 0x8000 && pPlayerPawnPolaris->pPawn)
                 {
                     auto pFortWeapon = static_cast<SDK::AFortWeapon*>(Util::FindActor(SDK::AFortWeapon::StaticClass()));
                     if (!pFortWeapon)
                         printf("Finding FortWeapon has failed, bailing-out immediately!\n");
                     else
-                    {
-                        pFortWeapon->ClientGivenTo(pPlayerPawn_Athena_C);
-
-                        pPlayerPawn_Athena_C->ClientInternalEquipWeapon(pFortWeapon);
-                    }
+                        pPlayerPawnPolaris->EquipWeapon(pFortWeapon);
                 }
             }
 
@@ -112,39 +104,7 @@ namespace polaris
         MH_CreateHook(static_cast<LPVOID>(pProcessEventAddress), ProcessEventHook, reinterpret_cast<LPVOID*>(&ProcessEvent));
         MH_EnableHook(static_cast<LPVOID>(pProcessEventAddress));
 
-        // Find our PlayerPawn.
-        pPlayerPawn_Athena_C = static_cast<SDK::APlayerPawn_Athena_C*>(Util::FindActor(SDK::APlayerPawn_Athena_C::StaticClass()));
-        if (!pPlayerPawn_Athena_C)
-            printf("Finding PlayerPawn_Athena_C has failed, bailing-out immediately!\n");
-        else
-        {
-            // Find our CustomCharacterParts in UObject cache.
-            auto pCustomCharacterPartBody = SDK::UObject::FindObject<SDK::UCustomCharacterPart>("CustomCharacterPart CP_001_Athena_Body.CP_001_Athena_Body");
-            auto pCustomCharacterPartHead = SDK::UObject::FindObject<SDK::UCustomCharacterPart>("CustomCharacterPart F_Med_Head1_ATH.F_Med_Head1_ATH");
-            if (!pCustomCharacterPartBody || !pCustomCharacterPartHead)
-                printf("Finding pCustomCharacterPartBody/pCustomCharacterPartHead has failed, bailing-out immediately!\n");
-            else
-            {
-                Util::Possess(pPlayerPawn_Athena_C); // Possess our PlayerPawn.
-
-                CreateThread(0, 0, UpdateThread, 0, 0, 0); // Create thread to handle input, etc...
-
-                Sleep(2000); // Wait for everything to be ready.
-
-                static_cast<SDK::AFortPlayerStateAthena*>(Core::pPlayerController->PlayerState)->TeamIndex = SDK::EFortTeam::HumanPvP_Team1;
-                static_cast<SDK::AFortPlayerStateAthena*>(Core::pPlayerController->PlayerState)->OnRep_TeamIndex();
-
-                static_cast<SDK::AFortPlayerStateAthena*>(Core::pPlayerController->PlayerState)->CharacterParts[0] = pCustomCharacterPartHead;
-                static_cast<SDK::AFortPlayerStateAthena*>(Core::pPlayerController->PlayerState)->CharacterParts[1] = pCustomCharacterPartBody;
-                static_cast<SDK::AFortPlayerStateAthena*>(Core::pPlayerController->PlayerState)->OnRep_CharacterParts();
-
-                // Tell the client that we are ready to start the match, this allows the loading screen to drop.
-                static_cast<SDK::AAthena_PlayerController_C*>(Core::pPlayerController)->ServerReadyToStartMatch();
-
-                auto pAuthorityGameMode = static_cast<SDK::AFortGameModeAthena*>((*Core::pWorld)->AuthorityGameMode);
-                pAuthorityGameMode->StartMatch();
-            }
-        }
+        CreateThread(0, 0, UpdateThread, 0, 0, 0); // Create thread to handle input, etc...
 
         return FALSE;
     }

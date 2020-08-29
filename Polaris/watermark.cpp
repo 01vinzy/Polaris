@@ -40,8 +40,13 @@ namespace polaris
 		// a skid trying to hide it, anyway, so it's a nice anti-skid measure, I suppose.
 		ImGui::Begin("Watermark", reinterpret_cast<bool*>(true), WINDOW_FLAGS);
 		{
+#ifdef POLARIS_RELEASE
 			ImGui::Text("Polaris %s", VERSION);
 			ImGui::Text("Follow us on Twitter! @ProjectPolaris_");
+#else
+			ImGui::Text("Polaris LOCAL DEBUG");
+			ImGui::Text("Development build. Do not share!");
+#endif
 			ImGui::End();
 		}
 	}
