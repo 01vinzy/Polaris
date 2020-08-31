@@ -2,8 +2,34 @@
 
 namespace polaris
 {
+	SDK::UObject* (*StaticLoadObject)(SDK::UClass* ObjectClass, SDK::UObject* InOuter, const TCHAR* InName, const TCHAR* Filename, uint32_t LoadFlags, SDK::UPackageMap* Sandbox, bool bAllowObjectReconciliation) = nullptr;
+
+	template<class T>
+	T* LoadObject(SDK::UObject* Outer, const TCHAR* Name, const TCHAR* Filename = nullptr, uint32_t LoadFlags = 0, SDK::UPackageMap* Sandbox = nullptr)
+	{
+		return (T*)StaticLoadObject(T::StaticClass(), Outer, Name, Filename, LoadFlags, Sandbox, true);
+	}
+
+	template<typename T>
+	T* FindOrLoadObject(const std::string PathName)
+	{
+		SDK::UClass* Class = T::StaticClass();
+		Class->CreateDefaultObject();
+
+		T* ObjectPtr = LoadObject<T>(NULL, std::wstring(PathName.begin(), PathName.end()).c_str());
+		if (ObjectPtr)
+		{
+			SDK::UObject::GObjects
+				->ObjObjects.GetItemByIndex(ObjectPtr->InternalIndex)->Flags |= int32_t(SDK::FUObjectItem::ObjectFlags::RootSet);
+		}
+
+		return ObjectPtr;
+	}
+
 	PlayerPawnPolaris::PlayerPawnPolaris()
 	{
+		StaticLoadObject = reinterpret_cast<decltype(StaticLoadObject)>(Util::BaseAddress() + 0x142E560); //stay blessed
+
 		// Summon a new PlayerPawn.
 		std::string sPawnClassName = "PlayerPawn_Athena_C";
 		Core::pPlayerController->CheatManager->Summon(SDK::FString(std::wstring(sPawnClassName.begin(), sPawnClassName.end()).c_str()));
@@ -60,6 +86,13 @@ namespace polaris
 
 	void PlayerPawnPolaris::EquipWeapon(SDK::AFortWeapon* weapon)
 	{
+		auto BuildingTool = FindOrLoadObject<SDK::UBlueprintGeneratedClass>("/Game/Weapons/FORT_BuildingTools/Blueprints/DefaultBuildingTool.DefaultBuildingTool_C");
+		if (BuildingTool)
+			printf("LOADING OBJECT WORKED!!!");
+		auto Shotgun = FindOrLoadObject<SDK::UBlueprintGeneratedClass>("/Game/Weapons/FORT_Shotguns/Blueprints/B_Shotgun_Standard_Athena.B_Shotgun_Standard_Athena_C");
+		if (Shotgun)
+			printf("LOADING OBJECT WORKED!!!");
+
 		weapon->ClientGivenTo(pPawn);
 		pPawn->ClientInternalEquipWeapon(weapon);
 	}
