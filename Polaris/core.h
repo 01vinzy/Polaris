@@ -8,6 +8,7 @@ namespace Core {
 
 	inline SDK::UWorld** pWorld;
 	inline SDK::ULevel* pLevel;
+	inline SDK::UGameplayStatics* pGameplayStatics;
 
 	inline SDK::UGameInstance* pGameInstance;
 
