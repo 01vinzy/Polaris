@@ -1,14 +1,11 @@
 #include "athena.h"
 #include "console.h"
 #include "util.h"
-#include "playerpawn_polaris.h"
 
 #include "SDK.hpp"
 
 namespace polaris
 {
-    PlayerPawnPolaris* pPlayerPawnPolaris;
-
     PVOID(*ProcessEvent)(SDK::UObject*, SDK::UFunction*, PVOID) = nullptr;
 
     PVOID ProcessEventHook(SDK::UObject* pObject, SDK::UFunction* pFunction, PVOID pParams)
@@ -17,19 +14,15 @@ namespace polaris
         {
             if (pFunction->GetName().find("StartMatch") != std::string::npos)
             {
-                if (!pPlayerPawnPolaris)
+                if (!gpAthena->m_pPlayerPawnPolaris)
                 {
                     // Create a new Player Pawn.
-                    pPlayerPawnPolaris = new PlayerPawnPolaris;
-                    pPlayerPawnPolaris->InitializeHero();
-                    
-                    Sleep(2000); // Wait for everything to be ready.
+                    gpAthena->m_pPlayerPawnPolaris = new PlayerPawnPolaris;
+                    gpAthena->m_pPlayerPawnPolaris->InitializeHero();
 
                     // Tell the client that we are ready to start the match, this allows the loading screen to drop.
                     static_cast<SDK::AAthena_PlayerController_C*>(Core::pPlayerController)->ServerReadyToStartMatch();
-
-                    auto pAuthorityGameMode = static_cast<SDK::AFortGameModeAthena*>((*Core::pWorld)->AuthorityGameMode);
-                    pAuthorityGameMode->StartMatch();
+                    static_cast<SDK::AGameMode*>((*Core::pWorld)->AuthorityGameMode)->StartMatch();
                 }
             }
 
@@ -40,13 +33,11 @@ namespace polaris
                 Core::pPlayerController->CheatManager->BugItGo(actorLocation.X, actorLocation.Y, actorLocation.Z, 0, 0, 0);
 
                 // Create a new player pawn.
-                pPlayerPawnPolaris = new PlayerPawnPolaris;
-                pPlayerPawnPolaris->InitializeHero();
-            }
+                gpAthena->m_pPlayerPawnPolaris = new PlayerPawnPolaris;
+                gpAthena->m_pPlayerPawnPolaris->InitializeHero();
 
-            // HACK: This will probably cause a crash, but it's worth a try.
-            if (pFunction->GetName().find("StopHoldProgress") != std::string::npos)
                 return NULL;
+            }
         }
 
         return ProcessEvent(pObject, pFunction, pParams);
@@ -56,30 +47,24 @@ namespace polaris
     {
         while (1)
         {
-            if (pPlayerPawnPolaris != nullptr)
+            if (gpAthena->m_pPlayerPawnPolaris != nullptr)
             {
                 // Keybind to jump (only run if not skydiving, might need to fix this more though):
-                if (GetKeyState(VK_SPACE) & 0x8000 && pPlayerPawnPolaris->pPawn && !pPlayerPawnPolaris->pPawn->IsSkydiving())
+                if (GetKeyState(VK_SPACE) & 0x8000 && gpAthena->m_pPlayerPawnPolaris->m_pPlayerPawn && !gpAthena->m_pPlayerPawnPolaris->m_pPlayerPawn->IsSkydiving())
                 {
-                    if (!pPlayerPawnPolaris->pPawn->IsJumpProvidingForce())
-                        pPlayerPawnPolaris->pPawn->Jump();
+                    if (!gpAthena->m_pPlayerPawnPolaris->m_pPlayerPawn->IsJumpProvidingForce())
+                        gpAthena->m_pPlayerPawnPolaris->m_pPlayerPawn->Jump();
                 }
 
                 // Keybind to sprint (only run if not skydiving):
-                if (GetKeyState(VK_SHIFT) & 0x8000 && pPlayerPawnPolaris->pPawn && !pPlayerPawnPolaris->pPawn->IsSkydiving())
-                    pPlayerPawnPolaris->pPawn->CurrentMovementStyle = SDK::EFortMovementStyle::Sprinting;
-                else if (pPlayerPawnPolaris->pPawn)
-                    pPlayerPawnPolaris->pPawn->CurrentMovementStyle = SDK::EFortMovementStyle::Running;
+                if (static_cast<SDK::AAthena_PlayerController_C*>(Core::pPlayerController)->bWantsToSprint && gpAthena->m_pPlayerPawnPolaris->m_pPlayerPawn)
+                    gpAthena->m_pPlayerPawnPolaris->m_pPlayerPawn->CurrentMovementStyle = SDK::EFortMovementStyle::Sprinting;
+                else if (gpAthena->m_pPlayerPawnPolaris->m_pPlayerPawn)
+                    gpAthena->m_pPlayerPawnPolaris->m_pPlayerPawn->CurrentMovementStyle = SDK::EFortMovementStyle::Running;
 
                 // Keybind to equip weapon:
-                if (GetKeyState(VK_END) & 0x8000 && pPlayerPawnPolaris->pPawn)
-                {
-                    auto pFortWeapon = static_cast<SDK::AFortWeapon*>(Util::FindActor(SDK::AFortWeapon::StaticClass()));
-                    if (!pFortWeapon)
-                        printf("Finding FortWeapon has failed, bailing-out immediately!\n");
-                    else
-                        pPlayerPawnPolaris->EquipWeapon(pFortWeapon);
-                }
+                if (GetKeyState(VK_END) & 0x8000 && gpAthena->m_pPlayerPawnPolaris->m_pPlayerPawn)
+                    gpAthena->m_pPlayerPawnPolaris->EquipWeapon();
             }
 
             // Update thread only runs at 60hz, so we don't rape CPUs.
@@ -89,7 +74,7 @@ namespace polaris
         return NULL;
     }
 
-    DWORD WINAPI Main(LPVOID lpParam)
+    DWORD WINAPI LoaderThread(LPVOID lpParam)
     {
         Util::InitSdk();
         Util::InitCore();
@@ -119,8 +104,10 @@ namespace polaris
         }
 
         gpAthena = this;
+
 		Console::Log("Loading Athena");
-        CreateThread(0, 0, Main, 0, 0, 0);
+
+        CreateThread(0, 0, LoaderThread, 0, 0, 0);
 	}
 
 	Athena::~Athena()

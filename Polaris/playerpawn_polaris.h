@@ -13,13 +13,12 @@ namespace polaris
 	class PlayerPawnPolaris
 	{
 	public:
-		SDK::AFortPlayerPawnAthena* pPawn;
+		SDK::AFortPlayerPawnAthena* m_pPlayerPawn;
 
 		PlayerPawnPolaris();
+
 		void InitializeHero();
-		void EquipWeapon(SDK::AFortWeapon* weapon);
-		//void SetSkin(Skin* newSkin);
-		//void SetSkin(std::string query);
+		void EquipWeapon();
 	};
 }
 

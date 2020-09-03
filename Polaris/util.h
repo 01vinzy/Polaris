@@ -13,16 +13,13 @@
 
 #include "core.h"
 
-class Util {
+class Util
+{
 private:
-    static DWORD PossessThread(LPVOID lpParam) {
-        Core::pPlayerController->Possess(static_cast<SDK::APawn*>(lpParam));
-
-        return NULL;
-    }
-
-    static BOOL MaskCompare(PVOID pBuffer, LPCSTR lpPattern, LPCSTR lpMask) {
-        for (auto value = static_cast<PBYTE>(pBuffer); *lpMask; ++lpPattern, ++lpMask, ++value) {
+    static BOOL MaskCompare(PVOID pBuffer, LPCSTR lpPattern, LPCSTR lpMask)
+    {
+        for (auto value = static_cast<PBYTE>(pBuffer); *lpMask; ++lpPattern, ++lpMask, ++value)
+        {
             if (*lpMask == 'x' && *reinterpret_cast<LPCBYTE>(lpPattern) != *value)
                 return false;
         }
@@ -31,16 +28,19 @@ private:
     }
 
 public:
-    static VOID InitConsole() {
+    static VOID InitConsole()
+    {
         AllocConsole();
 
         FILE* pFile;
         freopen_s(&pFile, "CONOUT$", "w", stdout);
     }
 
-    static VOID InitSdk() {
+    static VOID InitSdk()
+    {
         auto pUWorldAddress = Util::FindPattern("\x48\x8B\x1D\x00\x00\x00\x00\x00\x00\x00\x10\x4C\x8D\x4D\x00\x4C", "xxx???????xxxx?x");
-        if (!pUWorldAddress) {
+        if (!pUWorldAddress)
+        {
             MessageBox(NULL, static_cast<LPCWSTR>(L"Finding pattern for UWorld has failed, please re-open Fortnite and try again!"), static_cast<LPCWSTR>(L"Error"), MB_ICONERROR);
             ExitProcess(EXIT_FAILURE);
         }
@@ -50,7 +50,8 @@ public:
         Core::pWorld = reinterpret_cast<SDK::UWorld**>(pUWorldAddress + 7 + pUWorldOffset);
 
         auto pGObjectAddress = Util::FindPattern("\x48\x8D\x0D\x00\x00\x00\x00\xE8\x00\x00\x00\x00\xE8\x00\x00\x00\x00\xE8\x00\x00\x00\x00\x48\x8B\xD6", "xxx????x????x????x????xxx");
-        if (!pGObjectAddress) {
+        if (!pGObjectAddress)
+        {
             MessageBox(NULL, static_cast<LPCWSTR>(L"Finding pattern for GObject has failed, please re-open Fortnite and try again!"), static_cast<LPCWSTR>(L"Error"), MB_ICONERROR);
             ExitProcess(EXIT_FAILURE);
         }
@@ -60,7 +61,8 @@ public:
         SDK::UObject::GObjects = reinterpret_cast<SDK::FUObjectArray*>(pGObjectAddress + 7 + pGObjectOffset);
 
         auto pGNameAddress = Util::FindPattern("\x48\x8B\x05\x00\x00\x00\x00\x48\x85\xC0\x75\x50\xB9\x00\x00\x00\x00\x48\x89\x5C\x24", "xxx????xxxxxx????xxxx");
-        if (!pGNameAddress) {
+        if (!pGNameAddress)
+        {
             MessageBox(NULL, static_cast<LPCWSTR>(L"Finding pattern for GName has failed, please re-open Fortnite and try again!"), static_cast<LPCWSTR>(L"Error"), MB_ICONERROR);
             ExitProcess(EXIT_FAILURE);
         }
@@ -70,14 +72,17 @@ public:
         SDK::FName::GNames = *reinterpret_cast<SDK::TNameEntryArray**>(pGNameAddress + 7 + pGNameOffset);
     }
 
-    static VOID InitCore() {
+    static VOID InitCore()
+    {
         uintptr_t pBaseAddress = Util::BaseAddress();
-        if (!pBaseAddress) {
+        if (!pBaseAddress)
+        {
             MessageBox(NULL, static_cast<LPCWSTR>(L"Finding BaseAddress has failed, please re-open Fortnite and try again!"), static_cast<LPCWSTR>(L"Error"), MB_ICONERROR);
             ExitProcess(EXIT_FAILURE);
         }
 
-        if (!Core::pWorld) {
+        if (!Core::pWorld)
+        {
             MessageBox(NULL, static_cast<LPCWSTR>(L"The UWorld is not initialized, please re-open Fortnite and try again!"), static_cast<LPCWSTR>(L"Error"), MB_ICONERROR);
             ExitProcess(EXIT_FAILURE);
         }
@@ -94,19 +99,18 @@ public:
         Core::pPlayerController = Core::pLocalPlayer->PlayerController;
     }
 
-    static VOID Possess(SDK::AActor* pPawn) {
-        CreateThread(0, 0, Util::PossessThread, pPawn, 0, 0);
-    }
-
-    static uintptr_t BaseAddress() {
+    static uintptr_t BaseAddress()
+    {
         return reinterpret_cast<uintptr_t>(GetModuleHandle(0));
     }
 
-    static PBYTE FindPattern(PVOID pBase, DWORD dwSize, LPCSTR lpPattern, LPCSTR lpMask) {
+    static PBYTE FindPattern(PVOID pBase, DWORD dwSize, LPCSTR lpPattern, LPCSTR lpMask)
+    {
         dwSize -= static_cast<DWORD>(strlen(lpMask));
 
-        for (auto index = 0UL; index < dwSize; ++index) {
-            auto pAddress = static_cast<PBYTE>(pBase) + index;
+        for (auto i = 0UL; i < dwSize; ++i)
+        {
+            auto pAddress = static_cast<PBYTE>(pBase) + i;
 
             if (Util::MaskCompare(pAddress, lpPattern, lpMask))
                 return pAddress;
@@ -115,7 +119,8 @@ public:
         return NULL;
     }
 
-    static PBYTE FindPattern(LPCSTR lpPattern, LPCSTR lpMask) {
+    static PBYTE FindPattern(LPCSTR lpPattern, LPCSTR lpMask)
+    {
         MODULEINFO info = { 0 };
 
         GetModuleInformation(GetCurrentProcess(), GetModuleHandle(0), &info, sizeof(info));
@@ -123,15 +128,20 @@ public:
         return Util::FindPattern(info.lpBaseOfDll, info.SizeOfImage, lpPattern, lpMask);
     }
 
-    static SDK::AActor* FindActor(SDK::UClass* pClass, int iSkip = 0) {
-        for (int i = 0, j = 0; i < Core::pActors->Num(); i++) {
+    static SDK::AActor* FindActor(SDK::UClass* pClass, int iSkip = 0)
+    {
+        for (int i = 0, j = 0; i < Core::pActors->Num(); i++)
+        {
             SDK::AActor* pActor = Core::pActors->operator[](i);
 
-            if (pActor != nullptr) {
-                if (pActor->IsA(pClass)) {
+            if (pActor != nullptr)
+            {
+                if (pActor->IsA(pClass))
+                {
                     if (j >= iSkip)
                         return pActor;
-                    else {
+                    else
+                    {
                         j++;
                         continue;
                     }
@@ -143,16 +153,15 @@ public:
     }
 
     template<typename T>
-    static T* SearchObject(const std::string& classname, const std::string& query)
+    static T* FindObject(const std::string& sClassName, const std::string& sQuery)
     {
         for (int i = 0; i < SDK::UObject::GetGlobalObjects().Num(); ++i)
         {
-            auto object = SDK::UObject::GetGlobalObjects().GetByIndex(i);
-
-            if (object != nullptr && object->GetFullName().find("F_Med_Head1") == std::string::npos)
+            auto pObject = SDK::UObject::GetGlobalObjects().GetByIndex(i);
+            if (pObject != nullptr && pObject->GetFullName().find("F_Med_Head1") == std::string::npos)
             {
-                if (object->GetFullName().rfind(classname, 0) == 0 && object->GetFullName().find(query) != std::string::npos)
-                    return static_cast<T*>(object);
+                if (pObject->GetFullName().rfind(sClassName, 0) == 0 && pObject->GetFullName().find(sQuery) != std::string::npos)
+                    return static_cast<T*>(pObject);
             }
         }
 
