@@ -62,13 +62,22 @@ namespace polaris
 	// FIXME(irma): Make better.
 	void PlayerPawnPolaris::InitializeHero()
 	{
+		auto pPlayerState = static_cast<SDK::AFortPlayerStateAthena*>(Core::pPlayerController->PlayerState);
 		auto pCustomCharacterPartHead = Util::FindObject<SDK::UCustomCharacterPart>("CustomCharacterPart", "Head");
 		auto pCustomCharacterPartBody = Util::FindObject<SDK::UCustomCharacterPart>("CustomCharacterPart", "Body");
 		auto pCustomCharacterPartHat = Util::FindObject<SDK::UCustomCharacterPart>("CustomCharacterPart", "Hat_");
 
-		static_cast<SDK::AFortPlayerStateAthena*>(Core::pPlayerController->PlayerState)->CharacterParts[0] = pCustomCharacterPartHead;
-		static_cast<SDK::AFortPlayerStateAthena*>(Core::pPlayerController->PlayerState)->CharacterParts[1] = pCustomCharacterPartBody;
-		static_cast<SDK::AFortPlayerStateAthena*>(Core::pPlayerController->PlayerState)->CharacterParts[3] = pCustomCharacterPartHat;
+		pPlayerState->CharacterParts[0] = pCustomCharacterPartHead;
+		pPlayerState->CharacterParts[1] = pCustomCharacterPartBody;
+		pPlayerState->CharacterParts[3] = pCustomCharacterPartHat;
+
+		// If no head was found, force Ramirez's head.
+		if (!pPlayerState->CharacterParts[0])
+			pPlayerState->CharacterParts[0] = SDK::UObject::FindObject<SDK::UCustomCharacterPart>("CustomCharacterPart F_Med_Head1.F_Med_Head1");
+		
+		// If no body was found, force Ramirez's body.
+		if (!pPlayerState->CharacterParts[1])
+			pPlayerState->CharacterParts[1] = SDK::UObject::FindObject<SDK::UCustomCharacterPart>("CustomCharacterPart F_Med_Soldier_01.F_Med_Soldier_01");
 
 		static_cast<SDK::AFortPlayerStateAthena*>(Core::pPlayerController->PlayerState)->OnRep_CharacterParts();
 		m_pPlayerPawn->OnCharacterPartsReinitialized();
