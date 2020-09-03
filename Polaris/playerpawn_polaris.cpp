@@ -45,6 +45,12 @@ namespace polaris
 		{
 			Core::pPlayerController->Possess(m_pPlayerPawn);
 
+			// Initialize pawn
+			m_pPlayerPawn->ExecuteUbergraph(0);
+			m_pPlayerPawn->OnRep_PawnUniqueID();
+			m_pPlayerPawn->OnRep_CustomizationLoadout();
+			m_pPlayerPawn->ReceiveBeginPlay();
+
 			// Assign our PlayerPawn to a team.
 			static_cast<SDK::AFortPlayerStateAthena*>(Core::pPlayerController->PlayerState)->TeamIndex = SDK::EFortTeam::HumanPvP_Team1;
 			static_cast<SDK::AFortPlayerStateAthena*>(Core::pPlayerController->PlayerState)->OnRep_TeamIndex();
@@ -65,6 +71,7 @@ namespace polaris
 		static_cast<SDK::AFortPlayerStateAthena*>(Core::pPlayerController->PlayerState)->CharacterParts[3] = pCustomCharacterPartHat;
 
 		static_cast<SDK::AFortPlayerStateAthena*>(Core::pPlayerController->PlayerState)->OnRep_CharacterParts();
+		m_pPlayerPawn->OnCharacterPartsReinitialized();
 	}
 
 	void PlayerPawnPolaris::EquipWeapon()
@@ -72,6 +79,9 @@ namespace polaris
 		FindOrLoadObject<SDK::UDataTable>("/Game/Athena/Items/Weapons/AthenaMeleeWeapons.AthenaMeleeWeapons");
 		FindOrLoadObject<SDK::UDataTable>("/Game/Athena/Items/Weapons/AthenaRangedWeapons.AthenaRangedWeapons");
 
-		m_pPlayerPawn->EquipWeaponDefinition(SDK::UObject::FindObject<SDK::UFortWeaponMeleeItemDefinition>("FortWeaponMeleeItemDefinition WID_Harvest_Pickaxe_Athena_C_T01.WID_Harvest_Pickaxe_Athena_C_T01"), SDK::FGuid())->SetOwner(m_pPlayerPawn);
+		auto pPickaxe = SDK::UObject::FindObject<SDK::UFortWeaponMeleeItemDefinition>("FortWeaponMeleeItemDefinition WID_Harvest_Pickaxe_Athena_C_T01.WID_Harvest_Pickaxe_Athena_C_T01");
+
+		m_pPlayerPawn->EquipWeaponDefinition(pPickaxe, SDK::FGuid())->SetOwner(m_pPlayerPawn);
+		m_pPlayerPawn->AbilitySystemComponent->TryActivateAbilityByClass(pPickaxe->GetPrimaryFireAbility(), false);
 	}
 }
