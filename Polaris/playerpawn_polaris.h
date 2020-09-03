@@ -18,7 +18,7 @@ namespace polaris
 		PlayerPawnPolaris();
 
 		void InitializeHero();
-		void EquipWeapon();
+		void EquipWeapon(const char* cItemDef);
 	};
 }
 

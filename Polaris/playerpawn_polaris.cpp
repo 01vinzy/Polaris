@@ -55,7 +55,7 @@ namespace polaris
 			static_cast<SDK::AFortPlayerStateAthena*>(Core::pPlayerController->PlayerState)->TeamIndex = SDK::EFortTeam::HumanPvP_Team1;
 			static_cast<SDK::AFortPlayerStateAthena*>(Core::pPlayerController->PlayerState)->OnRep_TeamIndex();
 
-			EquipWeapon();
+			EquipWeapon("FortWeaponMeleeItemDefinition WID_Harvest_Pickaxe_Athena_C_T01.WID_Harvest_Pickaxe_Athena_C_T01");
 		}
 	}
 	
@@ -74,14 +74,14 @@ namespace polaris
 		m_pPlayerPawn->OnCharacterPartsReinitialized();
 	}
 
-	void PlayerPawnPolaris::EquipWeapon()
+	void PlayerPawnPolaris::EquipWeapon(const char* cItemDef)
 	{
 		FindOrLoadObject<SDK::UDataTable>("/Game/Athena/Items/Weapons/AthenaMeleeWeapons.AthenaMeleeWeapons");
 		FindOrLoadObject<SDK::UDataTable>("/Game/Athena/Items/Weapons/AthenaRangedWeapons.AthenaRangedWeapons");
 
-		auto pPickaxe = SDK::UObject::FindObject<SDK::UFortWeaponMeleeItemDefinition>("FortWeaponMeleeItemDefinition WID_Harvest_Pickaxe_Athena_C_T01.WID_Harvest_Pickaxe_Athena_C_T01");
+		auto pItemDef = SDK::UObject::FindObject<SDK::UFortWeaponMeleeItemDefinition>(cItemDef);
 
-		m_pPlayerPawn->EquipWeaponDefinition(pPickaxe, SDK::FGuid())->SetOwner(m_pPlayerPawn);
-		m_pPlayerPawn->AbilitySystemComponent->TryActivateAbilityByClass(pPickaxe->GetPrimaryFireAbility(), false);
+		m_pPlayerPawn->EquipWeaponDefinition(pItemDef, SDK::FGuid())->SetOwner(m_pPlayerPawn);
+		m_pPlayerPawn->AbilitySystemComponent->TryActivateAbilityByClass(pItemDef->GetPrimaryFireAbility(), false);
 	}
 }

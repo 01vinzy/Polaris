@@ -61,10 +61,6 @@ namespace polaris
                     gpAthena->m_pPlayerPawnPolaris->m_pPlayerPawn->CurrentMovementStyle = SDK::EFortMovementStyle::Sprinting;
                 else if (gpAthena->m_pPlayerPawnPolaris->m_pPlayerPawn)
                     gpAthena->m_pPlayerPawnPolaris->m_pPlayerPawn->CurrentMovementStyle = SDK::EFortMovementStyle::Running;
-
-                // Keybind to equip weapon:
-                if (GetKeyState(VK_END) & 0x8000 && gpAthena->m_pPlayerPawnPolaris->m_pPlayerPawn)
-                    gpAthena->m_pPlayerPawnPolaris->EquipWeapon();
             }
 
             // Update thread only runs at 60hz, so we don't rape CPUs.
