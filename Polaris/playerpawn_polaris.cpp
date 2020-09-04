@@ -90,9 +90,9 @@ namespace polaris
 		FindOrLoadObject<SDK::UDataTable>("/Game/Athena/Items/Weapons/AthenaRangedWeapons.AthenaRangedWeapons");
 
 		auto pItemDef = SDK::UObject::FindObject<SDK::UFortWeaponMeleeItemDefinition>(cItemDef);
-		auto pog = m_pPlayerPawn->EquipWeaponDefinition(pItemDef, SDK::FGuid());
+		auto pFortWeapon = m_pPlayerPawn->EquipWeaponDefinition(pItemDef, SDK::FGuid());
 
-		pog->SetOwner(static_cast<SDK::AAthena_PlayerController_C*>(Core::pPlayerController));
+		pFortWeapon->SetOwner(static_cast<SDK::AAthena_PlayerController_C*>(Core::pPlayerController));
 		static_cast<SDK::AAthena_PlayerController_C*>(Core::pPlayerController)->ToggleInventory();
 		static_cast<SDK::AAthena_PlayerController_C*>(Core::pPlayerController)->bHasInitializedWorldInventory = true;
 		static_cast<SDK::AAthena_PlayerController_C*>(Core::pPlayerController)->ClientExecuteInventoryItem(pog->ItemEntryGuid, 0, true);
