@@ -6,7 +6,6 @@
 
 #include "SDK.hpp"
 #include "core.h"
-#include "util.h"
 
 namespace polaris
 {

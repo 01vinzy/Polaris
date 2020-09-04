@@ -9,11 +9,6 @@ namespace polaris
 		Console::Log("Initializing CreditsWindow");
 	}
 
-	CreditsWindow::~CreditsWindow()
-	{
-		//TODO: unload CreditsWindow
-	}
-
 	void CreditsWindow::Draw()
 	{
 		ImGui::Begin("Credits", &bShowWindow, ImGuiWindowFlags_Modal);

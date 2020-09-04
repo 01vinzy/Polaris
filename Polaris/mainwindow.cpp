@@ -35,11 +35,6 @@ namespace polaris
 		pWatermark = new polaris::Watermark;
 	}
 
-	MainWindow::~MainWindow()
-	{
-		//TODO: unload MainWindow
-	}
-
 	void MainWindow::Draw()
 	{
 		ImGui::BeginMainMenuBar();

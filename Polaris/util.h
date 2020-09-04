@@ -28,6 +28,7 @@ private:
     }
 
 public:
+    // Initializes the console.
     static VOID InitConsole()
     {
         AllocConsole();
@@ -36,6 +37,7 @@ public:
         freopen_s(&pFile, "CONOUT$", "w", stdout);
     }
 
+    // Initializes the SDK.
     static VOID InitSdk()
     {
         auto pUWorldAddress = Util::FindPattern("\x48\x8B\x1D\x00\x00\x00\x00\x00\x00\x00\x10\x4C\x8D\x4D\x00\x4C", "xxx???????xxxx?x");
@@ -72,6 +74,7 @@ public:
         SDK::FName::GNames = *reinterpret_cast<SDK::TNameEntryArray**>(pGNameAddress + 7 + pGNameOffset);
     }
 
+    // Initializes Polaris Core.
     static VOID InitCore()
     {
         uintptr_t pBaseAddress = Util::BaseAddress();
@@ -99,11 +102,13 @@ public:
         Core::pPlayerController = Core::pLocalPlayer->PlayerController;
     }
 
+    // Get the Base Address.
     static uintptr_t BaseAddress()
     {
         return reinterpret_cast<uintptr_t>(GetModuleHandle(0));
     }
 
+    // Find a pattern.
     static PBYTE FindPattern(PVOID pBase, DWORD dwSize, LPCSTR lpPattern, LPCSTR lpMask)
     {
         dwSize -= static_cast<DWORD>(strlen(lpMask));
@@ -118,7 +123,6 @@ public:
 
         return NULL;
     }
-
     static PBYTE FindPattern(LPCSTR lpPattern, LPCSTR lpMask)
     {
         MODULEINFO info = { 0 };
@@ -128,6 +132,7 @@ public:
         return Util::FindPattern(info.lpBaseOfDll, info.SizeOfImage, lpPattern, lpMask);
     }
 
+    // Find an actor in the current umap.
     static SDK::AActor* FindActor(SDK::UClass* pClass, int iSkip = 0)
     {
         for (int i = 0, j = 0; i < Core::pActors->Num(); i++)
@@ -146,22 +151,6 @@ public:
                         continue;
                     }
                 }
-            }
-        }
-
-        return nullptr;
-    }
-
-    template<typename T>
-    static T* FindObject(const std::string& sClassName, const std::string& sQuery)
-    {
-        for (int i = 0; i < SDK::UObject::GetGlobalObjects().Num(); ++i)
-        {
-            auto pObject = SDK::UObject::GetGlobalObjects().GetByIndex(i);
-            if (pObject != nullptr && pObject->GetFullName().find("F_Med_Head1") == std::string::npos)
-            {
-                if (pObject->GetFullName().rfind(sClassName, 0) == 0 && pObject->GetFullName().find(sQuery) != std::string::npos)
-                    return static_cast<T*>(pObject);
             }
         }
 

@@ -11,11 +11,6 @@ namespace polaris
 		polaris::Renderer::SubscribeUIToEvents(this);
 	}
 
-	Window::~Window()
-	{
-		//TODO: unload Ui
-	}
-
 	void Window::Draw()
 	{
 	}

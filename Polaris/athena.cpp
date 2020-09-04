@@ -105,9 +105,4 @@ namespace polaris
 
         CreateThread(0, 0, LoaderThread, 0, 0, 0);
 	}
-
-	Athena::~Athena()
-	{
-		// TODO: Handle deconstruction.
-	}
 }
