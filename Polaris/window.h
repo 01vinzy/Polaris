@@ -11,7 +11,6 @@ namespace polaris
 		bool bShowWindow = false;
 
 		Window();
-		~Window();
 		virtual void Draw();
 		virtual void Resize();
 	};

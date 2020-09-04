@@ -1,19 +1,44 @@
 #include "playerpawn_polaris.h"
-#include "console.h"
+#include "util.h"
 
 namespace polaris
 {
-	SDK::UObject* (*StaticLoadObject)(SDK::UClass* ObjectClass, SDK::UObject* InOuter, const TCHAR* InName, const TCHAR* Filename, uint32_t LoadFlags, SDK::UPackageMap* Sandbox, bool bAllowObjectReconciliation) = nullptr;
+	static SDK::UObject* (*StaticLoadObject)(SDK::UClass* ObjectClass, SDK::UObject* InOuter, const TCHAR* InName, const TCHAR* Filename, uint32_t LoadFlags, SDK::UPackageMap* Sandbox, bool bAllowObjectReconciliation);
 
-	template<class T>
-	T* LoadObject(SDK::UObject* Outer, const TCHAR* Name, const TCHAR* Filename = nullptr, uint32_t LoadFlags = 0, SDK::UPackageMap* Sandbox = nullptr)
+	// Search an object in the Object Cache.
+	template<typename T>
+	static T* FindObject(const std::string& sClassName, const std::string& sQuery)
 	{
+		for (int i = 0; i < SDK::UObject::GetGlobalObjects().Num(); ++i)
+		{
+			auto pObject = SDK::UObject::GetGlobalObjects().GetByIndex(i);
+			if (pObject != nullptr && pObject->GetFullName().find("F_Med_Head1") == std::string::npos)
+			{
+				if (pObject->GetFullName().rfind(sClassName, 0) == 0 && pObject->GetFullName().find(sQuery) != std::string::npos)
+					return static_cast<T*>(pObject);
+			}
+		}
+
+		return nullptr;
+	}
+
+	// Load an object in memory.
+	template<class T>
+	static T* LoadObject(SDK::UObject* Outer, const TCHAR* Name, const TCHAR* Filename = nullptr, uint32_t LoadFlags = 0, SDK::UPackageMap* Sandbox = nullptr)
+	{
+		if (!StaticLoadObject)
+			StaticLoadObject = reinterpret_cast<decltype(StaticLoadObject)>(Util::BaseAddress() + 0x142E560);
+
 		return (T*)StaticLoadObject(T::StaticClass(), Outer, Name, Filename, LoadFlags, Sandbox, true);
 	}
 
+	// Find an object in cache, load it if it's not loaded.
 	template<typename T>
-	T* FindOrLoadObject(const std::string PathName)
+	static T* FindOrLoadObject(const std::string PathName)
 	{
+		if (!StaticLoadObject)
+			StaticLoadObject = reinterpret_cast<decltype(StaticLoadObject)>(Util::BaseAddress() + 0x142E560);
+
 		SDK::UClass* Class = T::StaticClass();
 		Class->CreateDefaultObject();
 
@@ -29,8 +54,6 @@ namespace polaris
 
 	PlayerPawnPolaris::PlayerPawnPolaris()
 	{
-		StaticLoadObject = reinterpret_cast<decltype(StaticLoadObject)>(Util::BaseAddress() + 0x142E560);
-
 		// Summon a new PlayerPawn.
 		std::string sPawnClassName = "PlayerPawn_Athena_C";
 		Core::pPlayerController->CheatManager->Summon(SDK::FString(std::wstring(sPawnClassName.begin(), sPawnClassName.end()).c_str()));
@@ -59,15 +82,16 @@ namespace polaris
 			EquipWeapon("FortWeaponMeleeItemDefinition WID_Harvest_Pickaxe_Athena_C_T01.WID_Harvest_Pickaxe_Athena_C_T01");
 		}
 	}
-	
-	// FIXME(irma): Make better.
+
+	// FIXME: (irma) Replace this with a proper Skin Loader.
 	void PlayerPawnPolaris::InitializeHero()
 	{
 		auto pPlayerState = static_cast<SDK::AFortPlayerStateAthena*>(Core::pPlayerController->PlayerState);
-		auto pCustomCharacterPartHead = Util::FindObject<SDK::UCustomCharacterPart>("CustomCharacterPart", "Head");
-		auto pCustomCharacterPartBody = Util::FindObject<SDK::UCustomCharacterPart>("CustomCharacterPart", "Body");
-		auto pCustomCharacterPartHat = Util::FindObject<SDK::UCustomCharacterPart>("CustomCharacterPart", "Hat_");
+		auto pCustomCharacterPartHead = FindObject<SDK::UCustomCharacterPart>("CustomCharacterPart", "Head");
+		auto pCustomCharacterPartBody = FindObject<SDK::UCustomCharacterPart>("CustomCharacterPart", "Body");
+		auto pCustomCharacterPartHat = FindObject<SDK::UCustomCharacterPart>("CustomCharacterPart", "Hat_");
 
+		// Assign custom character parts to the player.
 		pPlayerState->CharacterParts[0] = pCustomCharacterPartHead;
 		pPlayerState->CharacterParts[1] = pCustomCharacterPartBody;
 		pPlayerState->CharacterParts[3] = pCustomCharacterPartHat;
@@ -86,18 +110,14 @@ namespace polaris
 
 	void PlayerPawnPolaris::EquipWeapon(const char* cItemDef)
 	{
+		// Load the weapon datatables
 		FindOrLoadObject<SDK::UDataTable>("/Game/Athena/Items/Weapons/AthenaMeleeWeapons.AthenaMeleeWeapons");
 		FindOrLoadObject<SDK::UDataTable>("/Game/Athena/Items/Weapons/AthenaRangedWeapons.AthenaRangedWeapons");
 
 		auto pItemDef = SDK::UObject::FindObject<SDK::UFortWeaponMeleeItemDefinition>(cItemDef);
 		auto pFortWeapon = m_pPlayerPawn->EquipWeaponDefinition(pItemDef, SDK::FGuid());
 
-		pFortWeapon->SetOwner(static_cast<SDK::AAthena_PlayerController_C*>(Core::pPlayerController));
-		static_cast<SDK::AAthena_PlayerController_C*>(Core::pPlayerController)->ToggleInventory();
-		static_cast<SDK::AAthena_PlayerController_C*>(Core::pPlayerController)->bHasInitializedWorldInventory = true;
-		static_cast<SDK::AAthena_PlayerController_C*>(Core::pPlayerController)->ClientExecuteInventoryItem(pFortWeapon->ItemEntryGuid, 0, true);
-		static_cast<SDK::AAthena_PlayerController_C*>(Core::pPlayerController)->HandleWorldInventoryLocalUpdate();
-
+		pFortWeapon->SetOwner(m_pPlayerPawn);
 		m_pPlayerPawn->AbilitySystemComponent->TryActivateAbilityByClass(pItemDef->GetPrimaryFireAbility(), false);
 	}
 }
