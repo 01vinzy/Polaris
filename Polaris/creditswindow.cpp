@@ -6,7 +6,7 @@ namespace polaris
 {
 	CreditsWindow::CreditsWindow()
 	{
-		Console::Log("Creating a credits window");
+		Console::Log("Initializing CreditsWindow");
 	}
 
 	CreditsWindow::~CreditsWindow()

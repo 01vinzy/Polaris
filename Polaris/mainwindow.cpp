@@ -25,7 +25,10 @@ namespace polaris
 		{
 			pActorList = new polaris::ActorList;
 			pCreditsWindow = new polaris::CreditsWindow;
-			pObjectCache = new polaris::ObjectCache;
+
+			// This is an highly experimental tool.
+			if(ENABLE_EXPERIMENTAL_DEBUGGING_TOOLS)
+				pObjectCache = new polaris::ObjectCache;
 		}
 
 		// Create window instances.
@@ -68,8 +71,12 @@ namespace polaris
 				if (ImGui::MenuItem("Credits"))
 					pCreditsWindow->bShowWindow = true;
 
+#ifndef POLARIS_RELEASE
+
 				if (ImGui::MenuItem("Irma Burger"))
 					system("start https://www.youtube.com/watch?v=fC7oUOUEEi4");
+
+#endif // !POLARIS_RELEASE
 
 				ImGui::EndMenu();
 			}

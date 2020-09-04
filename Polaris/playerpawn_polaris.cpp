@@ -55,6 +55,7 @@ namespace polaris
 			static_cast<SDK::AFortPlayerStateAthena*>(Core::pPlayerController->PlayerState)->TeamIndex = SDK::EFortTeam::HumanPvP_Team1;
 			static_cast<SDK::AFortPlayerStateAthena*>(Core::pPlayerController->PlayerState)->OnRep_TeamIndex();
 
+			// Give the player a pickaxe.
 			EquipWeapon("FortWeaponMeleeItemDefinition WID_Harvest_Pickaxe_Athena_C_T01.WID_Harvest_Pickaxe_Athena_C_T01");
 		}
 	}
@@ -89,8 +90,14 @@ namespace polaris
 		FindOrLoadObject<SDK::UDataTable>("/Game/Athena/Items/Weapons/AthenaRangedWeapons.AthenaRangedWeapons");
 
 		auto pItemDef = SDK::UObject::FindObject<SDK::UFortWeaponMeleeItemDefinition>(cItemDef);
+		auto pog = m_pPlayerPawn->EquipWeaponDefinition(pItemDef, SDK::FGuid());
 
-		m_pPlayerPawn->EquipWeaponDefinition(pItemDef, SDK::FGuid())->SetOwner(m_pPlayerPawn);
+		pog->SetOwner(static_cast<SDK::AAthena_PlayerController_C*>(Core::pPlayerController));
+		static_cast<SDK::AAthena_PlayerController_C*>(Core::pPlayerController)->ToggleInventory();
+		static_cast<SDK::AAthena_PlayerController_C*>(Core::pPlayerController)->bHasInitializedWorldInventory = true;
+		static_cast<SDK::AAthena_PlayerController_C*>(Core::pPlayerController)->ClientExecuteInventoryItem(pog->ItemEntryGuid, 0, true);
+		static_cast<SDK::AAthena_PlayerController_C*>(Core::pPlayerController)->HandleWorldInventoryLocalUpdate();
+
 		m_pPlayerPawn->AbilitySystemComponent->TryActivateAbilityByClass(pItemDef->GetPrimaryFireAbility(), false);
 	}
 }
