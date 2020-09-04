@@ -31,6 +31,61 @@ namespace polaris
 	{
 		StaticLoadObject = reinterpret_cast<decltype(StaticLoadObject)>(Util::BaseAddress() + 0x142E560);
 
+		// Summon a new FortQuickBars.
+		std::string sQuickBarsClassName = "FortQuickBars";
+		Core::pPlayerController->CheatManager->Summon(SDK::FString(std::wstring(sQuickBarsClassName.begin(), sQuickBarsClassName.end()).c_str()));
+
+		/*auto pQuickBars = static_cast<SDK::AFortQuickBars*>(Util::FindActor(SDK::AFortQuickBars::StaticClass()));
+		if (pQuickBars)
+		{
+			Core::pPlayerController->Role = SDK::ENetRole::ROLE_None;
+
+			static_cast<SDK::AAthena_PlayerController_C*>(Core::pPlayerController)->QuickBars = pQuickBars;
+
+			pQuickBars->SetOwner(Core::pPlayerController);
+			pQuickBars->OnRep_Owner();
+
+			SDK::FQuickBar* pPrimaryQuickBar = &pQuickBars->PrimaryQuickBar;
+			if (!pPrimaryQuickBar)
+				printf("PrimaryQuickBar is null.\n");
+			else
+				printf("PrimaryQuickBar is ready.\n");
+
+			SDK::TArray<struct SDK::FQuickBarSlot>* pSlots = &pPrimaryQuickBar->Slots;
+			if (!pSlots)
+				printf("Slots is null.\n");
+			else
+				printf("Slots is ready, %i slots.\n", pSlots->Num());
+
+			for (int i = 0; i < pSlots->Num(); i++)
+			{
+				SDK::TArray<struct SDK::FGuid>* pItems = &pSlots->operator[](i).Items;
+				if (!pItems)
+					printf("Items for slot %i is null.\n", i);
+				else
+				{
+					pItems->Count = 1;
+
+					printf("Items for slot %i is ready, %i item(s).\n", i, pItems->Num());
+				}
+
+				for (int j = 0; j < pItems->Num(); j++)
+				{
+					printf("Slot = %i, Item = %i, Enabled = %i\n", i, j, pSlots->operator[](i).bEnabled);
+				}
+			}
+
+			//printf("DBG_1\n");
+
+			//pQuickBars->OnRep_PrimaryQuickBar();
+
+			//printf("DBG_2\n");
+
+			static_cast<SDK::AAthena_PlayerController_C*>(Core::pPlayerController)->OnRep_QuickBar();
+
+			Core::pPlayerController->Role = SDK::ENetRole::ROLE_Authority;
+		}*/
+
 		// Summon a new PlayerPawn.
 		std::string sPawnClassName = "PlayerPawn_Athena_C";
 		Core::pPlayerController->CheatManager->Summon(SDK::FString(std::wstring(sPawnClassName.begin(), sPawnClassName.end()).c_str()));
@@ -90,6 +145,48 @@ namespace polaris
 		FindOrLoadObject<SDK::UDataTable>("/Game/Athena/Items/Weapons/AthenaRangedWeapons.AthenaRangedWeapons");
 
 		auto pItemDef = SDK::UObject::FindObject<SDK::UFortWeaponMeleeItemDefinition>(cItemDef);
+
+		auto pWorldInventory = static_cast<SDK::AAthena_PlayerController_C*>(Core::pPlayerController)->WorldInventory;
+		if (pWorldInventory)
+		{
+			SDK::FFortItemList* pInventory = &pWorldInventory->Inventory;
+			if (!pInventory)
+				printf("Inventory is null.\n");
+			else
+				printf("Inventory is ready.\n");
+
+			//SDK::TArray<struct SDK::FFortItemEntry>* pReplicatedEntries = &pInventory->ReplicatedEntries;
+			SDK::TArray<class SDK::UFortWorldItem*>* pItemInstances = &pInventory->ItemInstances;
+
+			//pReplicatedEntries = new SDK::TArray<struct SDK::FFortItemEntry>(1);
+			pItemInstances = new SDK::TArray<class SDK::UFortWorldItem*>(1);
+
+			/*if (!pReplicatedEntries)
+				printf("ReplicatedEntries is null.\n");
+			else
+				printf("ReplicatedEntries is ready, %i entries.\n", pReplicatedEntries->Num());*/
+
+			if (!pItemInstances)
+				printf("ItemInstances is null.\n");
+			else
+				printf("ItemInstances is ready, %i instances.\n", pItemInstances->Num());
+
+			SDK::UFortWorldItem* pWorldItem = SDK::UFortWorldItem::StaticClass()->CreateDefaultObject<SDK::UFortWorldItem>();
+			pWorldItem->OwnerInventory = pWorldInventory;
+			pWorldItem->ItemEntry.Count = 1;
+			pWorldItem->ItemEntry.ItemDefinition = pItemDef;
+			pWorldItem->ItemEntry.Level = 1;
+			pWorldItem->ItemEntry.LoadedAmmo = 1;
+
+			//pReplicatedEntries->operator[](0) = pWorldItem->ItemEntry;
+			pItemInstances->operator[](0) = pWorldItem;
+		}
+
+		pWorldInventory->HandleInventoryLocalUpdate();
+
+		static_cast<SDK::AAthena_PlayerController_C*>(Core::pPlayerController)->bHasInitializedWorldInventory = true;
+		static_cast<SDK::AAthena_PlayerController_C*>(Core::pPlayerController)->HandleWorldInventoryLocalUpdate();
+
 		auto pFortWeapon = m_pPlayerPawn->EquipWeaponDefinition(pItemDef, SDK::FGuid());
 
 		pFortWeapon->SetOwner(static_cast<SDK::AAthena_PlayerController_C*>(Core::pPlayerController));
