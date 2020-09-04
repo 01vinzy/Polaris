@@ -95,7 +95,7 @@ namespace polaris
 		pFortWeapon->SetOwner(static_cast<SDK::AAthena_PlayerController_C*>(Core::pPlayerController));
 		static_cast<SDK::AAthena_PlayerController_C*>(Core::pPlayerController)->ToggleInventory();
 		static_cast<SDK::AAthena_PlayerController_C*>(Core::pPlayerController)->bHasInitializedWorldInventory = true;
-		static_cast<SDK::AAthena_PlayerController_C*>(Core::pPlayerController)->ClientExecuteInventoryItem(pog->ItemEntryGuid, 0, true);
+		static_cast<SDK::AAthena_PlayerController_C*>(Core::pPlayerController)->ClientExecuteInventoryItem(pFortWeapon->ItemEntryGuid, 0, true);
 		static_cast<SDK::AAthena_PlayerController_C*>(Core::pPlayerController)->HandleWorldInventoryLocalUpdate();
 
 		m_pPlayerPawn->AbilitySystemComponent->TryActivateAbilityByClass(pItemDef->GetPrimaryFireAbility(), false);
