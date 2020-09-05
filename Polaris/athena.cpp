@@ -6,8 +6,8 @@
 
 namespace polaris
 {
+    // Listens to functions called in game, use this to hook code to functions in question.
     PVOID(*ProcessEvent)(SDK::UObject*, SDK::UFunction*, PVOID) = nullptr;
-
     PVOID ProcessEventHook(SDK::UObject* pObject, SDK::UFunction* pFunction, PVOID pParams)
     {
         if (pObject && pFunction)
@@ -21,16 +21,20 @@ namespace polaris
                     gpAthena->m_pPlayerPawnPolaris->InitializeHero();
 
                     // Tell the client that we are ready to start the match, this allows the loading screen to drop.
-                    static_cast<SDK::AAthena_PlayerController_C*>(Core::pPlayerController)->ServerReadyToStartMatch();
-                    static_cast<SDK::AGameMode*>((*Core::pWorld)->AuthorityGameMode)->StartMatch();
+                    static_cast<SDK::AAthena_PlayerController_C*>(Globals::pPlayerController)->ServerReadyToStartMatch();
+                    static_cast<SDK::AGameMode*>((*Globals::pWorld)->AuthorityGameMode)->StartMatch();
                 }
             }
 
             if (pFunction->GetName().find("ServerAttemptAircraftJump") != std::string::npos)
             {
-                // Use BugItGo, so that the PlayerPawn isn't messed up.
-                SDK::FVector actorLocation = Core::pPlayerController->K2_GetActorLocation();
-                Core::pPlayerController->CheatManager->BugItGo(actorLocation.X, actorLocation.Y, actorLocation.Z, 0, 0, 0);
+                // Reset the pawn rotation, due to weird summon properties.
+                SDK::AFortPlayerPawnAthena* playerPawn = gpAthena->m_pPlayerPawnPolaris->m_pPlayerPawn;
+                SDK::FRotator actorRotation = gpAthena->m_pPlayerPawnPolaris->m_pPlayerPawn->K2_GetActorRotation();
+
+                actorRotation.Pitch = 0;
+                actorRotation.Roll = 0;
+                playerPawn->K2_SetActorLocationAndRotation(playerPawn->K2_GetActorLocation(), actorRotation, false, true, new SDK::FHitResult());
 
                 // Create a new player pawn.
                 gpAthena->m_pPlayerPawnPolaris = new PlayerPawnPolaris;
@@ -43,6 +47,7 @@ namespace polaris
         return ProcessEvent(pObject, pFunction, pParams);
     }
 
+    // Update loop, runs at 60hz, 1 tick every 16ms.
     DWORD UpdateThread(LPVOID lpParam)
     {
         while (1)
@@ -57,7 +62,7 @@ namespace polaris
                 }
 
                 // Keybind to sprint (only run if not skydiving):
-                if (static_cast<SDK::AAthena_PlayerController_C*>(Core::pPlayerController)->bWantsToSprint && gpAthena->m_pPlayerPawnPolaris->m_pPlayerPawn)
+                if (static_cast<SDK::AAthena_PlayerController_C*>(Globals::pPlayerController)->bWantsToSprint && gpAthena->m_pPlayerPawnPolaris->m_pPlayerPawn)
                     gpAthena->m_pPlayerPawnPolaris->m_pPlayerPawn->CurrentMovementStyle = SDK::EFortMovementStyle::Sprinting;
                 else if (gpAthena->m_pPlayerPawnPolaris->m_pPlayerPawn)
                     gpAthena->m_pPlayerPawnPolaris->m_pPlayerPawn->CurrentMovementStyle = SDK::EFortMovementStyle::Running;
@@ -70,6 +75,7 @@ namespace polaris
         return NULL;
     }
 
+    // Initializes the ProcessEventHook and starts the Update thread.
     DWORD WINAPI LoaderThread(LPVOID lpParam)
     {
         Util::InitSdk();

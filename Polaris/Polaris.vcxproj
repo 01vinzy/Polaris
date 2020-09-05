@@ -97,7 +97,6 @@
     <ClCompile Include="console.cpp" />
     <ClCompile Include="creditswindow.cpp" />
     <ClCompile Include="dllmain.cpp" />
-    <ClCompile Include="frontendmanager.cpp" />
     <ClCompile Include="imgui\examples\imgui_impl_dx11.cpp" />
     <ClCompile Include="imgui\examples\imgui_impl_win32.cpp" />
     <ClCompile Include="imgui\imgui.cpp" />
@@ -126,7 +125,6 @@
     <ClInclude Include="console.h" />
     <ClInclude Include="core.h" />
     <ClInclude Include="creditswindow.h" />
-    <ClInclude Include="frontendmanager.h" />
     <ClInclude Include="mainwindow.h" />
     <ClInclude Include="objectcache.h" />
     <ClInclude Include="playerpawn_polaris.h" />

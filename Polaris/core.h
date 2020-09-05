@@ -3,18 +3,22 @@
 
 #include "SDK.hpp"
 
-namespace Core
+namespace polaris
 {
-	inline SDK::UWorld** pWorld;
-	inline SDK::ULevel* pLevel;
-	inline SDK::TArray<SDK::AActor*>* pActors;
+	class Globals
+	{
+	public:
+		static inline SDK::UWorld** pWorld;
+		static inline SDK::ULevel* pLevel;
+		static inline SDK::TArray<SDK::AActor*>* pActors;
 
-	inline SDK::UGameInstance* pGameInstance;
+		static inline SDK::UGameInstance* pGameInstance;
 
-	inline SDK::TArray<SDK::ULocalPlayer*> pLocalPlayers;
-	inline SDK::ULocalPlayer* pLocalPlayer;
+		static inline SDK::TArray<SDK::ULocalPlayer*> pLocalPlayers;
+		static inline SDK::ULocalPlayer* pLocalPlayer;
 
-	inline SDK::APlayerController* pPlayerController;
+		static inline SDK::APlayerController* pPlayerController;
+	};
 };
 
 #endif // CORE_H

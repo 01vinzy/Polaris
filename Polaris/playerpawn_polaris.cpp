@@ -1,5 +1,10 @@
 #include "playerpawn_polaris.h"
+#include "console.h"
 #include "util.h"
+
+#include "SDK.hpp"
+
+// NOTE (irma) I couldn't move the loading into memory shit into their own classes. LMK if you can do it.
 
 namespace polaris
 {
@@ -26,9 +31,6 @@ namespace polaris
 	template<class T>
 	static T* LoadObject(SDK::UObject* Outer, const TCHAR* Name, const TCHAR* Filename = nullptr, uint32_t LoadFlags = 0, SDK::UPackageMap* Sandbox = nullptr)
 	{
-		if (!StaticLoadObject)
-			StaticLoadObject = reinterpret_cast<decltype(StaticLoadObject)>(Util::BaseAddress() + 0x142E560);
-
 		return (T*)StaticLoadObject(T::StaticClass(), Outer, Name, Filename, LoadFlags, Sandbox, true);
 	}
 
@@ -36,9 +38,6 @@ namespace polaris
 	template<typename T>
 	static T* FindOrLoadObject(const std::string PathName)
 	{
-		if (!StaticLoadObject)
-			StaticLoadObject = reinterpret_cast<decltype(StaticLoadObject)>(Util::BaseAddress() + 0x142E560);
-
 		SDK::UClass* Class = T::StaticClass();
 		Class->CreateDefaultObject();
 
@@ -58,7 +57,7 @@ namespace polaris
 
 		// Summon a new FortQuickBars.
 		std::string sQuickBarsClassName = "FortQuickBars";
-		Core::pPlayerController->CheatManager->Summon(SDK::FString(std::wstring(sQuickBarsClassName.begin(), sQuickBarsClassName.end()).c_str()));
+		Globals::pPlayerController->CheatManager->Summon(SDK::FString(std::wstring(sQuickBarsClassName.begin(), sQuickBarsClassName.end()).c_str()));
 
 		/*auto pQuickBars = static_cast<SDK::AFortQuickBars*>(Util::FindActor(SDK::AFortQuickBars::StaticClass()));
 		if (pQuickBars)
@@ -113,7 +112,7 @@ namespace polaris
 
 		// Summon a new PlayerPawn.
 		std::string sPawnClassName = "PlayerPawn_Athena_C";
-		Core::pPlayerController->CheatManager->Summon(SDK::FString(std::wstring(sPawnClassName.begin(), sPawnClassName.end()).c_str()));
+		Globals::pPlayerController->CheatManager->Summon(SDK::FString(std::wstring(sPawnClassName.begin(), sPawnClassName.end()).c_str()));
 
 		m_pPlayerPawn = static_cast<SDK::APlayerPawn_Athena_C*>(Util::FindActor(SDK::APlayerPawn_Athena_C::StaticClass()));
 		if (!m_pPlayerPawn)
@@ -123,7 +122,7 @@ namespace polaris
 		}
 		else
 		{
-			Core::pPlayerController->Possess(m_pPlayerPawn);
+			Globals::pPlayerController->Possess(m_pPlayerPawn);
 
 			// Initialize pawn
 			m_pPlayerPawn->ExecuteUbergraph(0);
@@ -132,8 +131,8 @@ namespace polaris
 			m_pPlayerPawn->ReceiveBeginPlay();
 
 			// Assign our PlayerPawn to a team.
-			static_cast<SDK::AFortPlayerStateAthena*>(Core::pPlayerController->PlayerState)->TeamIndex = SDK::EFortTeam::HumanPvP_Team1;
-			static_cast<SDK::AFortPlayerStateAthena*>(Core::pPlayerController->PlayerState)->OnRep_TeamIndex();
+			static_cast<SDK::AFortPlayerStateAthena*>(Globals::pPlayerController->PlayerState)->TeamIndex = SDK::EFortTeam::HumanPvP_Team1;
+			static_cast<SDK::AFortPlayerStateAthena*>(Globals::pPlayerController->PlayerState)->OnRep_TeamIndex();
 
 			// Give the player a pickaxe.
 			EquipWeapon("FortWeaponMeleeItemDefinition WID_Harvest_Pickaxe_Athena_C_T01.WID_Harvest_Pickaxe_Athena_C_T01");
@@ -143,7 +142,7 @@ namespace polaris
 	// FIXME (irma) Replace this with a proper Skin Loader.
 	void PlayerPawnPolaris::InitializeHero()
 	{
-		auto pPlayerState = static_cast<SDK::AFortPlayerStateAthena*>(Core::pPlayerController->PlayerState);
+		auto pPlayerState = static_cast<SDK::AFortPlayerStateAthena*>(Globals::pPlayerController->PlayerState);
 		auto pCustomCharacterPartHead = FindObject<SDK::UCustomCharacterPart>("CustomCharacterPart", "Head");
 		auto pCustomCharacterPartBody = FindObject<SDK::UCustomCharacterPart>("CustomCharacterPart", "Body");
 		auto pCustomCharacterPartHat = FindObject<SDK::UCustomCharacterPart>("CustomCharacterPart", "Hat_");
@@ -161,19 +160,20 @@ namespace polaris
 		if (!pPlayerState->CharacterParts[1])
 			pPlayerState->CharacterParts[1] = SDK::UObject::FindObject<SDK::UCustomCharacterPart>("CustomCharacterPart F_Med_Soldier_01.F_Med_Soldier_01");
 
-		static_cast<SDK::AFortPlayerStateAthena*>(Core::pPlayerController->PlayerState)->OnRep_CharacterParts();
+		static_cast<SDK::AFortPlayerStateAthena*>(Globals::pPlayerController->PlayerState)->OnRep_CharacterParts();
 		m_pPlayerPawn->OnCharacterPartsReinitialized();
 	}
 
+	// Equip a weapon.
 	void PlayerPawnPolaris::EquipWeapon(const char* cItemDef)
 	{
 		// Load the weapon datatables
 		FindOrLoadObject<SDK::UDataTable>("/Game/Athena/Items/Weapons/AthenaMeleeWeapons.AthenaMeleeWeapons");
 		FindOrLoadObject<SDK::UDataTable>("/Game/Athena/Items/Weapons/AthenaRangedWeapons.AthenaRangedWeapons");
 
-		auto pItemDef = SDK::UObject::FindObject<SDK::UFortWeaponMeleeItemDefinition>(cItemDef);
+		auto pItemDef = SDK::UObject::FindObject<SDK::UFortWeaponItemDefinition>(cItemDef);
 
-		auto pWorldInventory = static_cast<SDK::AAthena_PlayerController_C*>(Core::pPlayerController)->WorldInventory;
+		/*auto pWorldInventory = static_cast<SDK::AAthena_PlayerController_C*>(Core::pPlayerController)->WorldInventory;
 		if (pWorldInventory)
 		{
 			SDK::FFortItemList* pInventory = &pWorldInventory->Inventory;
@@ -187,11 +187,6 @@ namespace polaris
 
 			//pReplicatedEntries = new SDK::TArray<struct SDK::FFortItemEntry>(1);
 			pItemInstances = new SDK::TArray<class SDK::UFortWorldItem*>(1);
-
-			/*if (!pReplicatedEntries)
-				printf("ReplicatedEntries is null.\n");
-			else
-				printf("ReplicatedEntries is ready, %i entries.\n", pReplicatedEntries->Num());*/
 
 			if (!pItemInstances)
 				printf("ItemInstances is null.\n");
@@ -212,7 +207,7 @@ namespace polaris
 		pWorldInventory->HandleInventoryLocalUpdate();
 
 		static_cast<SDK::AAthena_PlayerController_C*>(Core::pPlayerController)->bHasInitializedWorldInventory = true;
-		static_cast<SDK::AAthena_PlayerController_C*>(Core::pPlayerController)->HandleWorldInventoryLocalUpdate();
+		static_cast<SDK::AAthena_PlayerController_C*>(Core::pPlayerController)->HandleWorldInventoryLocalUpdate();*/
 
 		auto pFortWeapon = m_pPlayerPawn->EquipWeaponDefinition(pItemDef, SDK::FGuid());
 

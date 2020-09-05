@@ -4,6 +4,12 @@ HANDLE hConsole;
 
 namespace polaris
 {
+	Console::Console()
+	{
+		Util::InitConsole();
+		polaris::Console::LogRaw("Welcome to Polaris!", 11);
+	}
+
 	// Log a message to console
 	void Console::Log(const char* msg)
 	{

@@ -21,10 +21,7 @@ static HWND hWnd = 0;
 
 // Forward declare message handler from imgui_impl_win32.cpp
 extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
-
 __declspec(dllexport) LRESULT CALLBACK WndProcHook(HWND hWnd, UINT Msg, WPARAM wParam, LPARAM lParam) {
-	// Handle application-specific workload.
-
 	if (Msg == WM_KEYUP && (wParam == VK_HOME || (bLockFortInput && wParam == VK_ESCAPE))) {
 		bLockFortInput = !bLockFortInput;
 
@@ -42,8 +39,8 @@ __declspec(dllexport) LRESULT CALLBACK WndProcHook(HWND hWnd, UINT Msg, WPARAM w
 	return CallWindowProc(lpPrevWndFunc, hWnd, Msg, wParam, lParam);
 }
 
+// Rendering hook used to draw on top of the Fortnite window.
 HRESULT(*Present)(IDXGISwapChain* pInstance, UINT SyncInterval, UINT Flags) = nullptr;
-
 __declspec(dllexport) HRESULT PresentHook(IDXGISwapChain* pInstance, UINT SyncInterval, UINT Flags)
 {
 	static float fWidth = 0;
@@ -116,8 +113,8 @@ __declspec(dllexport) HRESULT PresentHook(IDXGISwapChain* pInstance, UINT SyncIn
 	return Present(pInstance, SyncInterval, Flags);
 }
 
+// Resize hook.
 HRESULT(*ResizeBuffers)(IDXGISwapChain* pInstance, UINT BufferCount, UINT Width, UINT Height, DXGI_FORMAT NewFormat, UINT SwapChainFlags) = nullptr;
-
 __declspec(dllexport) HRESULT ResizeBuffersHook(IDXGISwapChain* pInstance, UINT BufferCount, UINT Width, UINT Height, DXGI_FORMAT NewFormat, UINT SwapChainFlags)
 {
 	// Invoke the Resize event on all subscribed Uis.
@@ -194,7 +191,7 @@ namespace polaris
 
 		// Enable keyboard input and load Segoe UI as font.
 		io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;
-		io.Fonts->AddFontFromFileTTF("C:\\Windows\\Fonts\\segoeui.ttf", 18); // FIXME(Cyuubi): Un-hardcode path.
+		io.Fonts->AddFontFromFileTTF("C:\\Windows\\Fonts\\segoeui.ttf", 18); // FIXME (Cyuubi) Un-hardcode path.
 
 		pSwapChain->Release();
 		pDevice->Release();

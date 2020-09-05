@@ -1,51 +1,40 @@
 #include <windows.h>
-
-#include "common.h"
-#include "renderer.h"
-#include "window.h"
-#include "frontendmanager.h"
-#include "athena.h"
-#include "mainwindow.h"
-#include "watermark.h"
-
 #include <stdio.h>
 #include <fcntl.h>
+#include <cstdio>
 #include <io.h>
 
-#include <cstdio>
-
 #include "SDK.hpp"
-#include "util.h"
-#include "core.h"
-#include "polarisflags.h"
+#include "renderer.h"
+#include "common.h"
+#include "athena.h"
 
+// The main thread for Polaris. Called when the Polaris DLL has successfully been injected.
 DWORD WINAPI Main(LPVOID lpParam)
 {
-    Util::InitConsole();
-
+    // If MinHook failed to properly initialize, prompt the user to restart the game.
     if (MH_Initialize() != MH_OK)
     {
         MessageBox(0, L"Failed to initialize MinHook.", L"Error", MB_ICONERROR);
         ExitProcess(EXIT_FAILURE);
     }
 
-    polaris::Console::LogRaw("Welcome to Polaris!", 11);
-    new polaris::Renderer; // Initialize renderer.
-    new polaris::Athena; // TEMP Initialize Athena.
+    // Start the Polaris modules.
+    new polaris::Console(); // Initialize the debug console.
+    new polaris::Renderer; // Initialize the Polaris renderer.
+
+    new polaris::Athena; // TEMP Start Athena.
 
     return FALSE;
 }
 
+// The entry point of the DLL. Called when the DLL is injected.
 BOOL APIENTRY DllMain(HMODULE hModule, DWORD dwReason, LPVOID lpReserved)
 {
     switch (dwReason)
     {
     case DLL_PROCESS_ATTACH:
         CreateThread(0, 0, Main, hModule, 0, 0);
-        break;
-
-    case DLL_PROCESS_DETACH:
-        // TODO Handle deconstruction.
         break;
     }
 
