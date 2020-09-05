@@ -28,6 +28,10 @@ namespace polaris
 
             if (pFunction->GetName().find("ServerAttemptAircraftJump") != std::string::npos)
             {
+                // Create a new player pawn.
+                gpAthena->m_pPlayerPawnPolaris = new PlayerPawnPolaris;
+                gpAthena->m_pPlayerPawnPolaris->InitializeHero();
+
                 // Reset the pawn rotation, due to weird summon properties.
                 SDK::AFortPlayerPawnAthena* playerPawn = gpAthena->m_pPlayerPawnPolaris->m_pPlayerPawn;
                 SDK::FRotator actorRotation = gpAthena->m_pPlayerPawnPolaris->m_pPlayerPawn->K2_GetActorRotation();
@@ -35,10 +39,6 @@ namespace polaris
                 actorRotation.Pitch = 0;
                 actorRotation.Roll = 0;
                 playerPawn->K2_SetActorLocationAndRotation(playerPawn->K2_GetActorLocation(), actorRotation, false, true, new SDK::FHitResult());
-
-                // Create a new player pawn.
-                gpAthena->m_pPlayerPawnPolaris = new PlayerPawnPolaris;
-                gpAthena->m_pPlayerPawnPolaris->InitializeHero();
 
                 return NULL;
             }
