@@ -140,7 +140,7 @@ namespace polaris
 		}
 	}
 
-	// FIXME: (irma) Replace this with a proper Skin Loader.
+	// FIXME (irma) Replace this with a proper Skin Loader.
 	void PlayerPawnPolaris::InitializeHero()
 	{
 		auto pPlayerState = static_cast<SDK::AFortPlayerStateAthena*>(Core::pPlayerController->PlayerState);

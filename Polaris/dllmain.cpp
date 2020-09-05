@@ -31,7 +31,7 @@ DWORD WINAPI Main(LPVOID lpParam)
 
     polaris::Console::LogRaw("Welcome to Polaris!", 11);
     new polaris::Renderer; // Initialize renderer.
-    new polaris::Athena; // TEMP: Initialize Athena.
+    new polaris::Athena; // TEMP Initialize Athena.
 
     return FALSE;
 }
@@ -45,7 +45,7 @@ BOOL APIENTRY DllMain(HMODULE hModule, DWORD dwReason, LPVOID lpReserved)
         break;
 
     case DLL_PROCESS_DETACH:
-        // TODO: Handle deconstruction.
+        // TODO Handle deconstruction.
         break;
     }
 
