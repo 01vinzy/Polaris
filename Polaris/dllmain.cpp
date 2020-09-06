@@ -21,29 +21,6 @@ DWORD WINAPI Main(LPVOID lpParam)
 		ExitProcess(EXIT_FAILURE);
 	}
 
-	/*
-	// TODO(Cyuubi): Move this into a seperate class for patches.
-	auto pAbilityPatchAddress = polaris::Util::FindPattern
-	(
-		"\xC0\x0F\x84\x3C\x02\x00\x00\x0F\x2F\xF7\x0F\x86\xF5\x00\x00\x00",
-		"xxxxxxxxxxxxxxxx"
-	);
-	if (!pAbilityPatchAddress)
-	{
-		MessageBox(NULL, static_cast<LPCWSTR>(L"An error has occured, please re-open Fortnite and try again!"), static_cast<LPCWSTR>(L"Error"), MB_ICONERROR);
-		ExitProcess(EXIT_FAILURE);
-	}
-
-	DWORD curProtection;
-	VirtualProtect(pAbilityPatchAddress, 16, PAGE_EXECUTE_READWRITE, &curProtection);
-
-	reinterpret_cast<uint8_t*>(pAbilityPatchAddress)[2] = 0x85;
-	reinterpret_cast<uint8_t*>(pAbilityPatchAddress)[11] = 0x8D;
-
-	DWORD temp;
-	VirtualProtect(pAbilityPatchAddress, 16, curProtection, &temp);
-	*/
-
 	// Start the Polaris modules.
 	new polaris::Console(); // Initialize the debug console.
 	new polaris::Renderer; // Initialize the Polaris renderer.
