@@ -21,6 +21,7 @@ DWORD WINAPI Main(LPVOID lpParam)
 		ExitProcess(EXIT_FAILURE);
 	}
 
+	/*
 	// TODO(Cyuubi): Move this into a seperate class for patches.
 	auto pAbilityPatchAddress = polaris::Util::FindPattern
 	(
@@ -41,6 +42,7 @@ DWORD WINAPI Main(LPVOID lpParam)
 
 	DWORD temp;
 	VirtualProtect(pAbilityPatchAddress, 16, curProtection, &temp);
+	*/
 
 	// Start the Polaris modules.
 	new polaris::Console(); // Initialize the debug console.

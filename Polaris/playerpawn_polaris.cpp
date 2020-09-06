@@ -134,6 +134,8 @@ namespace polaris
 			static_cast<SDK::AFortPlayerStateAthena*>(Globals::pPlayerController->PlayerState)->TeamIndex = SDK::EFortTeam::HumanPvP_Team1;
 			static_cast<SDK::AFortPlayerStateAthena*>(Globals::pPlayerController->PlayerState)->OnRep_TeamIndex();
 
+			LoadWeaponDataTables();
+
 			// Give the player a pickaxe.
 			EquipWeapon("FortWeaponMeleeItemDefinition WID_Harvest_Pickaxe_Athena_C_T01.WID_Harvest_Pickaxe_Athena_C_T01");
 		}
@@ -164,13 +166,19 @@ namespace polaris
 		m_pPlayerPawn->OnCharacterPartsReinitialized();
 	}
 
+	void PlayerPawnPolaris::LoadWeaponDataTables()
+	{
+		FindOrLoadObject<SDK::UDataTable>("/Game/Items/Datatables/AthenaTraps.AthenaTraps");
+		FindOrLoadObject<SDK::UDataTable>("/Game/Athena/Items/Weapons/AthenaMeleeWeapons.AthenaMeleeWeapons");
+		FindOrLoadObject<SDK::UDataTable>("/Game/Athena/Items/Weapons/AthenaRangedWeapons.AthenaRangedWeapons");
+		FindOrLoadObject<SDK::UDataTable>("/Game/Items/Datatables/RangedWeapons.RangedWeapons");
+		FindOrLoadObject<SDK::UDataTable>("/Game/Items/Datatables/MeleeWeapons.MeleeWeapons");
+		FindOrLoadObject<SDK::UDataTable>("/Game/Items/Datatables/Traps.Traps");
+	}
+
 	// Equip a weapon.
 	void PlayerPawnPolaris::EquipWeapon(const char* cItemDef)
 	{
-		// Load the weapon datatables
-		FindOrLoadObject<SDK::UDataTable>("/Game/Athena/Items/Weapons/AthenaMeleeWeapons.AthenaMeleeWeapons");
-		FindOrLoadObject<SDK::UDataTable>("/Game/Athena/Items/Weapons/AthenaRangedWeapons.AthenaRangedWeapons");
-
 		auto pItemDef = SDK::UObject::FindObject<SDK::UFortWeaponItemDefinition>(cItemDef);
 
 		/*auto pWorldInventory = static_cast<SDK::AAthena_PlayerController_C*>(Core::pPlayerController)->WorldInventory;
