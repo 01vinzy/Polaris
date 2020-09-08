@@ -11,6 +11,28 @@ namespace polaris
 	class Console
 	{
 	public:
+		static inline const char* cPolarisAscii[19] = {
+			"                                                  ",
+			"                                                  ",
+			"                     -/oyhhddhyso/.               ",
+			"                  -ohhhhhhhhhhhhhhhh+.            ",
+			"                -syyhhhhhhyyyyyyyyhhhho.          ",
+			"               +yyyyyys/.`    `-/syyyyyy/         ",
+			"              oyyyyyo.            -syyyyy/        ",
+			"             :sssss+               `oyysss-       Welcome to Polaris!",
+			"             ssssso                 .sssss+       They said to think back, but I think we went a bit too far.",
+			"       .----:ssssso:::::`            ssssso       ",
+			"        ./++ooosssssss+`            .yyyyyo       Build: ",
+			"          -/++oosssso-             `oyyyyy-       ",
+			"           `:/+ooos/`             -ossyyy+        ",
+			"             -/+++.           `.:ossssss/         ",
+			"              `:-          `+oooooosss+.          ",
+			"                           `+ooooooo/.            ",
+			"                           `+++/:-.               ",
+			"                                                  ",
+			"                                                  "
+		};
+
 		Console();
 		static void Log(const char* msg);
 		static void LogError(const char* msg);

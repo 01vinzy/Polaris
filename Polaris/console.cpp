@@ -1,13 +1,30 @@
 #include "console.h"
+#include "polarisflags.h"
+
+#include <iostream>
 
 HANDLE hConsole;
 
 namespace polaris
 {
+	DWORD DrawAsciiArt(LPVOID lpParam)
+	{
+		for (int i = 0; i < 19; i++)
+		{
+			auto addOn = i == 10 ? VERSION.c_str() : "";
+			auto appendedString = std::string(Console::cPolarisAscii[i]) + std::string(addOn);
+
+			polaris::Console::LogRaw(appendedString.c_str(), 11);
+		}
+	}
+
 	Console::Console()
 	{
 		Util::InitConsole();
-		polaris::Console::LogRaw("Welcome to Polaris!", 11);
+
+		// Draw fancy thing :D
+		CreateThread(0, 0, DrawAsciiArt, 0, 0, 0);
+		Sleep(500);
 	}
 
 	// Log a message to console

@@ -1,6 +1,6 @@
 #include "objectcache.h"
 
-#include "core.h"
+#include "globals.h"
 
 
 namespace polaris

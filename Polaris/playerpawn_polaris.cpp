@@ -1,8 +1,9 @@
 #include "playerpawn_polaris.h"
 #include "console.h"
 #include "util.h"
-
 #include "SDK.hpp"
+
+#include <list>
 
 // NOTE (irma) I couldn't move the loading into memory shit into their own classes. LMK if you can do it.
 
@@ -57,7 +58,7 @@ namespace polaris
 
 		// Summon a new FortQuickBars.
 		std::string sQuickBarsClassName = "FortQuickBars";
-		Globals::pPlayerController->CheatManager->Summon(SDK::FString(std::wstring(sQuickBarsClassName.begin(), sQuickBarsClassName.end()).c_str()));
+		Globals::gpPlayerController->CheatManager->Summon(SDK::FString(std::wstring(sQuickBarsClassName.begin(), sQuickBarsClassName.end()).c_str()));
 
 		/*auto pQuickBars = static_cast<SDK::AFortQuickBars*>(Util::FindActor(SDK::AFortQuickBars::StaticClass()));
 		if (pQuickBars)
@@ -112,7 +113,7 @@ namespace polaris
 
 		// Summon a new PlayerPawn.
 		std::string sPawnClassName = "PlayerPawn_Athena_C";
-		Globals::pPlayerController->CheatManager->Summon(SDK::FString(std::wstring(sPawnClassName.begin(), sPawnClassName.end()).c_str()));
+		Globals::gpPlayerController->CheatManager->Summon(SDK::FString(std::wstring(sPawnClassName.begin(), sPawnClassName.end()).c_str()));
 
 		m_pPlayerPawn = static_cast<SDK::APlayerPawn_Athena_C*>(Util::FindActor(SDK::APlayerPawn_Athena_C::StaticClass()));
 		if (!m_pPlayerPawn)
@@ -122,7 +123,7 @@ namespace polaris
 		}
 		else
 		{
-			Globals::pPlayerController->Possess(m_pPlayerPawn);
+			Globals::gpPlayerController->Possess(m_pPlayerPawn);
 
 			// Initialize pawn
 			m_pPlayerPawn->ExecuteUbergraph(0);
@@ -131,8 +132,8 @@ namespace polaris
 			m_pPlayerPawn->ReceiveBeginPlay();
 
 			// Assign our PlayerPawn to a team.
-			static_cast<SDK::AFortPlayerStateAthena*>(Globals::pPlayerController->PlayerState)->TeamIndex = SDK::EFortTeam::HumanPvP_Team1;
-			static_cast<SDK::AFortPlayerStateAthena*>(Globals::pPlayerController->PlayerState)->OnRep_TeamIndex();
+			static_cast<SDK::AFortPlayerStateAthena*>(Globals::gpPlayerController->PlayerState)->TeamIndex = SDK::EFortTeam::HumanPvP_Team1;
+			static_cast<SDK::AFortPlayerStateAthena*>(Globals::gpPlayerController->PlayerState)->OnRep_TeamIndex();
 
 			LoadWeaponDataTables();
 
@@ -144,7 +145,7 @@ namespace polaris
 	// FIXME (irma) Replace this with a proper Skin Loader.
 	void PlayerPawnPolaris::InitializeHero()
 	{
-		auto pPlayerState = static_cast<SDK::AFortPlayerStateAthena*>(Globals::pPlayerController->PlayerState);
+		auto pPlayerState = static_cast<SDK::AFortPlayerStateAthena*>(Globals::gpPlayerController->PlayerState);
 		auto pCustomCharacterPartHead = FindObject<SDK::UCustomCharacterPart>("CustomCharacterPart", "Head");
 		auto pCustomCharacterPartBody = FindObject<SDK::UCustomCharacterPart>("CustomCharacterPart", "Body");
 		auto pCustomCharacterPartHat = FindObject<SDK::UCustomCharacterPart>("CustomCharacterPart", "Hat_");
@@ -162,7 +163,7 @@ namespace polaris
 		if (!pPlayerState->CharacterParts[1])
 			pPlayerState->CharacterParts[1] = SDK::UObject::FindObject<SDK::UCustomCharacterPart>("CustomCharacterPart F_Med_Soldier_01.F_Med_Soldier_01");
 
-		static_cast<SDK::AFortPlayerStateAthena*>(Globals::pPlayerController->PlayerState)->OnRep_CharacterParts();
+		static_cast<SDK::AFortPlayerStateAthena*>(Globals::gpPlayerController->PlayerState)->OnRep_CharacterParts();
 		m_pPlayerPawn->OnCharacterPartsReinitialized();
 	}
 
@@ -177,9 +178,17 @@ namespace polaris
 	}
 
 	// Equip a weapon.
-	void PlayerPawnPolaris::EquipWeapon(const char* cItemDef)
+	void PlayerPawnPolaris::EquipWeapon(const char* cItemDef, int guid)
 	{
 		auto pItemDef = SDK::UObject::FindObject<SDK::UFortWeaponItemDefinition>(cItemDef);
+
+		SDK::FGuid wepGuid;
+		wepGuid.A = guid;
+		wepGuid.B = guid;
+		wepGuid.C = guid;
+		wepGuid.D = guid;
+
+		m_pPlayerPawn->EquipWeaponDefinition(pItemDef, wepGuid)->SetOwner(m_pPlayerPawn);
 
 		/*auto pWorldInventory = static_cast<SDK::AAthena_PlayerController_C*>(Core::pPlayerController)->WorldInventory;
 		if (pWorldInventory)
@@ -216,10 +225,5 @@ namespace polaris
 
 		static_cast<SDK::AAthena_PlayerController_C*>(Core::pPlayerController)->bHasInitializedWorldInventory = true;
 		static_cast<SDK::AAthena_PlayerController_C*>(Core::pPlayerController)->HandleWorldInventoryLocalUpdate();*/
-
-		auto pFortWeapon = m_pPlayerPawn->EquipWeaponDefinition(pItemDef, SDK::FGuid());
-
-		pFortWeapon->SetOwner(m_pPlayerPawn);
-		m_pPlayerPawn->AbilitySystemComponent->TryActivateAbilityByClass(pItemDef->GetPrimaryFireAbility(), false);
 	}
 }

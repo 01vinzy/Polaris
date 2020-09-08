@@ -9,7 +9,7 @@
 #include <MinHook.h>
 #pragma comment(lib, "libMinHook.lib")
 
-#include "core.h"
+#include "globals.h"
 
 namespace polaris
 {
@@ -49,7 +49,7 @@ namespace polaris
 
             auto pUWorldOffset = *reinterpret_cast<uint32_t*>(pUWorldAddress + 3);
 
-            polaris::Globals::pWorld = reinterpret_cast<SDK::UWorld**>(pUWorldAddress + 7 + pUWorldOffset);
+            polaris::Globals::gpWorld = reinterpret_cast<SDK::UWorld**>(pUWorldAddress + 7 + pUWorldOffset);
 
             auto pGObjectAddress = Util::FindPattern("\x48\x8D\x0D\x00\x00\x00\x00\xE8\x00\x00\x00\x00\xE8\x00\x00\x00\x00\xE8\x00\x00\x00\x00\x48\x8B\xD6", "xxx????x????x????x????xxx");
             if (!pGObjectAddress)
@@ -84,22 +84,22 @@ namespace polaris
                 ExitProcess(EXIT_FAILURE);
             }
 
-            if (!polaris::Globals::pWorld)
+            if (!polaris::Globals::gpWorld)
             {
                 MessageBox(NULL, static_cast<LPCWSTR>(L"The UWorld is not initialized. Please relaunch Fortnite and try again!"), static_cast<LPCWSTR>(L"Error"), MB_ICONERROR);
                 ExitProcess(EXIT_FAILURE);
             }
 
-            polaris::Globals::pLevel = (*polaris::Globals::pWorld)->PersistentLevel;
+            polaris::Globals::gpLevel = (*polaris::Globals::gpWorld)->PersistentLevel;
 
-            polaris::Globals::pGameInstance = (*polaris::Globals::pWorld)->OwningGameInstance;
+            polaris::Globals::gpGameInstance = (*polaris::Globals::gpWorld)->OwningGameInstance;
 
-            polaris::Globals::pLocalPlayers = polaris::Globals::pGameInstance->LocalPlayers;
-            polaris::Globals::pLocalPlayer = polaris::Globals::pLocalPlayers[0];
+            polaris::Globals::gpLocalPlayers = polaris::Globals::gpGameInstance->LocalPlayers;
+            polaris::Globals::gpLocalPlayer = polaris::Globals::gpLocalPlayers[0];
 
-            polaris::Globals::pActors = &polaris::Globals::pLevel->Actors;
+            polaris::Globals::gpActors = &polaris::Globals::gpLevel->Actors;
 
-            polaris::Globals::pPlayerController = polaris::Globals::pLocalPlayer->PlayerController;
+            polaris::Globals::gpPlayerController = polaris::Globals::gpLocalPlayer->PlayerController;
         }
 
         // Class patches.
@@ -160,9 +160,9 @@ namespace polaris
         // Find an actor in the current umap.
         static SDK::AActor* FindActor(SDK::UClass* pClass, int iSkip = 0)
         {
-            for (int i = 0, j = 0; i < polaris::Globals::pActors->Num(); i++)
+            for (int i = 0, j = 0; i < polaris::Globals::gpActors->Num(); i++)
             {
-                SDK::AActor* pActor = polaris::Globals::pActors->operator[](i);
+                SDK::AActor* pActor = polaris::Globals::gpActors->operator[](i);
 
                 if (pActor != nullptr)
                 {

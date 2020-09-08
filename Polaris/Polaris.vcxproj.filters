@@ -118,9 +118,6 @@
     <ClInclude Include="common.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="core.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="renderer.h">
       <Filter>Renderer</Filter>
     </ClInclude>
@@ -158,6 +155,9 @@
       <Filter>Utilities</Filter>
     </ClInclude>
     <ClInclude Include="polarisflags.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="globals.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

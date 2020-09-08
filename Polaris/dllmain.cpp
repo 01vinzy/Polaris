@@ -10,6 +10,7 @@
 #include "athena.h"
 #include "console.h"
 #include "util.h"
+#include "mainwindow.h"
 
 // The main thread for Polaris. Called when the Polaris DLL has successfully been injected.
 DWORD WINAPI Main(LPVOID lpParam)
@@ -24,8 +25,7 @@ DWORD WINAPI Main(LPVOID lpParam)
 	// Start the Polaris modules.
 	new polaris::Console(); // Initialize the debug console.
 	new polaris::Renderer; // Initialize the Polaris renderer.
-
-	new polaris::Athena; // TEMP Start Athena.
+	new polaris::Athena; // TEMP Load athena.
 
 	return FALSE;
 }

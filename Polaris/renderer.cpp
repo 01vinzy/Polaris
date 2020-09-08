@@ -12,8 +12,8 @@
 #include <tchar.h>
 #include <stdio.h>
 
-bool bLockFortInput;
 polaris::MainWindow* pMainWindow;
+bool bLockFortInput;
 std::list<polaris::Window*> polaris::Renderer::pUiInstances;
 
 WNDPROC lpPrevWndFunc;
@@ -191,7 +191,6 @@ namespace polaris
 
 		// Enable keyboard input and load Segoe UI as font.
 		io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;
-		io.Fonts->AddFontFromFileTTF("C:\\Windows\\Fonts\\segoeui.ttf", 18); // FIXME (Cyuubi) Un-hardcode path.
 
 		pSwapChain->Release();
 		pDevice->Release();
