@@ -1,4 +1,4 @@
-#include "core.h"
+#include "globals.h"
 #include "mainwindow.h"
 #include "creditswindow.h"
 #include "actorlist.h"
@@ -11,10 +11,11 @@
 
 namespace polaris
 {
-	ActorList* pActorList;
-	CreditsWindow* pCreditsWindow;
-	ObjectCache* pObjectCache;
-	Watermark* pWatermark;
+	// These are 
+	ActorList* pActorList = nullptr;
+	CreditsWindow* pCreditsWindow = nullptr;
+	ObjectCache* pObjectCache = nullptr;
+	Watermark* pWatermark = nullptr;
 
 	MainWindow::MainWindow()
 	{
@@ -31,6 +32,14 @@ namespace polaris
 				pObjectCache = new polaris::ObjectCache;
 		}
 
+		if (gpMainWindow)
+		{
+			MessageBox(0, L"Athena is already initialized.", L"Error", MB_ICONERROR);
+			ExitProcess(EXIT_FAILURE);
+		}
+
+		gpMainWindow = this;
+
 		// Create window instances.
 		pWatermark = new polaris::Watermark;
 	}
@@ -41,13 +50,13 @@ namespace polaris
 		{
 			if (ImGui::BeginMenu("Player"))
 			{
-				if (ImGui::MenuItem("Exit"))
-					ExitProcess(EXIT_SUCCESS);
-
 				// Only give the user this option if experimental & debugging tools are enabled.
 				if (ENABLE_DEBUGGING_TOOLS && ENABLE_EXPERIMENTAL_DEBUGGING_TOOLS)
 					if (ImGui::MenuItem("Object Cache (Lags!)"))
 						pObjectCache->bShowWindow = true;
+
+				if (ImGui::MenuItem("Exit"))
+					ExitProcess(EXIT_SUCCESS);
 
 				ImGui::EndMenu();
 			}

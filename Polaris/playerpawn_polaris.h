@@ -5,7 +5,7 @@
 #include <string>
 
 #include "SDK.hpp"
-#include "core.h"
+#include "globals.h"
 
 namespace polaris
 {
@@ -18,7 +18,7 @@ namespace polaris
 
 		void InitializeHero();
 		void LoadWeaponDataTables();
-		void EquipWeapon(const char* cItemDef);
+		void EquipWeapon(const char* cItemDef, int guid = 0);
 	};
 }
 

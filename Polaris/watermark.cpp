@@ -35,7 +35,7 @@ namespace polaris
 		ImVec2 window_pos_pivot = ImVec2((CORNER & 1) ? 1.0f : 0.0f, (CORNER & 2) ? 1.0f : 0.0f);
 		ImGui::SetNextWindowPos(window_pos, ImGuiCond_Always, window_pos_pivot);
 
-		// We want this to always render, thus the reinterpret cast.
+		// (irma) We want this to always render, thus the reinterpret cast.
 		// I don't care if this makes it crash trying to hide the window, cus it's probably
 		// a skid trying to hide it, anyway, so it's a nice anti-skid measure, I suppose.
 		ImGui::Begin("Watermark", reinterpret_cast<bool*>(true), WINDOW_FLAGS);
@@ -43,6 +43,7 @@ namespace polaris
 #ifdef POLARIS_RELEASE
 			ImGui::Text("Polaris %s", VERSION);
 			ImGui::Text("Follow us on Twitter! @ProjectPolaris_");
+			ImGui::Text("Press HOME to open the Polaris menu.");
 #else
 			ImGui::Text("Polaris LOCAL DEBUG");
 			ImGui::Text("Development build. Do not share!");

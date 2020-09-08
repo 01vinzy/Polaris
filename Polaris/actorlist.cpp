@@ -1,6 +1,6 @@
 #include "actorlist.h"
 
-#include "core.h"
+#include "globals.h"
 
 namespace polaris
 {
@@ -19,13 +19,13 @@ namespace polaris
 			{
 				ImGui::BeginChild("Hierarchy", ImVec2(300, 0), true);
 				{
-					for (int i = 0; i < Globals::pLevel->Actors.Num(); i++)
+					for (int i = 0; i < Globals::gpLevel->Actors.Num(); i++)
 					{
 						// Absolutely make sure the actor exists, Unreal Engine is very prone to crashing
-						if (Globals::pLevel->Actors.IsValidIndex(i) && Globals::pLevel->Actors[i])
+						if (Globals::gpLevel->Actors.IsValidIndex(i) && Globals::gpLevel->Actors[i])
 						{
 							// Create a button for the actor, and set the selected actor once clicked
-							if (ImGui::Selectable(Globals::pLevel->Actors[i]->GetName().c_str(), selected == i))
+							if (ImGui::Selectable(Globals::gpLevel->Actors[i]->GetName().c_str(), selected == i))
 								selected = i;
 						}
 					}
@@ -33,7 +33,7 @@ namespace polaris
 				}
 			}
 
-			auto selectedActor = Globals::pLevel->Actors[selected];
+			auto selectedActor = Globals::gpLevel->Actors[selected];
 
 			// Inspector
 			// Only draw the inspector screen if the selected actor exists

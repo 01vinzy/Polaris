@@ -15,4 +15,6 @@ namespace polaris
 	};
 }
 
+static polaris::MainWindow* gpMainWindow;
+
 #endif // MAINWINDOW_H
