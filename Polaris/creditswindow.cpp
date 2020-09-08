@@ -16,7 +16,7 @@ namespace polaris
 			for (const char* credit : credits)
 			{
 				ImGui::SetCursorPosX(ImGui::GetWindowWidth() / 2 - ImGui::CalcTextSize(credit).x / 2);
-				ImGui::TextWrapped(credit);
+				ImGui::Text(credit);
 			}
 
 			ImGui::End();
