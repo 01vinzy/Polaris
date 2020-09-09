@@ -3,9 +3,6 @@
 #include "util.h"
 #include "SDK.hpp"
 
-#include <iostream>
-#include <fstream>
-
 namespace polaris
 {
 	bool bIsInFrontend = true;
@@ -148,19 +145,24 @@ namespace polaris
 				if (pFunction->GetName().find("ServerAttemptAircraftJump") != std::string::npos || 
 					pFunction->GetName().find("OnAircraftExitedDropZone") != std::string::npos)
 				{
-					// Create a new player pawn.
-					gpAthena->m_pPlayerPawnPolaris = new PlayerPawnPolaris;
-					gpAthena->m_pPlayerPawnPolaris->InitializeHero();
+					if (static_cast<SDK::AFortPlayerControllerAthena*>(Globals::gpPlayerController)->IsInAircraft())
+					{
+						// Create a new player pawn.
+						gpAthena->m_pPlayerPawnPolaris = new PlayerPawnPolaris;
+						gpAthena->m_pPlayerPawnPolaris->InitializeHero(); // This causes a massive hitch.
 
-					// Reset the pawn rotation, due to weird summon properties.
-					SDK::AFortPlayerPawnAthena* playerPawn = gpAthena->m_pPlayerPawnPolaris->m_pPlayerPawn;
-					SDK::FRotator actorRotation = gpAthena->m_pPlayerPawnPolaris->m_pPlayerPawn->K2_GetActorRotation();
+						// Reset the pawn rotation, due to weird summon properties.
+						SDK::AFortPlayerPawnAthena* playerPawn = gpAthena->m_pPlayerPawnPolaris->m_pPlayerPawn;
+						SDK::FRotator actorRotation = gpAthena->m_pPlayerPawnPolaris->m_pPlayerPawn->K2_GetActorRotation();
 
-					actorRotation.Pitch = 0;
-					actorRotation.Roll = 0;
-					playerPawn->K2_SetActorLocationAndRotation(playerPawn->K2_GetActorLocation(), actorRotation, false, true, new SDK::FHitResult());
+						actorRotation.Pitch = 0;
+						actorRotation.Roll = 0;
+						playerPawn->K2_SetActorLocationAndRotation(playerPawn->K2_GetActorLocation(), actorRotation, false, true, new SDK::FHitResult());
 
-					return NULL;
+						// Don't return null if the aircraft exited drop zone, or the storm won't start.
+						if(pFunction->GetName().find("OnAircraftExitedDropZone") == std::string::npos)
+							return NULL;
+					}
 				}
 			}
 		}

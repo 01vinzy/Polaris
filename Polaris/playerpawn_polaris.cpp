@@ -1,9 +1,6 @@
 #include "playerpawn_polaris.h"
-#include "console.h"
 #include "util.h"
 #include "SDK.hpp"
-
-#include <list>
 
 // NOTE (irma) I couldn't move the loading into memory shit into their own classes. LMK if you can do it.
 

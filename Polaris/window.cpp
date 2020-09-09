@@ -2,7 +2,6 @@
 #include "renderer.h"
 
 #include <imgui.h>
-#include <Windows.h>
 
 namespace polaris
 {

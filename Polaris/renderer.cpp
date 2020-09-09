@@ -1,5 +1,4 @@
 #include "renderer.h"
-#include "common.h"
 #include "mainwindow.h"
 
 #include <windows.h>
@@ -8,9 +7,6 @@
 #include <imgui_impl_dx11.h>
 #include <imgui_impl_win32.h>
 #include <imgui_internal.h>
-
-#include <tchar.h>
-#include <stdio.h>
 
 polaris::MainWindow* pMainWindow;
 bool bLockFortInput;
