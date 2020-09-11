@@ -8,14 +8,6 @@ namespace polaris
 	bool bIsInFrontend = true;
 	bool bIsWaitingForLoadingScreen = false;
 
-	// Preset weapon definitions. We keep them here so we don't need to constantly reload them.
-	SDK::UFortWeaponItemDefinition* pTacticalShotgunDefinition;
-	SDK::UFortWeaponItemDefinition* pHarvestingToolDefinition;
-	SDK::UFortWeaponItemDefinition* pJackOLauncherDefinition;
-	SDK::UFortWeaponItemDefinition* pPumpShotgunDefinition;
-	SDK::UFortWeaponItemDefinition* pZapatronDefinition;
-	SDK::UFortWeaponItemDefinition* pScarDefinition;
-
 	// Listens to functions called in game, use this to hook code to functions in question.
 	PVOID(*ProcessEvent)(SDK::UObject*, SDK::UFunction*, PVOID) = nullptr;
 	PVOID ProcessEventHook(SDK::UObject* pObject, SDK::UFunction* pFunction, PVOID pParams)
@@ -51,14 +43,6 @@ namespace polaris
 						gpAthena->m_pPlayerPawnPolaris = new PlayerPawnPolaris;
 						gpAthena->m_pPlayerPawnPolaris->InitializeHero();
 
-						// Load preset item definitions (Prevents a hitch during weapon swapping)
-						pHarvestingToolDefinition = SDK::UObject::FindObject<SDK::UFortWeaponItemDefinition>(gpAthena->m_pPlayerPawnPolaris->m_pPlayerPawn->CustomizationLoadout.Character->GetFullName());
-						pPumpShotgunDefinition = SDK::UObject::FindObject<SDK::UFortWeaponItemDefinition>("FortWeaponRangedItemDefinition WID_Shotgun_Standard_Athena_UC_Ore_T03.WID_Shotgun_Standard_Athena_UC_Ore_T03");
-						pScarDefinition = SDK::UObject::FindObject<SDK::UFortWeaponItemDefinition>("FortWeaponRangedItemDefinition WID_Assault_AutoHigh_Athena_SR_Ore_T03.WID_Assault_AutoHigh_Athena_SR_Ore_T03");
-						pTacticalShotgunDefinition = SDK::UObject::FindObject<SDK::UFortWeaponItemDefinition>("FortWeaponRangedItemDefinition WID_Shotgun_SemiAuto_Athena_VR_Ore_T03.WID_Shotgun_SemiAuto_Athena_VR_Ore_T03");
-						pJackOLauncherDefinition = SDK::UObject::FindObject<SDK::UFortWeaponItemDefinition>("FortWeaponRangedItemDefinition WID_Launcher_Rocket_Athena_SR_Ore_T03.WID_Launcher_Rocket_Athena_SR_Ore_T03");
-						pZapatronDefinition = SDK::UObject::FindObject<SDK::UFortWeaponItemDefinition>("FortWeaponRangedItemDefinition WID_Sniper_AMR_Athena_SR_Ore_T03.WID_Sniper_AMR_Athena_SR_Ore_T03");
-
 						// Tell the client that we are ready to start the match, this allows the loading screen to drop.
 						static_cast<SDK::AAthena_PlayerController_C*>(Globals::gpPlayerController)->ServerReadyToStartMatch();
 						static_cast<SDK::AGameMode*>((*Globals::gpWorld)->AuthorityGameMode)->StartMatch();
@@ -72,80 +56,10 @@ namespace polaris
 			// Hooks for Athena_Terrain
 			else
 			{
-				// Called every frame.
-				if (pFunction->GetName().find("Tick") != std::string::npos)
-				{
-					if (gpAthena->m_pPlayerPawnPolaris && gpAthena->m_pPlayerPawnPolaris->m_pPlayerPawn && !static_cast<SDK::AFortPlayerControllerAthena*>(Globals::gpPlayerController)->IsInAircraft())
-					{
-						// This is awful, I know, it's just for the demo.
-						if (GetAsyncKeyState('1') & 0x8000)
-						{
-							SDK::FGuid guid;
-							guid.A = 0;
-							guid.B = 0;
-							guid.C = 0;
-							guid.D = 0;
-
-							gpAthena->m_pPlayerPawnPolaris->m_pPlayerPawn->EquipWeaponDefinition(pHarvestingToolDefinition, guid);
-						}
-						if (GetAsyncKeyState('2') & 0x8000)
-						{
-							SDK::FGuid guid;
-							guid.A = 1;
-							guid.B = 0;
-							guid.C = 0;
-							guid.D = 0;
-
-							gpAthena->m_pPlayerPawnPolaris->m_pPlayerPawn->EquipWeaponDefinition(pPumpShotgunDefinition, guid);
-						}
-						if (GetAsyncKeyState('3') & 0x8000)
-						{
-							SDK::FGuid guid;
-							guid.A = 2;
-							guid.B = 0;
-							guid.C = 0;
-							guid.D = 0;
-
-							gpAthena->m_pPlayerPawnPolaris->m_pPlayerPawn->EquipWeaponDefinition(pScarDefinition, guid);
-						}
-						if (GetAsyncKeyState('4') & 0x8000)
-						{
-							SDK::FGuid guid;
-							guid.A = 3;
-							guid.B = 0;
-							guid.C = 0;
-							guid.D = 0;
-
-							gpAthena->m_pPlayerPawnPolaris->m_pPlayerPawn->EquipWeaponDefinition(pTacticalShotgunDefinition, guid);
-						}
-						if (GetAsyncKeyState('5') & 0x8000)
-						{
-							SDK::FGuid guid;
-							guid.A = 4;
-							guid.B = 0;
-							guid.C = 0;
-							guid.D = 0;
-
-							gpAthena->m_pPlayerPawnPolaris->m_pPlayerPawn->EquipWeaponDefinition(pJackOLauncherDefinition, guid);
-						}
-						if (GetAsyncKeyState('6') & 0x8000)
-						{
-							SDK::FGuid guid;
-							guid.A = 5;
-							guid.B = 0;
-							guid.C = 0;
-							guid.D = 0;
-
-							gpAthena->m_pPlayerPawnPolaris->m_pPlayerPawn->EquipWeaponDefinition(pZapatronDefinition, guid);
-						}
-					}
-				}
-
 				// Called once the player jumps from the battle bus, or when they're supposed to be kicked out.
-				if (pFunction->GetName().find("ServerAttemptAircraftJump") != std::string::npos || 
-					pFunction->GetName().find("OnAircraftExitedDropZone") != std::string::npos)
+				if (pFunction->GetName().find("ServerAttemptAircraftJump") != std::string::npos)
 				{
-					if (static_cast<SDK::AFortPlayerControllerAthena*>(Globals::gpPlayerController)->IsInAircraft())
+					if (Globals::gpPlayerController && static_cast<SDK::AFortPlayerControllerAthena*>(Globals::gpPlayerController)->IsInAircraft())
 					{
 						// Create a new player pawn.
 						gpAthena->m_pPlayerPawnPolaris = new PlayerPawnPolaris;
@@ -159,9 +73,7 @@ namespace polaris
 						actorRotation.Roll = 0;
 						playerPawn->K2_SetActorLocationAndRotation(playerPawn->K2_GetActorLocation(), actorRotation, false, true, new SDK::FHitResult());
 
-						// Don't return null if the aircraft exited drop zone, or the storm won't start.
-						if(pFunction->GetName().find("OnAircraftExitedDropZone") == std::string::npos)
-							return NULL;
+						return NULL;
 					}
 				}
 			}
