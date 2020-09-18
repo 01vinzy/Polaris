@@ -41,12 +41,11 @@ namespace polaris
 		ImGui::Begin("Watermark", reinterpret_cast<bool*>(true), WINDOW_FLAGS);
 		{
 #ifdef POLARIS_RELEASE
-			ImGui::Text("Polaris %s", VERSION);
-			ImGui::Text("Follow us on Twitter! @ProjectPolaris_");
-			ImGui::Text("Press HOME to open the Polaris menu.");
+			ImGui::Text("Polaris (Beta)");
+			ImGui::Text("Press [HOME] to open the Polaris menu.");
+			ImGui::Text("Twitter: @ProjectPolaris_ | Discord: discord.gg/polaris");
 #else
-			ImGui::Text("Polaris LOCAL DEBUG");
-			ImGui::Text("Development build. Do not share!");
+			ImGui::Text("Polaris (Pre-Release), do not redistribute!");
 #endif
 			ImGui::End();
 		}

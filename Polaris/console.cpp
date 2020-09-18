@@ -10,12 +10,9 @@ namespace polaris
 	DWORD DrawAsciiArt(LPVOID lpParam)
 	{
 		for (int i = 0; i < 19; i++)
-		{
-			auto addOn = i == 10 ? VERSION.c_str() : "";
-			auto appendedString = std::string(Console::cPolarisAscii[i]) + std::string(addOn);
+			polaris::Console::LogRaw(Console::sAscii[i], 11);
 
-			polaris::Console::LogRaw(appendedString.c_str(), 11);
-		}
+		return 0;
 	}
 
 	Console::Console()

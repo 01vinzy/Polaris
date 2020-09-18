@@ -51,8 +51,25 @@ namespace polaris
 			{
 				// Only give the user this option if experimental & debugging tools are enabled.
 				if (ENABLE_DEBUGGING_TOOLS && ENABLE_EXPERIMENTAL_DEBUGGING_TOOLS)
-					if (ImGui::MenuItem("Object Cache (Lags!)"))
+					if (ImGui::MenuItem("Object Cache (Experimental)"))
 						pObjectCache->bShowWindow = true;
+
+				if (!Globals::gpLocalPlayer->ViewportClient->ViewportConsole)
+				{
+					if (ImGui::MenuItem("Enable Console"))
+					{
+						auto pConsole = SDK::UConsole::StaticClass()->CreateDefaultObject<SDK::UConsole>();
+
+						pConsole->Outer = Globals::gpLocalPlayer->ViewportClient;
+
+						Globals::gpLocalPlayer->ViewportClient->ViewportConsole = pConsole;
+					}
+				}
+				else
+				{
+					if (ImGui::MenuItem("Disable Console"))
+						Globals::gpLocalPlayer->ViewportClient->ViewportConsole = nullptr;
+				}
 
 				if (ImGui::MenuItem("Exit"))
 					ExitProcess(EXIT_SUCCESS);
@@ -74,12 +91,8 @@ namespace polaris
 				if (ImGui::MenuItem("Credits"))
 					pCreditsWindow->bShowWindow = true;
 
-#ifndef POLARIS_RELEASE
-
 				if (ImGui::MenuItem("Irma Burger"))
 					system("start https://www.youtube.com/watch?v=fC7oUOUEEi4");
-
-#endif // !POLARIS_RELEASE
 
 				ImGui::EndMenu();
 			}

@@ -8,6 +8,8 @@
 #include <imgui_impl_win32.h>
 #include <imgui_internal.h>
 
+#include "platform.h"
+
 polaris::MainWindow* pMainWindow;
 bool bLockFortInput;
 std::list<polaris::Window*> polaris::Renderer::pUiInstances;
@@ -187,6 +189,7 @@ namespace polaris
 
 		// Enable keyboard input and load Segoe UI as font.
 		io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;
+		io.Fonts->AddFontFromFileTTF(Util::GetConcatPath(Platform::GetFontsDir(), "segoeui.ttf").c_str(), 20);
 
 		pSwapChain->Release();
 		pDevice->Release();

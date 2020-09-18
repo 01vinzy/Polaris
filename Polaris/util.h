@@ -27,6 +27,21 @@ namespace polaris
             return true;
         }
 
+        static PBYTE FindPattern(PVOID pBase, DWORD dwSize, LPCSTR lpPattern, LPCSTR lpMask)
+        {
+            dwSize -= static_cast<DWORD>(strlen(lpMask));
+
+            for (auto i = 0UL; i < dwSize; ++i)
+            {
+                auto pAddress = static_cast<PBYTE>(pBase) + i;
+
+                if (MaskCompare(pAddress, lpPattern, lpMask))
+                    return pAddress;
+            }
+
+            return NULL;
+        }
+
     public:
         // Initializes the console.
         static VOID InitConsole()
@@ -74,7 +89,7 @@ namespace polaris
             SDK::FName::GNames = *reinterpret_cast<SDK::TNameEntryArray**>(pGNameAddress + 7 + pGNameOffset);
         }
 
-        // Initializes Polaris Core.
+        // Initializes Polaris.
         static VOID InitCore()
         {
             uintptr_t pBaseAddress = Util::BaseAddress();
@@ -102,8 +117,8 @@ namespace polaris
             polaris::Globals::gpPlayerController = polaris::Globals::gpLocalPlayer->PlayerController;
         }
 
-        // Class patches.
-        static VOID InitAddressPatches()
+        // Patches certain parts of Fortnite.
+        static VOID InitPatches()
         {
             // Item ownership check patching - allows weapons and other GameplayAbilites to properly function.
             auto pAbilityPatchAddress = polaris::Util::FindPattern
@@ -111,20 +126,17 @@ namespace polaris
                 "\xC0\x0F\x84\x3C\x02\x00\x00\x0F\x2F\xF7\x0F\x86\xF5\x00\x00\x00",
                 "xxxxxxxxxxxxxxxx"
             );
-            if (!pAbilityPatchAddress)
+            if (pAbilityPatchAddress)
             {
-                MessageBox(NULL, static_cast<LPCWSTR>(L"An error has occured while initalizing Polaris. Please relaunch Fortnite and try again!"), static_cast<LPCWSTR>(L"Error"), MB_ICONERROR);
-                ExitProcess(EXIT_FAILURE);
+                DWORD dwProtection;
+                VirtualProtect(pAbilityPatchAddress, 16, PAGE_EXECUTE_READWRITE, &dwProtection);
+
+                reinterpret_cast<uint8_t*>(pAbilityPatchAddress)[2] = 0x85;
+                reinterpret_cast<uint8_t*>(pAbilityPatchAddress)[11] = 0x8D;
+
+                DWORD dwTemp;
+                VirtualProtect(pAbilityPatchAddress, 16, dwProtection, &dwTemp);
             }
-
-            DWORD curProtection;
-            VirtualProtect(pAbilityPatchAddress, 16, PAGE_EXECUTE_READWRITE, &curProtection);
-
-            reinterpret_cast<uint8_t*>(pAbilityPatchAddress)[2] = 0x85;
-            reinterpret_cast<uint8_t*>(pAbilityPatchAddress)[11] = 0x8D;
-
-            DWORD temp;
-            VirtualProtect(pAbilityPatchAddress, 16, curProtection, &temp);
         }
 
         // Get the Base Address.
@@ -133,21 +145,6 @@ namespace polaris
             return reinterpret_cast<uintptr_t>(GetModuleHandle(0));
         }
 
-        // Find a pattern.
-        static PBYTE FindPattern(PVOID pBase, DWORD dwSize, LPCSTR lpPattern, LPCSTR lpMask)
-        {
-            dwSize -= static_cast<DWORD>(strlen(lpMask));
-
-            for (auto i = 0UL; i < dwSize; ++i)
-            {
-                auto pAddress = static_cast<PBYTE>(pBase) + i;
-
-                if (Util::MaskCompare(pAddress, lpPattern, lpMask))
-                    return pAddress;
-            }
-
-            return NULL;
-        }
         static PBYTE FindPattern(LPCSTR lpPattern, LPCSTR lpMask)
         {
             MODULEINFO info = { 0 };
@@ -157,7 +154,7 @@ namespace polaris
             return Util::FindPattern(info.lpBaseOfDll, info.SizeOfImage, lpPattern, lpMask);
         }
 
-        // Find an actor in the current umap.
+        // Find an AActor in the current UWorld.
         static SDK::AActor* FindActor(SDK::UClass* pClass, int iSkip = 0)
         {
             for (int i = 0, j = 0; i < polaris::Globals::gpActors->Num(); i++)
@@ -180,6 +177,20 @@ namespace polaris
             }
 
             return nullptr;
+        }
+
+        static std::string GetConcatPath(const std::string& sFirst, const std::string& sSecond)
+        {
+            std::string sTemp = sFirst;
+
+            if (sFirst[sFirst.length()] != '\\')
+            {
+                sTemp += '\\';
+
+                return(sTemp + sSecond);
+            }
+            else
+                return(sFirst + sSecond);
         }
     };
 }

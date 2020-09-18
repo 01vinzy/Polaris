@@ -6,7 +6,6 @@
 #include "athena.h"
 #include "console.h"
 
-// The main thread for Polaris. Called when the Polaris DLL has successfully been injected.
 DWORD WINAPI Main(LPVOID lpParam)
 {
 	// If MinHook failed to properly initialize, prompt the user to restart the game.
@@ -16,10 +15,10 @@ DWORD WINAPI Main(LPVOID lpParam)
 		ExitProcess(EXIT_FAILURE);
 	}
 
-	// Start the Polaris modules.
-	new polaris::Console(); // Initialize the debug console.
-	new polaris::Renderer; // Initialize the Polaris renderer.
-	new polaris::Athena;
+	// Initialize modules.
+	new polaris::Console;
+	new polaris::Renderer;
+	new polaris::Athena; 
 
 	return FALSE;
 }

@@ -9,8 +9,6 @@
 
 namespace polaris
 {
-	static const std::string VERSION = "BETA 20w371";
-
 	static const bool ENABLE_DEBUGGING_TOOLS = true;
 	static const bool ENABLE_EXPERIMENTAL_DEBUGGING_TOOLS = false;
 }

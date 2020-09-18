@@ -5,6 +5,32 @@
 
 namespace polaris
 {
+	static SDK::UObject* (*StaticLoadObject)(SDK::UClass* ObjectClass, SDK::UObject* InOuter, const TCHAR* InName, const TCHAR* Filename, uint32_t LoadFlags, SDK::UPackageMap* Sandbox, bool bAllowObjectReconciliation);
+
+	// Load an object in memory.
+	template<class T>
+	static T* LoadObject(SDK::UObject* Outer, const TCHAR* Name, const TCHAR* Filename = nullptr, uint32_t LoadFlags = 0, SDK::UPackageMap* Sandbox = nullptr)
+	{
+		return (T*)StaticLoadObject(T::StaticClass(), Outer, Name, Filename, LoadFlags, Sandbox, true);
+	}
+
+	// Find an object in cache, load it if it's not loaded.
+	template<typename T>
+	static T* FindOrLoadObject(const std::string PathName)
+	{
+		SDK::UClass* Class = T::StaticClass();
+		Class->CreateDefaultObject();
+
+		T* ObjectPtr = LoadObject<T>(NULL, std::wstring(PathName.begin(), PathName.end()).c_str());
+		if (ObjectPtr)
+		{
+			SDK::UObject::GObjects
+				->ObjObjects.GetItemByIndex(ObjectPtr->InternalIndex)->Flags |= int32_t(SDK::FUObjectItem::ObjectFlags::RootSet);
+		}
+
+		return ObjectPtr;
+	}
+
 	bool bIsInFrontend = true;
 	bool bIsWaitingForLoadingScreen = false;
 
@@ -30,7 +56,10 @@ namespace polaris
 				if (pFunction->GetName().find("BndEvt__BP_PlayButton_K2Node_ComponentBoundEvent_1_CommonButtonClicked__DelegateSignature") != std::string::npos)
 				{
 					bIsWaitingForLoadingScreen = true;
+
 					Globals::gpPlayerController->SwitchLevel(TEXT("Athena_Terrain"));
+
+					return NULL;
 				}
 
 				// This gets called once the loading screen is ready to drop.
@@ -40,10 +69,19 @@ namespace polaris
 					bIsInFrontend = false;
 					bIsWaitingForLoadingScreen = false;
 
-					// Reinitialize the core, there's missing references because of frontend unloading.
+					// Reinitialize the core, there's missing references because of Frontend unloading.
 					Util::InitSdk();
 					Util::InitCore();
-					Util::InitAddressPatches();
+					Util::InitPatches();
+
+					StaticLoadObject = reinterpret_cast<decltype(StaticLoadObject)>(Util::BaseAddress() + 0x142E560);
+
+					FindOrLoadObject<SDK::UDataTable>("/Game/Items/Datatables/AthenaTraps.AthenaTraps");
+					FindOrLoadObject<SDK::UDataTable>("/Game/Athena/Items/Weapons/AthenaMeleeWeapons.AthenaMeleeWeapons");
+					FindOrLoadObject<SDK::UDataTable>("/Game/Athena/Items/Weapons/AthenaRangedWeapons.AthenaRangedWeapons");
+					FindOrLoadObject<SDK::UDataTable>("/Game/Items/Datatables/RangedWeapons.RangedWeapons");
+					FindOrLoadObject<SDK::UDataTable>("/Game/Items/Datatables/MeleeWeapons.MeleeWeapons");
+					FindOrLoadObject<SDK::UDataTable>("/Game/Items/Datatables/Traps.Traps");
 
 					if (!gpAthena->m_pPlayerPawnPolaris)
 					{
@@ -88,6 +126,7 @@ namespace polaris
 
 							gpAthena->m_pPlayerPawnPolaris->m_pPlayerPawn->EquipWeaponDefinition(pHarvestingToolDefinition, guid);
 						}
+
 						if (GetAsyncKeyState('2') & 0x8000)
 						{
 							SDK::FGuid guid;
@@ -98,6 +137,7 @@ namespace polaris
 
 							gpAthena->m_pPlayerPawnPolaris->m_pPlayerPawn->EquipWeaponDefinition(pPumpShotgunDefinition, guid);
 						}
+
 						if (GetAsyncKeyState('3') & 0x8000)
 						{
 							SDK::FGuid guid;
@@ -108,6 +148,7 @@ namespace polaris
 
 							gpAthena->m_pPlayerPawnPolaris->m_pPlayerPawn->EquipWeaponDefinition(pScarDefinition, guid);
 						}
+
 						if (GetAsyncKeyState('4') & 0x8000)
 						{
 							SDK::FGuid guid;
@@ -118,6 +159,7 @@ namespace polaris
 
 							gpAthena->m_pPlayerPawnPolaris->m_pPlayerPawn->EquipWeaponDefinition(pTacticalShotgunDefinition, guid);
 						}
+
 						if (GetAsyncKeyState('5') & 0x8000)
 						{
 							SDK::FGuid guid;
@@ -128,6 +170,7 @@ namespace polaris
 
 							gpAthena->m_pPlayerPawnPolaris->m_pPlayerPawn->EquipWeaponDefinition(pJackOLauncherDefinition, guid);
 						}
+
 						if (GetAsyncKeyState('6') & 0x8000)
 						{
 							SDK::FGuid guid;
@@ -137,6 +180,12 @@ namespace polaris
 							guid.D = 0;
 
 							gpAthena->m_pPlayerPawnPolaris->m_pPlayerPawn->EquipWeaponDefinition(pZapatronDefinition, guid);
+						}
+
+						if (GetAsyncKeyState(VK_END) & 0x8000)
+						{
+							static_cast<SDK::AFortPlayerControllerAthena*>(Globals::gpPlayerController)->ClientNotifyWon();
+							static_cast<SDK::AFortPlayerControllerAthena*>(Globals::gpPlayerController)->PlayWinEffects();
 						}
 					}
 				}
@@ -160,7 +209,7 @@ namespace polaris
 						playerPawn->K2_SetActorLocationAndRotation(playerPawn->K2_GetActorLocation(), actorRotation, false, true, new SDK::FHitResult());
 
 						// Don't return null if the aircraft exited drop zone, or the storm won't start.
-						if(pFunction->GetName().find("OnAircraftExitedDropZone") == std::string::npos)
+						if (pFunction->GetName().find("OnAircraftExitedDropZone") == std::string::npos)
 							return NULL;
 					}
 				}

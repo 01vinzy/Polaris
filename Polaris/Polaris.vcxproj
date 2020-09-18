@@ -127,6 +127,7 @@
     <ClInclude Include="creditswindow.h" />
     <ClInclude Include="mainwindow.h" />
     <ClInclude Include="objectcache.h" />
+    <ClInclude Include="platform.h" />
     <ClInclude Include="playerpawn_polaris.h" />
     <ClInclude Include="polarisflags.h" />
     <ClInclude Include="renderer.h" />

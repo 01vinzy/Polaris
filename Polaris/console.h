@@ -11,7 +11,7 @@ namespace polaris
 	class Console
 	{
 	public:
-		static inline const char* cPolarisAscii[19] = {
+		static inline const char* sAscii[19] = {
 			"                                                  ",
 			"                                                  ",
 			"                     -/oyhhddhyso/.               ",
@@ -22,7 +22,7 @@ namespace polaris
 			"             :sssss+               `oyysss-       Welcome to Polaris!",
 			"             ssssso                 .sssss+       They said to think back, but I think we went a bit too far.",
 			"       .----:ssssso:::::`            ssssso       ",
-			"        ./++ooosssssss+`            .yyyyyo       Build: ",
+			"        ./++ooosssssss+`            .yyyyyo       ",
 			"          -/++oosssso-             `oyyyyy-       ",
 			"           `:/+ooos/`             -ossyyy+        ",
 			"             -/+++.           `.:ossssss/         ",
@@ -34,6 +34,7 @@ namespace polaris
 		};
 
 		Console();
+
 		static void Log(const char* msg);
 		static void LogError(const char* msg);
 		static void LogRaw(const char* msg, int color = 15);
