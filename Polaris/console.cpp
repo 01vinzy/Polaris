@@ -7,11 +7,8 @@ HANDLE hConsole;
 
 namespace polaris
 {
-	Console::Console()
+	DWORD DrawAsciiArt(LPVOID lpParam)
 	{
-		Util::InitConsole();
-
-		// Draw fancy thing :D
 		for (int i = 0; i < 19; i++)
 		{
 			auto addOn = i == 10 ? VERSION.c_str() : "";
@@ -19,6 +16,15 @@ namespace polaris
 
 			polaris::Console::LogRaw(appendedString.c_str(), 11);
 		}
+	}
+
+	Console::Console()
+	{
+		Util::InitConsole();
+
+		// Draw fancy thing :D
+		CreateThread(0, 0, DrawAsciiArt, 0, 0, 0);
+		Sleep(500);
 	}
 
 	// Log a message to console

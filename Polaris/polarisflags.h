@@ -3,13 +3,13 @@
 
 // Uncomment this for official releases
 // Also don't forget to update the VERSION flag.
-//#define POLARIS_RELEASE
+#define POLARIS_RELEASE
 
 #include <string>
 
 namespace polaris
 {
-	static const std::string VERSION = "LOCAL DEBUG";
+	static const std::string VERSION = "BETA 20w371";
 
 	static const bool ENABLE_DEBUGGING_TOOLS = true;
 	static const bool ENABLE_EXPERIMENTAL_DEBUGGING_TOOLS = false;
