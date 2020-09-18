@@ -24,11 +24,61 @@ SDK::UNetDriver* (*FindNamedNetDriver)(SDK::UEngine*, SDK::UWorld*, SDK::FName) 
 VOID (*SetWorld)(SDK::UNetDriver*, SDK::UWorld*) = nullptr;
 BOOL (*InitListen)(SDK::UNetDriver*, PVOID, SDK::FURL&, BOOL, SDK::FString&) = nullptr;
 SDK::FLevelCollection* (*FindCollectionByType)(SDK::UWorld*, INT) = nullptr;
-VOID (*InitHandler)(SDK::UNetConnection*) = nullptr;
+VOID (*Tick)(SDK::UWorld*, unsigned int, float) = nullptr;
+VOID(*Broadcast0)(__int64 a1, __int64 a2, __int64 a3, __int64 a4) = nullptr;
+VOID(*Broadcast1)(__int64 a1, __int64 a2, __int64 a3, __int64 a4) = nullptr;
+VOID(*TickDispatch)(SDK::UIpNetDriver*, float) = nullptr;
 
-VOID InitHandlerHook(SDK::UNetConnection* what)
+SDK::UIpNetDriver* driver = nullptr;
+
+bool bIsTick = false;
+bool bRunOnce = false;
+
+float mydelta = 0;
+
+VOID TickHook(SDK::UWorld* world, unsigned int ticktype, float delta)
 {
-    // init
+    bIsTick = true;
+
+    mydelta = delta;
+
+    Tick(world, ticktype, delta);
+
+    bIsTick = false;
+}
+
+VOID Broadcast0Hook(__int64 a1, __int64 a2, __int64 a3, __int64 a4)
+{
+    if (!bIsTick && bRunOnce)
+    {
+        Broadcast0(a1, a2, a3, a4);
+
+        bRunOnce = false;
+    }
+    else
+        bRunOnce = true;
+    //else
+    {
+        /*if (driver)
+        {
+            TickDispatch(driver, mydelta);
+
+            //bRunOnce = true;
+
+            //SDK::GetVFunction<void(*)(SDK::UNetDriver*, float)>(driver, 664)(driver, mydelta);
+        }*/
+    }
+}
+
+VOID Broadcast1Hook(__int64 a1, __int64 a2, __int64 a3, __int64 a4)
+{
+    if (!bIsTick)
+        Broadcast1(a1, a2, a3, a4);
+    else
+    {
+        //if (driver)
+            //SDK::GetVFunction<void(*)(SDK::UNetDriver*, float)>(driver, 672)(driver, mydelta);
+    }
 }
 
 BOOL Listen()
@@ -51,6 +101,8 @@ BOOL Listen()
 
     if (!(*Core::pWorld)->NetDriver)
         return FALSE;
+
+    driver = reinterpret_cast<SDK::UIpNetDriver*>((*Core::pWorld)->NetDriver);
 
     printf("%s\n", (*Core::pWorld)->NetDriver->GetFullName().c_str());
 
@@ -87,7 +139,7 @@ DWORD WINAPI Main(LPVOID lpParam)
         ExitProcess(EXIT_FAILURE);
     }
 
-    /*auto pCreateNamedNetDriverOffset = Util::FindPattern("\xE8\x00\x00\x00\x00\x84\xC0\x75\x43\x80\x3D\x00\x00\x00\x00\x00", "x????xxxxxx?????");
+    auto pCreateNamedNetDriverOffset = Util::FindPattern("\xE8\x00\x00\x00\x00\x84\xC0\x75\x43\x80\x3D\x00\x00\x00\x00\x00", "x????xxxxxx?????");
     auto pCreateNamedNetDriverAddress = pCreateNamedNetDriverOffset + 5 + *reinterpret_cast<int32_t*>(pCreateNamedNetDriverOffset + 1);
 
     CreateNamedNetDriver = reinterpret_cast<decltype(CreateNamedNetDriver)>(pCreateNamedNetDriverAddress);
@@ -109,27 +161,39 @@ DWORD WINAPI Main(LPVOID lpParam)
     auto pFindCollectionByTypeOffset = Util::FindPattern("\xE8\x00\x00\x00\x00\x4C\x8B\xF0\x4C\x8B\xFB", "x????xxxxxx");
     auto pFindCollectionByTypeAddress = pFindCollectionByTypeOffset + 5 + *reinterpret_cast<int32_t*>(pFindCollectionByTypeOffset + 1);
 
-    FindCollectionByType = reinterpret_cast<decltype(FindCollectionByType)>(pFindCollectionByTypeAddress);*/
+    FindCollectionByType = reinterpret_cast<decltype(FindCollectionByType)>(pFindCollectionByTypeAddress);
+
+    /*auto pTickOffset = Util::FindPattern("\xE8\x00\x00\x00\x00\x49\x8B\x8D\x00\x00\x00\x00\x8B\x81\x00\x00\x00\x00", "x????xxx????xx????");
+    auto pTickAddress = pTickOffset + 5 + *reinterpret_cast<int32_t*>(pTickOffset + 1);
+
+    MH_CreateHook(static_cast<LPVOID>(pTickAddress), TickHook, reinterpret_cast<LPVOID*>(&Tick));
+    MH_EnableHook(static_cast<LPVOID>(pTickAddress));
+
+    auto pTickDispatchAddress = Util::FindPattern("\x4C\x8B\xDC\x55\x53\x49\x8D\xAB\x00\x00\x00\x00\x48\x81\xEC\x00\x00\x00\x00\x48\x8B\x05\x00\x00\x00\x00\x48\x33\xC4\x48\x89\x85\x00\x00\x00\x00\x49\x89\x73\x18\x49\x89\x7B\xE8\x4D\x89\x63\xE0\x45\x33\xE4", "xxxxxxxx????xxx????xxx????xxxxxx????xxxxxxxxxxxxxxx");
+
+    TickDispatch = reinterpret_cast<decltype(TickDispatch)>(pTickDispatchAddress);*/
+
+    /*auto pBroadcast0Offset = Util::FindPattern("\xE8\x00\x00\x00\x00\x49\x63\x7E\x0C", "x????xxxx");
+    auto pBroadcast0Address = pBroadcast0Offset + 5 + *reinterpret_cast<int32_t*>(pBroadcast0Offset + 1);
+
+    MH_CreateHook(static_cast<LPVOID>(pBroadcast0Address), Broadcast0Hook, reinterpret_cast<LPVOID*>(&Broadcast0));
+    MH_EnableHook(static_cast<LPVOID>(pBroadcast0Address));*/
+
+    /*auto pBroadcast1Offset = Util::FindPattern("\xE8\x00\x00\x00\x00\x87\x7B\x70", "x????xxx");
+    auto pBroadcast1Address = pBroadcast1Offset + 5 + *reinterpret_cast<int32_t*>(pBroadcast1Offset + 1);
+
+    MH_CreateHook(static_cast<LPVOID>(pBroadcast1Address), Broadcast1Hook, reinterpret_cast<LPVOID*>(&Broadcast1));
+    MH_EnableHook(static_cast<LPVOID>(pBroadcast1Address));*/
 
     polaris::Console::LogRaw("Welcome to Polaris!", 11);
     /*new polaris::Renderer; // Initialize renderer.
     new polaris::Athena; // TEMP: Initialize Athena.*/
 
-    /*Util::InitSdk();
+    Util::InitSdk();
     Util::InitCore();
 
     if (Listen())
-        printf("listen success");*/
-
-    auto pProcessEventAddress = Util::FindPattern("\x48\x89\x6C\x24\x00\x48\x89\x74\x24\x00\x57\x48\x83\xEC\x50\x48\x8B\xF9\xB9\x00\x00\x00\x00\xE8\x00\x00\x00\x00\x33\xED\x48\x85\xC0\x74\x0D\x48\x8B\xC8\xE8\x00\x00\x00\x00\x48\x8B\xC8\xEB\x03\x48\x8B\xCD\x48\x8D\xB7\x00\x00\x00\x00\x48\x8D\x44\x24\x00\x48\x3B\xF0\x74\x13\x4C\x8B\x06\x48\x89\x0E\x4D\x85\xC0\x74\x17\x49\x8B\x00\x49\x8B\xC8\xEB\x08\x48\x85\xC9\x74\x0A\x48\x8B\x01\xBA\x00\x00\x00\x00\xFF\x10\x48\x8B\x0E\x48\x85\xC9\x0F\x84\x00\x00\x00\x00\x48\x8B\x47\x58", "xxxx?xxxx?xxxxxxxxx????x????xxxxxxxxxxx????xxxxxxxxxxx????xxxx?xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx????xxxxxxxxxx????xxxx");
-    if (!pProcessEventAddress)
-    {
-        MessageBox(NULL, static_cast<LPCWSTR>(L"Finding pattern for ProcessEvent has failed, please re-open Fortnite and try again!"), static_cast<LPCWSTR>(L"Error"), MB_ICONERROR);
-        ExitProcess(EXIT_FAILURE);
-    }
-
-    MH_CreateHook(static_cast<LPVOID>(pProcessEventAddress), InitHandlerHook, reinterpret_cast<LPVOID*>(&InitHandler));
-    MH_EnableHook(static_cast<LPVOID>(pProcessEventAddress));
+        printf("listen success\n");
 
     return FALSE;
 }
