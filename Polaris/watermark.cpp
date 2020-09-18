@@ -30,7 +30,7 @@ namespace polaris
 
 		ImGui::SetNextWindowBgAlpha(0.45); // Make window background invisible.
 
-		// Position the window.
+		// Position the window
 		ImVec2 window_pos = ImVec2((CORNER & 1) ? io.DisplaySize.x - DISTANCE_TO_CORNER : DISTANCE_TO_CORNER, (CORNER & 2) ? io.DisplaySize.y - DISTANCE_TO_CORNER : DISTANCE_TO_CORNER);
 		ImVec2 window_pos_pivot = ImVec2((CORNER & 1) ? 1.0f : 0.0f, (CORNER & 2) ? 1.0f : 0.0f);
 		ImGui::SetNextWindowPos(window_pos, ImGuiCond_Always, window_pos_pivot);
@@ -41,12 +41,12 @@ namespace polaris
 		ImGui::Begin("Watermark", reinterpret_cast<bool*>(true), WINDOW_FLAGS);
 		{
 #ifdef POLARIS_RELEASE
-			ImGui::Text("Polaris (Beta)");
-			ImGui::Text("Press [HOME] to open the Polaris menu.");
-			ImGui::Text("Twitter: @ProjectPolaris_ | Discord: discord.gg/polaris");
+			ImGui::Text("Polaris (Beta), press [HOME] to open the Polaris menu.");
 #else
 			ImGui::Text("Polaris (Pre-Release), do not redistribute!");
 #endif
+			ImGui::Text("Twitter: @ProjectPolaris_ | Discord: discord.gg/polaris");
+
 			ImGui::End();
 		}
 	}

@@ -10,13 +10,14 @@ namespace polaris
 	{
 	public:
 		const char* credits[17] = {
-			"Polaris Owner:",
+			"Creator:",
 			"@uguuCyuubi",
 			"",
 			"Developer:",
 			"@omairma",
 			"",
 			"Contributors:",
+			"@BattleDashBR"
 			"@kann3r",
 			"@pivotman319",
 			"@wiktorwiktor12a",
