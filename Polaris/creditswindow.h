@@ -9,7 +9,7 @@ namespace polaris
 	class CreditsWindow : public Window
 	{
 	public:
-		const char* credits[17] = {
+		const char* credits[18] = {
 			"Creator:",
 			"@uguuCyuubi",
 			"",
@@ -17,7 +17,7 @@ namespace polaris
 			"@omairma",
 			"",
 			"Contributors:",
-			"@BattleDashBR"
+			"@BattleDashBR",
 			"@kann3r",
 			"@pivotman319",
 			"@wiktorwiktor12a",
