@@ -3,7 +3,7 @@
 
 // Uncomment this for official releases
 // Also don't forget to update the VERSION flag.
-#define POLARIS_RELEASE
+//#define POLARIS_RELEASE
 
 #include <string>
 

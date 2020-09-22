@@ -2,6 +2,8 @@
 #include "util.h"
 #include "SDK.hpp"
 
+#include <iostream>
+
 // NOTE (irma) I couldn't move the loading into memory shit into their own classes. LMK if you can do it.
 
 namespace polaris
@@ -80,6 +82,7 @@ namespace polaris
 		// If no body was found, force Ramirez's body.
 		if (!pPlayerState->CharacterParts[1])
 			pPlayerState->CharacterParts[1] = SDK::UObject::FindObject<SDK::UCustomCharacterPart>("CustomCharacterPart F_Med_Soldier_01.F_Med_Soldier_01");
+
 
 		static_cast<SDK::AFortPlayerStateAthena*>(Globals::gpPlayerController->PlayerState)->OnRep_CharacterParts();
 	}

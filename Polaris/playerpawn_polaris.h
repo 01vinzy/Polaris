@@ -18,6 +18,7 @@ namespace polaris
 
 		void InitializeHero();
 		void EquipWeapon(const char* cItemDef, int guid = 0);
+		void EquipSkin(const char* cHeroDef);
 	};
 }
 

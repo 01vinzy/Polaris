@@ -113,6 +113,18 @@
     <ClCompile Include="SDK\FN_GameplayAbilities_functions.cpp">
       <Filter>Third Party\SDK</Filter>
     </ClCompile>
+    <ClCompile Include="SDK\FN_FortniteUI_functions.cpp">
+      <Filter>Third Party\SDK</Filter>
+    </ClCompile>
+    <ClCompile Include="SDK\FN_QuickbarBase_functions.cpp">
+      <Filter>Third Party\SDK</Filter>
+    </ClCompile>
+    <ClCompile Include="SDK\FN_AthenaHUD_functions.cpp">
+      <Filter>Third Party\SDK</Filter>
+    </ClCompile>
+    <ClCompile Include="SDK\FN_UMG_functions.cpp">
+      <Filter>Third Party\SDK</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="common.h">

@@ -182,13 +182,26 @@ namespace polaris
 							gpAthena->m_pPlayerPawnPolaris->m_pPlayerPawn->EquipWeaponDefinition(pZapatronDefinition, guid);
 						}
 
-						if (GetAsyncKeyState(VK_END) & 0x8000)
+						if (GetAsyncKeyState(VK_END) & 0x8000 && !gpAthena->m_pPlayerPawnPolaris->m_pPlayerPawn->bBlockInput)
 						{
 							static_cast<SDK::AFortPlayerControllerAthena*>(Globals::gpPlayerController)->ClientNotifyWon();
 							static_cast<SDK::AFortPlayerControllerAthena*>(Globals::gpPlayerController)->PlayWinEffects();
 						}
 					}
 				}
+
+				// (irma) This is broken, I'll find out a fix later.
+				/*if (pFunction->GetName().find("GameplayCue.Athena.OutsideSafeZone") != std::string::npos)
+				{
+					if (gpAthena->m_pPlayerPawnPolaris && gpAthena->m_pPlayerPawnPolaris->m_pPlayerPawn && !static_cast<SDK::AFortPlayerControllerAthena*>(Globals::gpPlayerController)->IsInAircraft())
+					{
+						gpAthena->m_pPlayerPawnPolaris->m_pPlayerPawn->OnRep_IsOutsideSafeZone();
+						if (gpAthena->m_pPlayerPawnPolaris->m_pPlayerPawn->bIsOutsideSafeZone)
+							static_cast<SDK::APlayerPawn_Athena_C*>(gpAthena->m_pPlayerPawnPolaris->m_pPlayerPawn)->AddStormFX();
+						else
+							static_cast<SDK::APlayerPawn_Athena_C*>(gpAthena->m_pPlayerPawnPolaris->m_pPlayerPawn)->RemoveStormFX();
+					}
+				}*/
 
 				// Called once the player jumps from the battle bus, or when they're supposed to be kicked out.
 				if (pFunction->GetName().find("ServerAttemptAircraftJump") != std::string::npos || 
@@ -224,11 +237,23 @@ namespace polaris
 	{
 		while (1)
 		{
-			if (gpAthena->m_pPlayerPawnPolaris != nullptr && !static_cast<SDK::AFortPlayerControllerAthena*>(Globals::gpPlayerController)->IsInAircraft())
+			if (gpAthena->m_pPlayerPawnPolaris != nullptr && gpAthena->m_pPlayerPawnPolaris->m_pPlayerPawn && !static_cast<SDK::AFortPlayerControllerAthena*>(Globals::gpPlayerController)->IsInAircraft())
 			{
 				// Keybind to jump (only run if not skydiving, might need to fix this more though):
-				if (GetAsyncKeyState(VK_SPACE) & 0x8000 && gpAthena->m_pPlayerPawnPolaris->m_pPlayerPawn && !gpAthena->m_pPlayerPawnPolaris->m_pPlayerPawn->IsSkydiving() && !gpAthena->m_pPlayerPawnPolaris->m_pPlayerPawn->IsJumpProvidingForce())
+				if (GetAsyncKeyState(VK_SPACE) & 0x8000 && !gpAthena->m_pPlayerPawnPolaris->m_pPlayerPawn->IsSkydiving() && !gpAthena->m_pPlayerPawnPolaris->m_pPlayerPawn->IsJumpProvidingForce())
 					gpAthena->m_pPlayerPawnPolaris->m_pPlayerPawn->Jump();
+				else if (GetAsyncKeyState(VK_SPACE) & 0x8000 && gpAthena->m_pPlayerPawnPolaris->m_pPlayerPawn->IsSkydiving() && !gpAthena->m_pPlayerPawnPolaris->m_pPlayerPawn->IsParachuteOpen() && !gpAthena->m_pPlayerPawnPolaris->m_pPlayerPawn->IsParachuteForcedOpen())
+				{
+					gpAthena->m_pPlayerPawnPolaris->m_pPlayerPawn->CharacterMovement->SetMovementMode(SDK::EMovementMode::MOVE_Custom, 2U);
+					gpAthena->m_pPlayerPawnPolaris->m_pPlayerPawn->OnRep_IsParachuteOpen(false);
+					Sleep(200);
+				}
+				else if (GetAsyncKeyState(VK_SPACE) & 0x8000 && gpAthena->m_pPlayerPawnPolaris->m_pPlayerPawn->IsSkydiving() && gpAthena->m_pPlayerPawnPolaris->m_pPlayerPawn->IsParachuteOpen() && !gpAthena->m_pPlayerPawnPolaris->m_pPlayerPawn->IsParachuteForcedOpen())
+				{
+					gpAthena->m_pPlayerPawnPolaris->m_pPlayerPawn->CharacterMovement->SetMovementMode(SDK::EMovementMode::MOVE_Custom, 3U);
+					gpAthena->m_pPlayerPawnPolaris->m_pPlayerPawn->OnRep_IsParachuteOpen(true);
+					Sleep(200);
+				}
 
 				// Keybind to sprint (only run if not skydiving & not targeting, else walk):
 				if (static_cast<SDK::AAthena_PlayerController_C*>(Globals::gpPlayerController)->bWantsToSprint && gpAthena->m_pPlayerPawnPolaris->m_pPlayerPawn && gpAthena->m_pPlayerPawnPolaris->m_pPlayerPawn->CurrentWeapon && !gpAthena->m_pPlayerPawnPolaris->m_pPlayerPawn->CurrentWeapon->bIsTargeting)

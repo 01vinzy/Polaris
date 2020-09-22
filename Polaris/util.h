@@ -43,6 +43,21 @@ namespace polaris
         }
 
     public:
+
+        static VOID EnableConsole(bool enabled)
+        {
+            if (enabled)
+            {
+                auto pConsole = SDK::UConsole::StaticClass()->CreateDefaultObject<SDK::UConsole>();
+
+                pConsole->Outer = Globals::gpLocalPlayer->ViewportClient;
+
+                Globals::gpLocalPlayer->ViewportClient->ViewportConsole = pConsole;
+            }
+            else
+                Globals::gpLocalPlayer->ViewportClient->ViewportConsole = nullptr;
+        }
+
         // Initializes the console.
         static VOID InitConsole()
         {

@@ -5,6 +5,8 @@
 #include "renderer.h"
 #include "athena.h"
 #include "console.h"
+#include "polarisflags.h"
+#include "util.h"
 
 DWORD WINAPI Main(LPVOID lpParam)
 {
@@ -18,7 +20,7 @@ DWORD WINAPI Main(LPVOID lpParam)
 	// Initialize modules.
 	new polaris::Console;
 	new polaris::Renderer;
-	new polaris::Athena; 
+	new polaris::Athena;
 
 	return FALSE;
 }

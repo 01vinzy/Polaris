@@ -5,6 +5,7 @@
 #include "renderer.h"
 #include "objectcache.h"
 #include "watermark.h"
+#include "playerpawn_polaris.h"
 
 #include <imgui.h>
 
@@ -57,18 +58,12 @@ namespace polaris
 				if (!Globals::gpLocalPlayer->ViewportClient->ViewportConsole)
 				{
 					if (ImGui::MenuItem("Enable Console"))
-					{
-						auto pConsole = SDK::UConsole::StaticClass()->CreateDefaultObject<SDK::UConsole>();
-
-						pConsole->Outer = Globals::gpLocalPlayer->ViewportClient;
-
-						Globals::gpLocalPlayer->ViewportClient->ViewportConsole = pConsole;
-					}
+						Util::EnableConsole(true);
 				}
 				else
 				{
 					if (ImGui::MenuItem("Disable Console"))
-						Globals::gpLocalPlayer->ViewportClient->ViewportConsole = nullptr;
+						Util::EnableConsole(false);
 				}
 
 				if (ImGui::MenuItem("Exit"))
