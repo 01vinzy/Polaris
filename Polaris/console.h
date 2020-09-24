@@ -11,26 +11,25 @@ namespace polaris
 	class Console
 	{
 	public:
-		static inline const char* sAscii[19] = {
-			"                                                  ",
-			"                                                  ",
-			"                     -/oyhhddhyso/.               ",
-			"                  -ohhhhhhhhhhhhhhhh+.            ",
-			"                -syyhhhhhhyyyyyyyyhhhho.          ",
-			"               +yyyyyys/.`    `-/syyyyyy/         ",
-			"              oyyyyyo.            -syyyyy/        ",
-			"             :sssss+               `oyysss-       Welcome to Polaris!",
-			"             ssssso                 .sssss+       They said to think back, but I think we went a bit too far.",
-			"       .----:ssssso:::::`            ssssso       ",
-			"        ./++ooosssssss+`            .yyyyyo       ",
-			"          -/++oosssso-             `oyyyyy-       ",
-			"           `:/+ooos/`             -ossyyy+        ",
-			"             -/+++.           `.:ossssss/         ",
-			"              `:-          `+oooooosss+.          ",
-			"                           `+ooooooo/.            ",
-			"                           `+++/:-.               ",
-			"                                                  ",
-			"                                                  "
+		static inline const char* sAscii[18] = {
+			" ",
+			"                      `:+syddmmmdhyo/.",
+			"                   `/yddddddddddddddddho-",
+			"                 .+hhhhhhhhhyyyhhhhhhhhhhy:`",
+			"                /yyyyyyyy+:-....-:/syyyyyyys.",
+			"               +yyyyyyo-`           ./syyyyys-",
+			"              /ssssss:                .ossssss.       Welcome to Polaris!",
+			"             .ssssss:                  `osssss+       They said to think back, but I think we went a bit too far.",
+			"       ``````:ssssss.`````              /ssssss",
+			"       `/////+oossssoooo+-              /yyssss       %s",
+			"        `-////++oosssso/.              `syyyss+",
+			"          `-////++ooo+-               .ossssss.",
+			"            .:///+++:`              `:ossssss-",
+			"              .://:`          ``.-:+oooooss+.",
+			"               `-.            /oooooooooo+-",
+			"                              /ooooooo+/.",
+			"                              :/+//:-.",
+			" "
 		};
 
 		Console();

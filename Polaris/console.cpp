@@ -7,21 +7,24 @@ HANDLE hConsole;
 
 namespace polaris
 {
-	DWORD DrawAsciiArt(LPVOID lpParam)
-	{
-		for (int i = 0; i < 19; i++)
-			polaris::Console::LogRaw(Console::sAscii[i], 11);
-
-		return 0;
-	}
-
 	Console::Console()
 	{
 		Util::InitConsole();
 
+#ifdef POLARIS_RELEASE
+		std::string versionString = VERSION;
+#else
+		std::string versionString = "Pre-release build, do not redistribute!";
+#endif
+
 		// Draw fancy thing :D
-		CreateThread(0, 0, DrawAsciiArt, 0, 0, 0);
-		Sleep(500);
+		for (int i = 0; i < 18; i++)
+		{
+			char buffer[2000];
+			sprintf_s(buffer, sizeof(buffer), Console::sAscii[i], versionString.c_str());
+
+			polaris::Console::LogRaw(buffer, 11);
+		}
 	}
 
 	// Log a message to console

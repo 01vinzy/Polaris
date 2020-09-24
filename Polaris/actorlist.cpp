@@ -26,7 +26,10 @@ namespace polaris
 						{
 							SDK::ULevel* level = (*polaris::Globals::gpWorld)->Levels[i];
 
-							if (ImGui::TreeNode(level->GetName().c_str()))
+							// GetName only returns "PersistentLevel" for some reason, so we do this hacky garbage :D
+							std::string name = level->GetFullName();
+							std::string formattedName = name.substr(0, name.find(".")).substr(5, name.length() - 1);
+							if (ImGui::TreeNode(formattedName.c_str()))
 							{
 								for (int j = 0; j < level->Actors.Num(); j++)
 								{
@@ -36,7 +39,7 @@ namespace polaris
 										SDK::AActor* actor = level->Actors[j];
 
 										// Create a button for the actor, and set the selected actor once clicked
-										if (ImGui::Selectable(actor->GetName().c_str(), selectedActor == j))
+										if (ImGui::Selectable(actor->GetName().c_str(), selectedActor == j && selectedLevel == i))
 										{
 											selectedLevel = i;
 											selectedActor = j;

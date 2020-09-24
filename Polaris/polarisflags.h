@@ -11,6 +11,7 @@ namespace polaris
 {
 	static const bool ENABLE_DEBUGGING_TOOLS = true;
 	static const bool ENABLE_EXPERIMENTAL_DEBUGGING_TOOLS = false;
+	static std::string VERSION = "v1.0";
 }
 
 #endif // POLARISFLAGS_H
