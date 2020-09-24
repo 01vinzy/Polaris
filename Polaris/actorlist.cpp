@@ -4,6 +4,8 @@
 
 namespace polaris
 {
+	bool highFpsMode = false;
+
 	ActorList::ActorList()
 	{
 		Console::Log("Initializing ActorList");
@@ -14,40 +16,89 @@ namespace polaris
 		ImGui::SetNextWindowSize(ImVec2(820, 440), ImGuiCond_Appearing);
 		ImGui::Begin("Actors", &bShowWindow, ImGuiWindowFlags_Modal);
 		{
+			ImGui::Checkbox("FPS Saver mode", &highFpsMode);
+
+			// High Performance Mode defaults
+			std::string defaultLevelName = (*polaris::Globals::gpWorld)->Levels[0]->GetFullName();
+			static std::string selectedLevelName = defaultLevelName.substr(0, defaultLevelName.find(".")).substr(5, defaultLevelName.length() - 1);
+
 			// Actor Hierarchy
 			static int selectedLevel = 0;
 			static int selectedActor = 0;
 			{
 				ImGui::BeginChild("Hierarchy", ImVec2(300, 0), true);
 				{
-					for (int i = 0; i < (*polaris::Globals::gpWorld)->Levels.Num(); i++)
+					if (highFpsMode == true)
 					{
-						if ((*polaris::Globals::gpWorld)->Levels.IsValidIndex(i) && (*polaris::Globals::gpWorld)->Levels[i])
+						if (ImGui::BeginCombo("Map", selectedLevelName.c_str()))
 						{
-							SDK::ULevel* level = (*polaris::Globals::gpWorld)->Levels[i];
-
-							// GetName only returns "PersistentLevel" for some reason, so we do this hacky garbage :D
-							std::string name = level->GetFullName();
-							std::string formattedName = name.substr(0, name.find(".")).substr(5, name.length() - 1);
-							if (ImGui::TreeNode(formattedName.c_str()))
+							for (int i = 0; i < (*polaris::Globals::gpWorld)->Levels.Num(); i++)
 							{
-								for (int j = 0; j < level->Actors.Num(); j++)
-								{
-									// Absolutely make sure the actor exists, Unreal Engine is very prone to crashing
-									if (level->Actors.IsValidIndex(j) && level->Actors[j])
-									{
-										SDK::AActor* actor = level->Actors[j];
+								SDK::ULevel* level = (*polaris::Globals::gpWorld)->Levels[i];
 
-										// Create a button for the actor, and set the selected actor once clicked
-										if (ImGui::Selectable(actor->GetName().c_str(), selectedActor == j && selectedLevel == i))
+								// GetName only returns "PersistentLevel" for some reason, so we do this hacky garbage :D
+								std::string name = level->GetFullName();
+								std::string formattedName = name.substr(0, name.find(".")).substr(5, name.length() - 1);
+
+								if(ImGui::Selectable(formattedName.c_str(), selectedLevel == i))
+								{
+									selectedLevelName = formattedName;
+									selectedLevel = i;
+								}
+							}
+
+							ImGui::EndCombo();
+						}
+
+						ImGui::Separator();
+
+						SDK::ULevel* level = (*polaris::Globals::gpWorld)->Levels[selectedLevel];
+						for (int i = 0; i < level->Actors.Num(); i++)
+						{
+							// Absolutely make sure the actor exists, Unreal Engine is very prone to crashing
+							if (level->Actors.IsValidIndex(i) && level->Actors[i])
+							{
+								SDK::AActor* actor = level->Actors[i];
+
+								// Create a button for the actor, and set the selected actor once clicked
+								if (ImGui::Selectable(actor->GetName().c_str(), selectedActor == i))
+								{
+									selectedActor = i;
+								}
+							}
+						}
+					}
+					else
+					{
+						for (int i = 0; i < (*polaris::Globals::gpWorld)->Levels.Num(); i++)
+						{
+							if ((*polaris::Globals::gpWorld)->Levels.IsValidIndex(i) && (*polaris::Globals::gpWorld)->Levels[i])
+							{
+								SDK::ULevel* level = (*polaris::Globals::gpWorld)->Levels[i];
+
+								// GetName only returns "PersistentLevel" for some reason, so we do this hacky garbage :D
+								std::string name = level->GetFullName();
+								std::string formattedName = name.substr(0, name.find(".")).substr(5, name.length() - 1);
+								if (ImGui::TreeNode(formattedName.c_str()))
+								{
+									for (int j = 0; j < level->Actors.Num(); j++)
+									{
+										// Absolutely make sure the actor exists, Unreal Engine is very prone to crashing
+										if (level->Actors.IsValidIndex(j) && level->Actors[j])
 										{
-											selectedLevel = i;
-											selectedActor = j;
+											SDK::AActor* actor = level->Actors[j];
+
+											// Create a button for the actor, and set the selected actor once clicked
+											if (ImGui::Selectable(actor->GetName().c_str(), selectedActor == j && selectedLevel == i))
+											{
+												selectedLevel = i;
+												selectedActor = j;
+											}
 										}
 									}
-								}
 
-								ImGui::TreePop();
+									ImGui::TreePop();
+								}
 							}
 						}
 					}
