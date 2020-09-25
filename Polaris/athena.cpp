@@ -241,7 +241,10 @@ namespace polaris
 			{
 				// Keybind to jump (only run if not skydiving, might need to fix this more though):
 				if (GetAsyncKeyState(VK_SPACE) & 0x8000 && !gpAthena->m_pPlayerPawnPolaris->m_pPlayerPawn->IsSkydiving() && !gpAthena->m_pPlayerPawnPolaris->m_pPlayerPawn->IsJumpProvidingForce())
+				{
 					gpAthena->m_pPlayerPawnPolaris->m_pPlayerPawn->Jump();
+					Sleep(200);
+				}
 				else if (GetAsyncKeyState(VK_SPACE) & 0x8000 && gpAthena->m_pPlayerPawnPolaris->m_pPlayerPawn->IsSkydiving() && !gpAthena->m_pPlayerPawnPolaris->m_pPlayerPawn->IsParachuteOpen() && !gpAthena->m_pPlayerPawnPolaris->m_pPlayerPawn->IsParachuteForcedOpen())
 				{
 					gpAthena->m_pPlayerPawnPolaris->m_pPlayerPawn->CharacterMovement->SetMovementMode(SDK::EMovementMode::MOVE_Custom, 2U);

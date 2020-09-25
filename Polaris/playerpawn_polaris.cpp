@@ -54,7 +54,27 @@ namespace polaris
 			static_cast<SDK::AFortPlayerStateAthena*>(Globals::gpPlayerController->PlayerState)->OnRep_TeamIndex();
 
 			// Give the player a pickaxe.
-			EquipWeapon("FortWeaponMeleeItemDefinition WID_Harvest_Pickaxe_Athena_C_T01.WID_Harvest_Pickaxe_Athena_C_T01");
+			// consume the cum chalice
+			if (m_pPlayerPawn->CustomizationLoadout.Character->GetName() == "BoltonPickaxe")
+				EquipWeapon("FortWeaponMeleeItemDefinition WID_Harvest_Pickaxe_BoltOn_Athena_C_T01.WID_Harvest_Pickaxe_BoltOn_Athena_C_T01");
+			else if (m_pPlayerPawn->CustomizationLoadout.Character->GetName() == "HalloweenScythe")
+				EquipWeapon("FortWeaponMeleeItemDefinition WID_Harvest_HalloweenScythe_Athena_C_T01.WID_Harvest_HalloweenScythe_Athena_C_T01");
+			else if (m_pPlayerPawn->CustomizationLoadout.Character->GetName() == "HappyPickaxe")
+				EquipWeapon("FortWeaponMeleeItemDefinition WID_Harvest_Pickaxe_Smiley_Athena_C_T01.WID_Harvest_Pickaxe_Smiley_Athena_C_T01");
+			else if (m_pPlayerPawn->CustomizationLoadout.Character->GetName() == "Pickaxe_Deathvalley")
+				EquipWeapon("FortWeaponMeleeItemDefinition WID_Harvest_Pickaxe_Deathvalley_Athena_C_T01.WID_Harvest_Pickaxe_Deathvalley_Athena_C_T01");
+			else if (m_pPlayerPawn->CustomizationLoadout.Character->GetName() == "Pickaxe_Flamingo")
+				EquipWeapon("FortWeaponMeleeItemDefinition WID_Harvest_Pickaxe_Flamingo_Athena_C_T01.WID_Harvest_Pickaxe_Flamingo_Athena_C_T01");
+			else if (m_pPlayerPawn->CustomizationLoadout.Character->GetName() == "Pickaxe_Lockjaw")
+				EquipWeapon("FortWeaponMeleeItemDefinition WID_Harvest_Pickaxe_Lockjaw_Athena_C_T01.WID_Harvest_Pickaxe_Lockjaw_Athena_C_T01");
+			else if (m_pPlayerPawn->CustomizationLoadout.Character->GetName() == "SickleBatPickaxe")
+				EquipWeapon("FortWeaponMeleeItemDefinition WID_Harvest_Pickaxe_SickleBat_Athena_C_T01.WID_Harvest_Pickaxe_SickleBat_Athena_C_T01");
+			else if (m_pPlayerPawn->CustomizationLoadout.Character->GetName() == "SkiIcePickaxe")
+				EquipWeapon("FortWeaponMeleeItemDefinition WID_Harvest_Pickaxe_IcePick_Athena_C_T01.WID_Harvest_Pickaxe_IcePick_Athena_C_T01");
+			else if (m_pPlayerPawn->CustomizationLoadout.Character->GetName() == "SkiIcePickaxe")
+				EquipWeapon("FortWeaponMeleeItemDefinition WID_Harvest_Pickaxe_Spikey_Athena_C_T01.WID_Harvest_Pickaxe_Spikey_Athena_C_T01");
+			else
+				EquipWeapon("FortWeaponMeleeItemDefinition WID_Harvest_Pickaxe_Athena_C_T01.WID_Harvest_Pickaxe_Athena_C_T01");
 		}
 	}
 
