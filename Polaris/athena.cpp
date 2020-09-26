@@ -5,7 +5,6 @@
 
 namespace polaris
 {
-	SDK::UAthenaHUD_C* pHud;
 	static SDK::UObject* (*StaticLoadObject)(SDK::UClass* ObjectClass, SDK::UObject* InOuter, const TCHAR* InName, const TCHAR* Filename, uint32_t LoadFlags, SDK::UPackageMap* Sandbox, bool bAllowObjectReconciliation);
 
 	// Load an object in memory.
@@ -126,12 +125,6 @@ namespace polaris
 							guid.D = 0;
 
 							gpAthena->m_pPlayerPawnPolaris->m_pPlayerPawn->EquipWeaponDefinition(pHarvestingToolDefinition, guid);
-
-							if (pHud)
-							{
-								pHud->QuickbarPrimary->OnQuickbarSlotFocusChanged(SDK::EFortQuickBars::Primary, 0);
-								pHud->HandleQuickbarSlotFocusSlotChanged(SDK::EFortQuickBars::Primary, 0);
-							}
 						}
 
 						if (GetAsyncKeyState('2') & 0x8000)
@@ -143,12 +136,6 @@ namespace polaris
 							guid.D = 0;
 
 							gpAthena->m_pPlayerPawnPolaris->m_pPlayerPawn->EquipWeaponDefinition(pPumpShotgunDefinition, guid);
-
-							if (pHud)
-							{
-								pHud->QuickbarPrimary->OnQuickbarSlotFocusChanged(SDK::EFortQuickBars::Primary, 1);
-								pHud->HandleQuickbarSlotFocusSlotChanged(SDK::EFortQuickBars::Primary, 1);
-							}
 						}
 
 						if (GetAsyncKeyState('3') & 0x8000)
@@ -160,12 +147,6 @@ namespace polaris
 							guid.D = 0;
 
 							gpAthena->m_pPlayerPawnPolaris->m_pPlayerPawn->EquipWeaponDefinition(pScarDefinition, guid);
-
-							if (pHud)
-							{
-								pHud->QuickbarPrimary->OnQuickbarSlotFocusChanged(SDK::EFortQuickBars::Primary, 2);
-								pHud->HandleQuickbarSlotFocusSlotChanged(SDK::EFortQuickBars::Primary, 2);
-							}
 						}
 
 						if (GetAsyncKeyState('4') & 0x8000)
@@ -177,12 +158,6 @@ namespace polaris
 							guid.D = 0;
 
 							gpAthena->m_pPlayerPawnPolaris->m_pPlayerPawn->EquipWeaponDefinition(pTacticalShotgunDefinition, guid);
-
-							if (pHud)
-							{
-								pHud->QuickbarPrimary->OnQuickbarSlotFocusChanged(SDK::EFortQuickBars::Primary, 3);
-								pHud->HandleQuickbarSlotFocusSlotChanged(SDK::EFortQuickBars::Primary, 3);
-							}
 						}
 
 						if (GetAsyncKeyState('5') & 0x8000)
@@ -194,12 +169,6 @@ namespace polaris
 							guid.D = 0;
 
 							gpAthena->m_pPlayerPawnPolaris->m_pPlayerPawn->EquipWeaponDefinition(pJackOLauncherDefinition, guid);
-
-							if (pHud)
-							{
-								pHud->QuickbarPrimary->OnQuickbarSlotFocusChanged(SDK::EFortQuickBars::Primary, 4);
-								pHud->HandleQuickbarSlotFocusSlotChanged(SDK::EFortQuickBars::Primary, 4);
-							}
 						}
 
 						if (GetAsyncKeyState('6') & 0x8000)
@@ -211,12 +180,6 @@ namespace polaris
 							guid.D = 0;
 
 							gpAthena->m_pPlayerPawnPolaris->m_pPlayerPawn->EquipWeaponDefinition(pZapatronDefinition, guid);
-
-							if (pHud)
-							{
-								pHud->QuickbarPrimary->OnQuickbarSlotFocusChanged(SDK::EFortQuickBars::Primary, 5);
-								pHud->HandleQuickbarSlotFocusSlotChanged(SDK::EFortQuickBars::Primary, 5);
-							}
 						}
 
 						if (GetAsyncKeyState(VK_END) & 0x8000 && !gpAthena->m_pPlayerPawnPolaris->m_pPlayerPawn->bBlockInput)
@@ -276,24 +239,6 @@ namespace polaris
 		{
 			if (gpAthena->m_pPlayerPawnPolaris != nullptr && gpAthena->m_pPlayerPawnPolaris->m_pPlayerPawn && !static_cast<SDK::AFortPlayerControllerAthena*>(Globals::gpPlayerController)->IsInAircraft())
 			{
-				if (!pHud)
-				{
-					pHud = SDK::UObject::FindObject<SDK::UAthenaHUD_C>("AthenaHUD_C Transient.FortEngine_1.FortGameInstance_1.AthenaHUD_C_1");
-
-					if (pHud)
-					{
-						auto library = SDK::UObject::FindObject<SDK::UFortUIBlueprintFunctionLibrary>("FortUIBlueprintFunctionLibrary FortniteUI.Default__FortUIBlueprintFunctionLibrary");
-						if (library)
-						{
-							pHud->QuickbarPrimary->QuickbarSlot1->Empty->SetColorAndOpacity(SDK::FLinearColor(255, 255, 255, 255));
-							pHud->QuickbarPrimary->QuickbarSlot1->Empty->SetBrush(library->STATIC_GetItemSmallPreviewImageBrush(pPumpShotgunDefinition->CreateTemporaryItemInstanceBP(1, 1), SDK::TEnumAsByte<SDK::EFortBrushSize>(SDK::EFortBrushSize::Large)));
-						}
-
-						pHud->QuickbarPrimary->OnQuickbarSlotFocusChanged(SDK::EFortQuickBars::Primary, 0);
-						pHud->HandleQuickbarSlotFocusSlotChanged(SDK::EFortQuickBars::Primary, 0);
-					}
-				}
-
 				// Keybind to jump (only run if not skydiving, might need to fix this more though):
 				if (GetAsyncKeyState(VK_SPACE) & 0x8000 && !gpAthena->m_pPlayerPawnPolaris->m_pPlayerPawn->IsSkydiving() && !gpAthena->m_pPlayerPawnPolaris->m_pPlayerPawn->IsJumpProvidingForce())
 				{
