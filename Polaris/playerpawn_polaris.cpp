@@ -2,6 +2,7 @@
 #include "util.h"
 #include "SDK.hpp"
 
+#include <map>
 #include <iostream>
 
 // NOTE (irma) I couldn't move the loading into memory shit into their own classes. LMK if you can do it.
@@ -12,6 +13,20 @@ namespace polaris
 	static SDK::UCustomCharacterPart* pCustomCharacterPartHead;
 	static SDK::UCustomCharacterPart* pCustomCharacterPartBody;
 	static SDK::UCustomCharacterPart* pCustomCharacterPartHat;
+
+	std::map<std::string, std::string> mPickaxeAsWid
+	{
+		std::make_pair("BoltonPickaxe", "FortWeaponMeleeItemDefinition WID_Harvest_Pickaxe_BoltOn_Athena_C_T01.WID_Harvest_Pickaxe_BoltOn_Athena_C_T01"),
+		std::make_pair("DefaultPickaxe", "FortWeaponMeleeItemDefinition WID_Harvest_Pickaxe_Athena_C_T01.WID_Harvest_Pickaxe_Athena_C_T01"),
+		std::make_pair("HalloweenScythe", "FortWeaponMeleeItemDefinition WID_Harvest_HalloweenScythe_Athena_C_T01.WID_Harvest_HalloweenScythe_Athena_C_T01"),
+		std::make_pair("HappyPickaxe", "FortWeaponMeleeItemDefinition WID_Harvest_Pickaxe_Smiley_Athena_C_T01.WID_Harvest_Pickaxe_Smiley_Athena_C_T01"),
+		std::make_pair("Pickaxe_Deathvalley", "FortWeaponMeleeItemDefinition WID_Harvest_Pickaxe_Deathvalley_Athena_C_T01.WID_Harvest_Pickaxe_Deathvalley_Athena_C_T01"),
+		std::make_pair("Pickaxe_Flamingo", "FortWeaponMeleeItemDefinition WID_Harvest_Pickaxe_Flamingo_Athena_C_T01.WID_Harvest_Pickaxe_Flamingo_Athena_C_T01"),
+		std::make_pair("Pickaxe_Lockjaw", "FortWeaponMeleeItemDefinition WID_Harvest_Pickaxe_Lockjaw_Athena_C_T01.WID_Harvest_Pickaxe_Lockjaw_Athena_C_T01"),
+		std::make_pair("SickleBatPickaxe", "FortWeaponMeleeItemDefinition WID_Harvest_Pickaxe_SickleBat_Athena_C_T01.WID_Harvest_Pickaxe_SickleBat_Athena_C_T01"),
+		std::make_pair("SkiIcePickaxe", "FortWeaponMeleeItemDefinition WID_Harvest_Pickaxe_IcePick_Athena_C_T01.WID_Harvest_Pickaxe_IcePick_Athena_C_T01"),
+		std::make_pair("SpikyPickaxe", "FortWeaponMeleeItemDefinition WID_Harvest_Pickaxe_Spikey_Athena_C_T01.WID_Harvest_Pickaxe_Spikey_Athena_C_T01")
+	};
 
 	// Search an object in the UObject cache.
 	template<typename T>
@@ -50,31 +65,13 @@ namespace polaris
 			m_pPlayerPawn->OnRep_CustomizationLoadout();
 
 			// Assign our PlayerPawn to a team.
-			static_cast<SDK::AFortPlayerStateAthena*>(Globals::gpPlayerController->PlayerState)->TeamIndex = SDK::EFortTeam::HumanPvP_Team1;
-			static_cast<SDK::AFortPlayerStateAthena*>(Globals::gpPlayerController->PlayerState)->OnRep_TeamIndex();
+			auto playerState = static_cast<SDK::AFortPlayerStateAthena*>(Globals::gpPlayerController->PlayerState);
+
+			playerState->TeamIndex = SDK::EFortTeam::HumanPvP_Team1;
+			playerState->OnRep_TeamIndex();
 
 			// Give the player a pickaxe.
-			// consume the cum chalice
-			if (m_pPlayerPawn->CustomizationLoadout.Character->GetName() == "BoltonPickaxe")
-				EquipWeapon("FortWeaponMeleeItemDefinition WID_Harvest_Pickaxe_BoltOn_Athena_C_T01.WID_Harvest_Pickaxe_BoltOn_Athena_C_T01");
-			else if (m_pPlayerPawn->CustomizationLoadout.Character->GetName() == "HalloweenScythe")
-				EquipWeapon("FortWeaponMeleeItemDefinition WID_Harvest_HalloweenScythe_Athena_C_T01.WID_Harvest_HalloweenScythe_Athena_C_T01");
-			else if (m_pPlayerPawn->CustomizationLoadout.Character->GetName() == "HappyPickaxe")
-				EquipWeapon("FortWeaponMeleeItemDefinition WID_Harvest_Pickaxe_Smiley_Athena_C_T01.WID_Harvest_Pickaxe_Smiley_Athena_C_T01");
-			else if (m_pPlayerPawn->CustomizationLoadout.Character->GetName() == "Pickaxe_Deathvalley")
-				EquipWeapon("FortWeaponMeleeItemDefinition WID_Harvest_Pickaxe_Deathvalley_Athena_C_T01.WID_Harvest_Pickaxe_Deathvalley_Athena_C_T01");
-			else if (m_pPlayerPawn->CustomizationLoadout.Character->GetName() == "Pickaxe_Flamingo")
-				EquipWeapon("FortWeaponMeleeItemDefinition WID_Harvest_Pickaxe_Flamingo_Athena_C_T01.WID_Harvest_Pickaxe_Flamingo_Athena_C_T01");
-			else if (m_pPlayerPawn->CustomizationLoadout.Character->GetName() == "Pickaxe_Lockjaw")
-				EquipWeapon("FortWeaponMeleeItemDefinition WID_Harvest_Pickaxe_Lockjaw_Athena_C_T01.WID_Harvest_Pickaxe_Lockjaw_Athena_C_T01");
-			else if (m_pPlayerPawn->CustomizationLoadout.Character->GetName() == "SickleBatPickaxe")
-				EquipWeapon("FortWeaponMeleeItemDefinition WID_Harvest_Pickaxe_SickleBat_Athena_C_T01.WID_Harvest_Pickaxe_SickleBat_Athena_C_T01");
-			else if (m_pPlayerPawn->CustomizationLoadout.Character->GetName() == "SkiIcePickaxe")
-				EquipWeapon("FortWeaponMeleeItemDefinition WID_Harvest_Pickaxe_IcePick_Athena_C_T01.WID_Harvest_Pickaxe_IcePick_Athena_C_T01");
-			else if (m_pPlayerPawn->CustomizationLoadout.Character->GetName() == "SkiIcePickaxe")
-				EquipWeapon("FortWeaponMeleeItemDefinition WID_Harvest_Pickaxe_Spikey_Athena_C_T01.WID_Harvest_Pickaxe_Spikey_Athena_C_T01");
-			else
-				EquipWeapon("FortWeaponMeleeItemDefinition WID_Harvest_Pickaxe_Athena_C_T01.WID_Harvest_Pickaxe_Athena_C_T01");
+			EquipWeapon(mPickaxeAsWid[m_pPlayerPawn->CustomizationLoadout.Character->GetName()].c_str());
 		}
 	}
 
@@ -82,7 +79,7 @@ namespace polaris
 	void PlayerPawnPolaris::InitializeHero()
 	{
 		auto pPlayerState = static_cast<SDK::AFortPlayerStateAthena*>(Globals::gpPlayerController->PlayerState);
-
+		
 		if (!pCustomCharacterPartHead)
 			pCustomCharacterPartHead = FindObject<SDK::UCustomCharacterPart>("CustomCharacterPart", "Head");
 		if (!pCustomCharacterPartBody)

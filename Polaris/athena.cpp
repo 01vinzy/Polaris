@@ -5,23 +5,6 @@
 
 namespace polaris
 {
-#ifndef POLARIS_RELEASE
-	typedef __int64(__fastcall* O_UE_LOG)(__int64 File, __int32 Line, __int64* categoryName, __int8 verbosity, const wchar_t* format, ...);
-	static O_UE_LOG UE_LOG = NULL;
-
-	__int64 UE_LOG_HOOK(__int64 ANSICHAR, __int32 Line, __int64 categoryName, __int8 verbosity, const wchar_t* format, ...)
-	{
-		wchar_t buffer[256];
-		va_list args;
-		va_start(args, format);
-		vswprintf(buffer, 256, format, args);
-		printf("\n");
-		fputws(buffer, stdout);
-		va_end(args);
-		return 0;
-	}
-#endif
-
 	static SDK::UObject* (*StaticLoadObject)(SDK::UClass* ObjectClass, SDK::UObject* InOuter, const TCHAR* InName, const TCHAR* Filename, uint32_t LoadFlags, SDK::UPackageMap* Sandbox, bool bAllowObjectReconciliation);
 
 	// Load an object in memory.
@@ -308,17 +291,6 @@ namespace polaris
 	{
 		Util::InitSdk();
 		Util::InitCore();
-		
-#ifndef POLARIS_RELEASE
-		auto pUE_LOG_ADDRESS = Util::FindPattern("\x40\x53\x55\x56\x57\x41\x55\xB8\x00\x00\x00\x00\xE8\x00\x00\x00\x00\x48\x2B\xE0\x48\x8B\x05\x00\x00\x00\x00\x48\x33\xC4\x48\x89\x84\x24\x00\x00\x00\x00\x4C\x89\x44\x24\x00\x41\x8B\xF9\x4D\x8B\xE8\x8B\xEA\x48\x8B\xF1\x41\x83\xF9\x01", "xxxxxxxx????x????xxxxxx????xxxxxxx????xxxx?xxxxxxxxxxxxxxx");
-		if (!pUE_LOG_ADDRESS)
-		{
-			MessageBox(NULL, static_cast<LPCWSTR>(L"Finding pattern for UE_LOG has failed. Please relaunch Fortnite and try again!"), static_cast<LPCWSTR>(L"Error"), MB_ICONERROR);
-			ExitProcess(EXIT_FAILURE);
-		}
-		MH_CreateHook(static_cast<LPVOID>(pUE_LOG_ADDRESS), UE_LOG_HOOK, reinterpret_cast<LPVOID*>(&UE_LOG));
-		MH_EnableHook(static_cast<LPVOID>(pUE_LOG_ADDRESS));
-#endif
 
 		auto pProcessEventAddress = Util::FindPattern("\x40\x55\x56\x57\x41\x54\x41\x55\x41\x56\x41\x57\x48\x81\xEC\x00\x00\x00\x00\x48\x8D\x6C\x24\x00\x48\x89\x9D\x00\x00\x00\x00\x48\x8B\x05\x00\x00\x00\x00\x48\x33\xC5\x48\x89\x85\x00\x00\x00\x00\x48\x63\x41\x0C", "xxxxxxxxxxxxxxx????xxxx?xxx????xxx????xxxxxx????xxxx");
 		if (!pProcessEventAddress)
