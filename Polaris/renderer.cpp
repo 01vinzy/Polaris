@@ -143,8 +143,7 @@ namespace polaris
 		// Check if our renderer is already initialized.
 		if (gpRenderer)
 		{
-			MessageBox(0, L"Renderer is already initialized.", L"Error", MB_ICONERROR);
-			ExitProcess(EXIT_FAILURE);
+			Util::ThrowFatalError(L"Renderer is already initialized!");
 		}
 
 		gpRenderer = this;
@@ -162,8 +161,6 @@ namespace polaris
 		desc.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
 		desc.BufferCount = 1;
 
-		Console::Log("Attempting to find Fortnite window");
-
 		hWnd = FindWindow(L"UnrealWindow", L"Fortnite ");
 
 		desc.OutputWindow = hWnd;
@@ -174,8 +171,7 @@ namespace polaris
 		// Initialize and check if we failed to initialize our DirectX 11 device.
 		if (FAILED(D3D11CreateDeviceAndSwapChain(nullptr, D3D_DRIVER_TYPE_HARDWARE, 0, 0, &featureLevel, 1, D3D11_SDK_VERSION, &desc, &pSwapChain, &pDevice, nullptr, &pContext)))
 		{
-			MessageBox(0, L"Failed to create DirectX 11 device.", L"Error", MB_ICONERROR);
-			ExitProcess(EXIT_FAILURE);
+			Util::ThrowFatalError(L"Failed to create DX11 device.");
 		}
 
 		auto pTable = *reinterpret_cast<PVOID**>(pSwapChain);

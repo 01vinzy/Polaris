@@ -34,8 +34,7 @@ namespace polaris
 
 		if (gpMainWindow)
 		{
-			MessageBox(0, L"Athena is already initialized.", L"Error", MB_ICONERROR);
-			ExitProcess(EXIT_FAILURE);
+			Util::ThrowFatalError(L"MainWindow is already initialized!");
 		}
 
 		gpMainWindow = this;

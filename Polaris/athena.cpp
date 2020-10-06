@@ -6,15 +6,11 @@
 namespace polaris
 {
 	static SDK::UObject* (*StaticLoadObject)(SDK::UClass* ObjectClass, SDK::UObject* InOuter, const TCHAR* InName, const TCHAR* Filename, uint32_t LoadFlags, SDK::UPackageMap* Sandbox, bool bAllowObjectReconciliation);
-
-	// Load an object in memory.
 	template<class T>
 	static T* LoadObject(SDK::UObject* Outer, const TCHAR* Name, const TCHAR* Filename = nullptr, uint32_t LoadFlags = 0, SDK::UPackageMap* Sandbox = nullptr)
 	{
 		return (T*)StaticLoadObject(T::StaticClass(), Outer, Name, Filename, LoadFlags, Sandbox, true);
 	}
-
-	// Find an object in cache, load it if it's not loaded.
 	template<typename T>
 	static T* FindOrLoadObject(const std::string PathName)
 	{
@@ -31,17 +27,6 @@ namespace polaris
 		return ObjectPtr;
 	}
 
-	bool bIsInFrontend = true;
-	bool bIsWaitingForLoadingScreen = false;
-
-	// Preset weapon definitions. We keep them here so we don't need to constantly reload them.
-	SDK::UFortWeaponItemDefinition* pTacticalShotgunDefinition;
-	SDK::UFortWeaponItemDefinition* pHarvestingToolDefinition;
-	SDK::UFortWeaponItemDefinition* pJackOLauncherDefinition;
-	SDK::UFortWeaponItemDefinition* pPumpShotgunDefinition;
-	SDK::UFortWeaponItemDefinition* pZapatronDefinition;
-	SDK::UFortWeaponItemDefinition* pScarDefinition;
-
 	// Listens to functions called in game, use this to hook code to functions in question.
 	PVOID(*ProcessEvent)(SDK::UObject*, SDK::UFunction*, PVOID) = nullptr;
 	PVOID ProcessEventHook(SDK::UObject* pObject, SDK::UFunction* pFunction, PVOID pParams)
@@ -49,13 +34,12 @@ namespace polaris
 		if (pObject && pFunction)
 		{
 			// Hooks for Frontend
-			if (bIsInFrontend)
+			if (gpAthena->m_bIsInFrontend)
 			{
-				// What the fuck is this function name.
 				// Load Athena_Terrain once the player readies up.
 				if (pFunction->GetName().find("BndEvt__BP_PlayButton_K2Node_ComponentBoundEvent_1_CommonButtonClicked__DelegateSignature") != std::string::npos)
 				{
-					bIsWaitingForLoadingScreen = true;
+					gpAthena->m_bIsWaitingForLoadingScreen = true;
 
 					Globals::gpPlayerController->SwitchLevel(TEXT("Athena_Terrain"));
 
@@ -64,10 +48,10 @@ namespace polaris
 
 				// This gets called once the loading screen is ready to drop.
 				// We reinitialize the SDK, Core and update memory to fix the abilities.
-				if (pFunction->GetName().find("ReadyToStartMatch") != std::string::npos && bIsWaitingForLoadingScreen)
+				if (pFunction->GetName().find("ReadyToStartMatch") != std::string::npos && gpAthena->m_bIsWaitingForLoadingScreen)
 				{
-					bIsInFrontend = false;
-					bIsWaitingForLoadingScreen = false;
+					gpAthena->m_bIsInFrontend = false;
+					gpAthena->m_bIsWaitingForLoadingScreen = false;
 
 					// Reinitialize the core, there's missing references because of Frontend unloading.
 					Util::InitSdk();
@@ -76,6 +60,7 @@ namespace polaris
 
 					StaticLoadObject = reinterpret_cast<decltype(StaticLoadObject)>(Util::BaseAddress() + 0x142E560);
 
+					FindOrLoadObject<SDK::UBlueprintGeneratedClass>("/Game/Weapons/FORT_BuildingTools/Blueprints/DefaultBuildingTool.DefaultBuildingTool_C");
 					FindOrLoadObject<SDK::UDataTable>("/Game/Items/Datatables/AthenaTraps.AthenaTraps");
 					FindOrLoadObject<SDK::UDataTable>("/Game/Athena/Items/Weapons/AthenaMeleeWeapons.AthenaMeleeWeapons");
 					FindOrLoadObject<SDK::UDataTable>("/Game/Athena/Items/Weapons/AthenaRangedWeapons.AthenaRangedWeapons");
@@ -90,12 +75,12 @@ namespace polaris
 						gpAthena->m_pPlayerPawnPolaris->InitializeHero();
 
 						// Load preset item definitions (Prevents a hitch during weapon swapping)
-						pHarvestingToolDefinition = SDK::UObject::FindObject<SDK::UFortWeaponItemDefinition>(gpAthena->m_pPlayerPawnPolaris->m_pPlayerPawn->CustomizationLoadout.Character->GetFullName());
-						pPumpShotgunDefinition = SDK::UObject::FindObject<SDK::UFortWeaponItemDefinition>("FortWeaponRangedItemDefinition WID_Shotgun_Standard_Athena_UC_Ore_T03.WID_Shotgun_Standard_Athena_UC_Ore_T03");
-						pScarDefinition = SDK::UObject::FindObject<SDK::UFortWeaponItemDefinition>("FortWeaponRangedItemDefinition WID_Assault_AutoHigh_Athena_SR_Ore_T03.WID_Assault_AutoHigh_Athena_SR_Ore_T03");
-						pTacticalShotgunDefinition = SDK::UObject::FindObject<SDK::UFortWeaponItemDefinition>("FortWeaponRangedItemDefinition WID_Shotgun_SemiAuto_Athena_VR_Ore_T03.WID_Shotgun_SemiAuto_Athena_VR_Ore_T03");
-						pJackOLauncherDefinition = SDK::UObject::FindObject<SDK::UFortWeaponItemDefinition>("FortWeaponRangedItemDefinition WID_Launcher_Rocket_Athena_SR_Ore_T03.WID_Launcher_Rocket_Athena_SR_Ore_T03");
-						pZapatronDefinition = SDK::UObject::FindObject<SDK::UFortWeaponItemDefinition>("FortWeaponRangedItemDefinition WID_Sniper_AMR_Athena_SR_Ore_T03.WID_Sniper_AMR_Athena_SR_Ore_T03");
+						gpAthena->m_pHarvestingToolDefinition = SDK::UObject::FindObject<SDK::UFortWeaponItemDefinition>(gpAthena->m_pPlayerPawnPolaris->m_pPlayerPawn->CustomizationLoadout.Character->GetFullName());
+						gpAthena->m_pPumpShotgunDefinition = SDK::UObject::FindObject<SDK::UFortWeaponItemDefinition>("FortWeaponRangedItemDefinition WID_Shotgun_Standard_Athena_UC_Ore_T03.WID_Shotgun_Standard_Athena_UC_Ore_T03");
+						gpAthena->m_pScarDefinition = SDK::UObject::FindObject<SDK::UFortWeaponItemDefinition>("FortWeaponRangedItemDefinition WID_Assault_AutoHigh_Athena_SR_Ore_T03.WID_Assault_AutoHigh_Athena_SR_Ore_T03");
+						gpAthena->m_pTacticalShotgunDefinition = SDK::UObject::FindObject<SDK::UFortWeaponItemDefinition>("FortWeaponRangedItemDefinition WID_Shotgun_SemiAuto_Athena_VR_Ore_T03.WID_Shotgun_SemiAuto_Athena_VR_Ore_T03");
+						gpAthena->m_pJackOLauncherDefinition = SDK::UObject::FindObject<SDK::UFortWeaponItemDefinition>("FortWeaponRangedItemDefinition WID_Launcher_Rocket_Athena_SR_Ore_T03.WID_Launcher_Rocket_Athena_SR_Ore_T03");
+						gpAthena->m_pZapatronDefinition = SDK::UObject::FindObject<SDK::UFortWeaponItemDefinition>("FortWeaponRangedItemDefinition WID_Sniper_AMR_Athena_SR_Ore_T03.WID_Sniper_AMR_Athena_SR_Ore_T03");
 
 						// Tell the client that we are ready to start the match, this allows the loading screen to drop.
 						static_cast<SDK::AAthena_PlayerController_C*>(Globals::gpPlayerController)->ServerReadyToStartMatch();
@@ -124,9 +109,8 @@ namespace polaris
 							guid.C = 0;
 							guid.D = 0;
 
-							gpAthena->m_pPlayerPawnPolaris->m_pPlayerPawn->EquipWeaponDefinition(pHarvestingToolDefinition, guid);
+							gpAthena->m_pPlayerPawnPolaris->m_pPlayerPawn->EquipWeaponDefinition(gpAthena->m_pHarvestingToolDefinition, guid);
 						}
-
 						if (GetAsyncKeyState('2') & 0x8000)
 						{
 							SDK::FGuid guid;
@@ -135,9 +119,8 @@ namespace polaris
 							guid.C = 0;
 							guid.D = 0;
 
-							gpAthena->m_pPlayerPawnPolaris->m_pPlayerPawn->EquipWeaponDefinition(pPumpShotgunDefinition, guid);
+							gpAthena->m_pPlayerPawnPolaris->m_pPlayerPawn->EquipWeaponDefinition(gpAthena->m_pPumpShotgunDefinition, guid);
 						}
-
 						if (GetAsyncKeyState('3') & 0x8000)
 						{
 							SDK::FGuid guid;
@@ -146,9 +129,8 @@ namespace polaris
 							guid.C = 0;
 							guid.D = 0;
 
-							gpAthena->m_pPlayerPawnPolaris->m_pPlayerPawn->EquipWeaponDefinition(pScarDefinition, guid);
+							gpAthena->m_pPlayerPawnPolaris->m_pPlayerPawn->EquipWeaponDefinition(gpAthena->m_pScarDefinition, guid);
 						}
-
 						if (GetAsyncKeyState('4') & 0x8000)
 						{
 							SDK::FGuid guid;
@@ -157,9 +139,8 @@ namespace polaris
 							guid.C = 0;
 							guid.D = 0;
 
-							gpAthena->m_pPlayerPawnPolaris->m_pPlayerPawn->EquipWeaponDefinition(pTacticalShotgunDefinition, guid);
+							gpAthena->m_pPlayerPawnPolaris->m_pPlayerPawn->EquipWeaponDefinition(gpAthena->m_pTacticalShotgunDefinition, guid);
 						}
-
 						if (GetAsyncKeyState('5') & 0x8000)
 						{
 							SDK::FGuid guid;
@@ -168,9 +149,8 @@ namespace polaris
 							guid.C = 0;
 							guid.D = 0;
 
-							gpAthena->m_pPlayerPawnPolaris->m_pPlayerPawn->EquipWeaponDefinition(pJackOLauncherDefinition, guid);
+							gpAthena->m_pPlayerPawnPolaris->m_pPlayerPawn->EquipWeaponDefinition(gpAthena->m_pJackOLauncherDefinition, guid);
 						}
-
 						if (GetAsyncKeyState('6') & 0x8000)
 						{
 							SDK::FGuid guid;
@@ -179,29 +159,17 @@ namespace polaris
 							guid.C = 0;
 							guid.D = 0;
 
-							gpAthena->m_pPlayerPawnPolaris->m_pPlayerPawn->EquipWeaponDefinition(pZapatronDefinition, guid);
+							gpAthena->m_pPlayerPawnPolaris->m_pPlayerPawn->EquipWeaponDefinition(gpAthena->m_pZapatronDefinition, guid);
 						}
 
-						if (GetAsyncKeyState(VK_END) & 0x8000 && !gpAthena->m_pPlayerPawnPolaris->m_pPlayerPawn->bBlockInput)
+						if (GetAsyncKeyState(VK_END) & 0x8000 && !gpAthena->m_bGameOver)
 						{
+							gpAthena->m_bGameOver = true;
 							static_cast<SDK::AFortPlayerControllerAthena*>(Globals::gpPlayerController)->ClientNotifyWon();
 							static_cast<SDK::AFortPlayerControllerAthena*>(Globals::gpPlayerController)->PlayWinEffects();
 						}
 					}
 				}
-
-				// (irma) This is broken, I'll find out a fix later.
-				/*if (pFunction->GetName().find("GameplayCue.Athena.OutsideSafeZone") != std::string::npos)
-				{
-					if (gpAthena->m_pPlayerPawnPolaris && gpAthena->m_pPlayerPawnPolaris->m_pPlayerPawn && !static_cast<SDK::AFortPlayerControllerAthena*>(Globals::gpPlayerController)->IsInAircraft())
-					{
-						gpAthena->m_pPlayerPawnPolaris->m_pPlayerPawn->OnRep_IsOutsideSafeZone();
-						if (gpAthena->m_pPlayerPawnPolaris->m_pPlayerPawn->bIsOutsideSafeZone)
-							static_cast<SDK::APlayerPawn_Athena_C*>(gpAthena->m_pPlayerPawnPolaris->m_pPlayerPawn)->AddStormFX();
-						else
-							static_cast<SDK::APlayerPawn_Athena_C*>(gpAthena->m_pPlayerPawnPolaris->m_pPlayerPawn)->RemoveStormFX();
-					}
-				}*/
 
 				// Called once the player jumps from the battle bus, or when they're supposed to be kicked out.
 				if (pFunction->GetName().find("ServerAttemptAircraftJump") != std::string::npos || 
@@ -294,10 +262,7 @@ namespace polaris
 
 		auto pProcessEventAddress = Util::FindPattern("\x40\x55\x56\x57\x41\x54\x41\x55\x41\x56\x41\x57\x48\x81\xEC\x00\x00\x00\x00\x48\x8D\x6C\x24\x00\x48\x89\x9D\x00\x00\x00\x00\x48\x8B\x05\x00\x00\x00\x00\x48\x33\xC5\x48\x89\x85\x00\x00\x00\x00\x48\x63\x41\x0C", "xxxxxxxxxxxxxxx????xxxx?xxx????xxx????xxxxxx????xxxx");
 		if (!pProcessEventAddress)
-		{
-			MessageBox(NULL, static_cast<LPCWSTR>(L"Finding pattern for ProcessEvent has failed. Please relaunch Fortnite and try again!"), static_cast<LPCWSTR>(L"Error"), MB_ICONERROR);
-			ExitProcess(EXIT_FAILURE);
-		}
+			Util::ThrowFatalError(L"Finding pattern for ProcessEvent has failed. Please relaunch Fortnite and try again!");
 
 		MH_CreateHook(static_cast<LPVOID>(pProcessEventAddress), ProcessEventHook, reinterpret_cast<LPVOID*>(&ProcessEvent));
 		MH_EnableHook(static_cast<LPVOID>(pProcessEventAddress));
@@ -309,17 +274,11 @@ namespace polaris
 
 	Athena::Athena()
 	{
-		// Check if athena is already initialized.
+		// Athena is basically a singleton, so we can't have it more than once.
 		if (gpAthena)
-		{
-			MessageBox(0, L"Athena is already initialized.", L"Error", MB_ICONERROR);
-			ExitProcess(EXIT_FAILURE);
-		}
+			Util::ThrowFatalError(L"Athena is already initialized!");
 
 		gpAthena = this;
-
-		Console::Log("Loading Athena");
-
 		CreateThread(0, 0, LoaderThread, 0, 0, 0);
 	}
 }

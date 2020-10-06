@@ -73,8 +73,7 @@ namespace polaris
             auto pUWorldAddress = Util::FindPattern("\x48\x8B\x1D\x00\x00\x00\x00\x00\x00\x00\x10\x4C\x8D\x4D\x00\x4C", "xxx???????xxxx?x");
             if (!pUWorldAddress)
             {
-                MessageBox(NULL, static_cast<LPCWSTR>(L"Finding pattern for UWorld has failed, please re-open Fortnite and try again!"), static_cast<LPCWSTR>(L"Error"), MB_ICONERROR);
-                ExitProcess(EXIT_FAILURE);
+                Util::ThrowFatalError(L"Finding pattern for UWorld has failed.");
             }
 
             auto pUWorldOffset = *reinterpret_cast<uint32_t*>(pUWorldAddress + 3);
@@ -84,8 +83,7 @@ namespace polaris
             auto pGObjectAddress = Util::FindPattern("\x48\x8D\x0D\x00\x00\x00\x00\xE8\x00\x00\x00\x00\xE8\x00\x00\x00\x00\xE8\x00\x00\x00\x00\x48\x8B\xD6", "xxx????x????x????x????xxx");
             if (!pGObjectAddress)
             {
-                MessageBox(NULL, static_cast<LPCWSTR>(L"Finding pattern for GObject has failed. Please relaunch Fortnite and try again!"), static_cast<LPCWSTR>(L"Error"), MB_ICONERROR);
-                ExitProcess(EXIT_FAILURE);
+                Util::ThrowFatalError(L"Finding pattern for GObject has failed.");
             }
 
             auto pGObjectOffset = *reinterpret_cast<uint32_t*>(pGObjectAddress + 3);
@@ -95,8 +93,7 @@ namespace polaris
             auto pGNameAddress = Util::FindPattern("\x48\x8B\x05\x00\x00\x00\x00\x48\x85\xC0\x75\x50\xB9\x00\x00\x00\x00\x48\x89\x5C\x24", "xxx????xxxxxx????xxxx");
             if (!pGNameAddress)
             {
-                MessageBox(NULL, static_cast<LPCWSTR>(L"Finding pattern for GName has failed. Please relaunch Fortnite and try again!"), static_cast<LPCWSTR>(L"Error"), MB_ICONERROR);
-                ExitProcess(EXIT_FAILURE);
+                Util::ThrowFatalError(L"Finding pattern for GName has failed.");
             }
 
             auto pGNameOffset = *reinterpret_cast<uint32_t*>(pGNameAddress + 3);
@@ -110,14 +107,12 @@ namespace polaris
             uintptr_t pBaseAddress = Util::BaseAddress();
             if (!pBaseAddress)
             {
-                MessageBox(NULL, static_cast<LPCWSTR>(L"Finding BaseAddress has failed. Please relaunch Fortnite and try again!"), static_cast<LPCWSTR>(L"Error"), MB_ICONERROR);
-                ExitProcess(EXIT_FAILURE);
+                Util::ThrowFatalError(L"Finding BaseAddress has failed.");
             }
 
             if (!polaris::Globals::gpWorld)
             {
-                MessageBox(NULL, static_cast<LPCWSTR>(L"The UWorld is not initialized. Please relaunch Fortnite and try again!"), static_cast<LPCWSTR>(L"Error"), MB_ICONERROR);
-                ExitProcess(EXIT_FAILURE);
+                Util::ThrowFatalError(L"The UWorld is not initialized.");
             }
 
             polaris::Globals::gpLevel = (*polaris::Globals::gpWorld)->PersistentLevel;
@@ -152,6 +147,17 @@ namespace polaris
                 DWORD dwTemp;
                 VirtualProtect(pAbilityPatchAddress, 16, dwProtection, &dwTemp);
             }
+        }
+
+        // Shows an error message and closes Fortnite.
+        static VOID ThrowFatalError(LPCWSTR errorInfo)
+        {
+            LPCWSTR base = L"Something went wrong with Polaris, please try restarting Fortnite.\n\nAdditional info:\n";
+            std::wstring combined = std::wstring(base) + errorInfo;
+            LPCWSTR combinedLPC = combined.c_str();
+
+            MessageBox(0, combinedLPC, L"Error", MB_ICONERROR);
+            ExitProcess(EXIT_FAILURE);
         }
 
         // Get the Base Address.

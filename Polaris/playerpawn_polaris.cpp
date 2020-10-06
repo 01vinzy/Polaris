@@ -16,8 +16,8 @@ namespace polaris
 
 	std::map<std::string, std::string> mPickaxeAsWid
 	{
-		{"BoltonPickaxe", "FortWeaponMeleeItemDefinition WID_Harvest_Pickaxe_BoltOn_Athena_C_T01.WID_Harvest_Pickaxe_BoltOn_Athena_C_T01"},
 		{"DefaultPickaxe", "FortWeaponMeleeItemDefinition WID_Harvest_Pickaxe_Athena_C_T01.WID_Harvest_Pickaxe_Athena_C_T01"},
+		{"BoltonPickaxe", "FortWeaponMeleeItemDefinition WID_Harvest_Pickaxe_BoltOn_Athena_C_T01.WID_Harvest_Pickaxe_BoltOn_Athena_C_T01"},
 		{"HalloweenScythe", "FortWeaponMeleeItemDefinition WID_Harvest_HalloweenScythe_Athena_C_T01.WID_Harvest_HalloweenScythe_Athena_C_T01"},
 		{"HappyPickaxe", "FortWeaponMeleeItemDefinition WID_Harvest_Pickaxe_Smiley_Athena_C_T01.WID_Harvest_Pickaxe_Smiley_Athena_C_T01"},
 		{"Pickaxe_Deathvalley", "FortWeaponMeleeItemDefinition WID_Harvest_Pickaxe_Deathvalley_Athena_C_T01.WID_Harvest_Pickaxe_Deathvalley_Athena_C_T01"},
@@ -54,12 +54,15 @@ namespace polaris
 		m_pPlayerPawn = static_cast<SDK::APlayerPawn_Athena_C*>(Util::FindActor(SDK::APlayerPawn_Athena_C::StaticClass()));
 		if (!m_pPlayerPawn)
 		{
-			MessageBox(0, L"Failed to spawn PlayerPawn_Athena_C.", L"Error", MB_ICONERROR);
-			ExitProcess(EXIT_FAILURE);
+			Util::ThrowFatalError(L"Failed to spawn PlayerPawn!");
 		}
 		else
 		{
 			Globals::gpPlayerController->Possess(m_pPlayerPawn);
+
+			auto controller = static_cast<SDK::AFortPlayerControllerAthena*>(Globals::gpPlayerController);
+			controller->bIsLocalPlayerController = true;
+			controller->SetReplicates(false);
 
 			// Tell the PlayerPawn that our customization was replicated.
 			m_pPlayerPawn->OnRep_CustomizationLoadout();
@@ -72,9 +75,12 @@ namespace polaris
 
 			// Give the player a pickaxe.
 			EquipWeapon(mPickaxeAsWid[m_pPlayerPawn->CustomizationLoadout.Character->GetName()].c_str());
+
+			auto athenaController = static_cast<SDK::AFortPlayerControllerAthena*>(Globals::gpPlayerController);
+			athenaController->ToggleInventory();
 		}
 	}
-
+	
 	// FIXME (irma) Replace this with a proper Skin Loader.
 	void PlayerPawnPolaris::InitializeHero()
 	{

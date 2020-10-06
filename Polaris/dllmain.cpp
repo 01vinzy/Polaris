@@ -2,10 +2,10 @@
 #include <stdio.h>
 #include <cstdio>
 
-#include "renderer.h"
-#include "athena.h"
-#include "console.h"
 #include "polarisflags.h"
+#include "renderer.h"
+#include "console.h"
+#include "athena.h"
 #include "util.h"
 
 DWORD WINAPI Main(LPVOID lpParam)
@@ -13,8 +13,7 @@ DWORD WINAPI Main(LPVOID lpParam)
 	// If MinHook failed to properly initialize, prompt the user to restart the game.
 	if (MH_Initialize() != MH_OK)
 	{
-		MessageBox(0, L"Failed to initialize MinHook.", L"Error", MB_ICONERROR);
-		ExitProcess(EXIT_FAILURE);
+		polaris::Util::ThrowFatalError(L"Failed to initialize MinHook.");
 	}
 
 	// Initialize modules.
