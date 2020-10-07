@@ -1,8 +1,9 @@
 #ifndef ATHENA_H
 #define ATHENA_H
 
-#include "common.h"
+#include "SDK.hpp"
 #include "player.h"
+#include "inventorymapper.h"
 
 namespace polaris
 {
@@ -16,12 +17,12 @@ namespace polaris
 
 		// Variables for Athena_Terrain
 		Player* m_pPlayer;
-		SDK::UFortWeaponItemDefinition* m_pTacticalShotgunDefinition;
 		SDK::UFortWeaponItemDefinition* m_pHarvestingToolDefinition;
-		SDK::UFortWeaponItemDefinition* m_pJackOLauncherDefinition;
-		SDK::UFortWeaponItemDefinition* m_pPumpShotgunDefinition;
-		SDK::UFortWeaponItemDefinition* m_pZapatronDefinition;
-		SDK::UFortWeaponItemDefinition* m_pScarDefinition;
+		SDK::UFortWeaponItemDefinition* m_pSlot2Definition;
+		SDK::UFortWeaponItemDefinition* m_pSlot3Definition;
+		SDK::UFortWeaponItemDefinition* m_pSlot4Definition;
+		SDK::UFortWeaponItemDefinition* m_pSlot5Definition;
+		SDK::UFortWeaponItemDefinition* m_pSlot6Definition;
 
 		Athena();
 	};

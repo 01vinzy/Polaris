@@ -1,7 +1,4 @@
 #include "athena.h"
-#include "console.h"
-#include "util.h"
-#include "SDK.hpp"
 
 namespace polaris
 {
@@ -76,11 +73,11 @@ namespace polaris
 
 						// Load preset item definitions (Prevents a hitch during weapon swapping)
 						gpAthena->m_pHarvestingToolDefinition = SDK::UObject::FindObject<SDK::UFortWeaponItemDefinition>(gpAthena->m_pPlayer->m_pPlayerPawn->CustomizationLoadout.Character->GetFullName());
-						gpAthena->m_pPumpShotgunDefinition = SDK::UObject::FindObject<SDK::UFortWeaponItemDefinition>("FortWeaponRangedItemDefinition WID_Shotgun_Standard_Athena_UC_Ore_T03.WID_Shotgun_Standard_Athena_UC_Ore_T03");
-						gpAthena->m_pScarDefinition = SDK::UObject::FindObject<SDK::UFortWeaponItemDefinition>("FortWeaponRangedItemDefinition WID_Assault_AutoHigh_Athena_SR_Ore_T03.WID_Assault_AutoHigh_Athena_SR_Ore_T03");
-						gpAthena->m_pTacticalShotgunDefinition = SDK::UObject::FindObject<SDK::UFortWeaponItemDefinition>("FortWeaponRangedItemDefinition WID_Shotgun_SemiAuto_Athena_VR_Ore_T03.WID_Shotgun_SemiAuto_Athena_VR_Ore_T03");
-						gpAthena->m_pJackOLauncherDefinition = SDK::UObject::FindObject<SDK::UFortWeaponItemDefinition>("FortWeaponRangedItemDefinition WID_Launcher_Rocket_Athena_SR_Ore_T03.WID_Launcher_Rocket_Athena_SR_Ore_T03");
-						gpAthena->m_pZapatronDefinition = SDK::UObject::FindObject<SDK::UFortWeaponItemDefinition>("FortWeaponRangedItemDefinition WID_Sniper_AMR_Athena_SR_Ore_T03.WID_Sniper_AMR_Athena_SR_Ore_T03");
+						gpAthena->m_pSlot2Definition = SDK::UObject::FindObject<SDK::UFortWeaponItemDefinition>("FortWeaponRangedItemDefinition WID_Shotgun_Standard_Athena_UC_Ore_T03.WID_Shotgun_Standard_Athena_UC_Ore_T03");
+						gpAthena->m_pSlot3Definition = SDK::UObject::FindObject<SDK::UFortWeaponItemDefinition>("FortWeaponRangedItemDefinition WID_Assault_AutoHigh_Athena_SR_Ore_T03.WID_Assault_AutoHigh_Athena_SR_Ore_T03");
+						gpAthena->m_pSlot4Definition = SDK::UObject::FindObject<SDK::UFortWeaponItemDefinition>("FortWeaponRangedItemDefinition WID_Shotgun_SemiAuto_Athena_VR_Ore_T03.WID_Shotgun_SemiAuto_Athena_VR_Ore_T03");
+						gpAthena->m_pSlot5Definition = SDK::UObject::FindObject<SDK::UFortWeaponItemDefinition>("FortWeaponRangedItemDefinition WID_Launcher_Rocket_Athena_SR_Ore_T03.WID_Launcher_Rocket_Athena_SR_Ore_T03");
+						gpAthena->m_pSlot6Definition = SDK::UObject::FindObject<SDK::UFortWeaponItemDefinition>("FortWeaponRangedItemDefinition WID_Sniper_AMR_Athena_SR_Ore_T03.WID_Sniper_AMR_Athena_SR_Ore_T03");
 
 						// Tell the client that we are ready to start the match, this allows the loading screen to drop.
 						static_cast<SDK::AAthena_PlayerController_C*>(Globals::gpPlayerController)->ServerReadyToStartMatch();
@@ -98,7 +95,7 @@ namespace polaris
 				// Called every frame.
 				if (pFunction->GetName().find("Tick") != std::string::npos)
 				{
-					if (gpAthena->m_pPlayer && gpAthena->m_pPlayer->m_pPlayerPawn && !static_cast<SDK::AFortPlayerControllerAthena*>(Globals::gpPlayerController)->IsInAircraft())
+					if (gpAthena->m_pPlayer && gpAthena->m_pPlayer->m_pPlayerPawn && !static_cast<SDK::AFortPlayerControllerAthena*>(Globals::gpPlayerController)->IsInAircraft() && gpInventoryMapper != nullptr)
 					{
 						// This is awful, I know, it's just for the demo.
 						if (GetAsyncKeyState('1') & 0x8000)
@@ -119,7 +116,10 @@ namespace polaris
 							guid.C = 0;
 							guid.D = 0;
 
-							gpAthena->m_pPlayer->m_pPlayerPawn->EquipWeaponDefinition(gpAthena->m_pPumpShotgunDefinition, guid);
+							if (gpAthena->m_pSlot2Definition->GetFullName() != (*std::next(gpInventoryMapper->m_lInventoryItems.begin(), 1)).c_str())
+								gpAthena->m_pSlot2Definition = SDK::UObject::FindObject<SDK::UFortWeaponRangedItemDefinition>((*std::next(gpInventoryMapper->m_lInventoryItems.begin(), 1)));
+
+							gpAthena->m_pPlayer->m_pPlayerPawn->EquipWeaponDefinition(gpAthena->m_pSlot2Definition, guid);
 						}
 						if (GetAsyncKeyState('3') & 0x8000)
 						{
@@ -129,7 +129,10 @@ namespace polaris
 							guid.C = 0;
 							guid.D = 0;
 
-							gpAthena->m_pPlayer->m_pPlayerPawn->EquipWeaponDefinition(gpAthena->m_pScarDefinition, guid);
+							if (gpAthena->m_pSlot2Definition->GetFullName() != (*std::next(gpInventoryMapper->m_lInventoryItems.begin(), 2)).c_str())
+								gpAthena->m_pSlot2Definition = SDK::UObject::FindObject<SDK::UFortWeaponRangedItemDefinition>((*std::next(gpInventoryMapper->m_lInventoryItems.begin(), 2)));
+
+							gpAthena->m_pPlayer->m_pPlayerPawn->EquipWeaponDefinition(gpAthena->m_pSlot3Definition, guid);
 						}
 						if (GetAsyncKeyState('4') & 0x8000)
 						{
@@ -139,7 +142,10 @@ namespace polaris
 							guid.C = 0;
 							guid.D = 0;
 
-							gpAthena->m_pPlayer->m_pPlayerPawn->EquipWeaponDefinition(gpAthena->m_pTacticalShotgunDefinition, guid);
+							if (gpAthena->m_pSlot2Definition->GetFullName() != (*std::next(gpInventoryMapper->m_lInventoryItems.begin(), 3)).c_str())
+								gpAthena->m_pSlot2Definition = SDK::UObject::FindObject<SDK::UFortWeaponRangedItemDefinition>((*std::next(gpInventoryMapper->m_lInventoryItems.begin(), 3)));
+
+							gpAthena->m_pPlayer->m_pPlayerPawn->EquipWeaponDefinition(gpAthena->m_pSlot4Definition, guid);
 						}
 						if (GetAsyncKeyState('5') & 0x8000)
 						{
@@ -149,7 +155,10 @@ namespace polaris
 							guid.C = 0;
 							guid.D = 0;
 
-							gpAthena->m_pPlayer->m_pPlayerPawn->EquipWeaponDefinition(gpAthena->m_pJackOLauncherDefinition, guid);
+							if (gpAthena->m_pSlot2Definition->GetFullName() != (*std::next(gpInventoryMapper->m_lInventoryItems.begin(), 4)).c_str())
+								gpAthena->m_pSlot2Definition = SDK::UObject::FindObject<SDK::UFortWeaponRangedItemDefinition>((*std::next(gpInventoryMapper->m_lInventoryItems.begin(), 4)));
+
+							gpAthena->m_pPlayer->m_pPlayerPawn->EquipWeaponDefinition(gpAthena->m_pSlot5Definition, guid);
 						}
 						if (GetAsyncKeyState('6') & 0x8000)
 						{
@@ -159,7 +168,10 @@ namespace polaris
 							guid.C = 0;
 							guid.D = 0;
 
-							gpAthena->m_pPlayer->m_pPlayerPawn->EquipWeaponDefinition(gpAthena->m_pZapatronDefinition, guid);
+							if (gpAthena->m_pSlot2Definition->GetFullName() != (*std::next(gpInventoryMapper->m_lInventoryItems.begin(), 5)).c_str())
+								gpAthena->m_pSlot2Definition = SDK::UObject::FindObject<SDK::UFortWeaponRangedItemDefinition>((*std::next(gpInventoryMapper->m_lInventoryItems.begin(), 5)));
+
+							gpAthena->m_pPlayer->m_pPlayerPawn->EquipWeaponDefinition(gpAthena->m_pSlot6Definition, guid);
 						}
 
 						if (GetAsyncKeyState(VK_END) & 0x8000 && !gpAthena->m_bGameOver)

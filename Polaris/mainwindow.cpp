@@ -6,7 +6,6 @@
 #include "objectcache.h"
 #include "watermark.h"
 #include "inventorymapper.h"
-#include "playerpawn_polaris.h"
 
 #include <imgui.h>
 

@@ -1,19 +1,10 @@
 #include "player.h"
-#include "util.h"
-#include "SDK.hpp"
-
-#include <map>
-#include <iostream>
-
-// NOTE (irma) I couldn't move the loading into memory shit into their own classes. LMK if you can do it.
 
 namespace polaris
 {
-	// Caching these the first time inithero is called, should reduce hitch when jumping out of battle bus.
-	static SDK::UCustomCharacterPart* pCustomCharacterPartHead;
-	static SDK::UCustomCharacterPart* pCustomCharacterPartBody;
-	static SDK::UCustomCharacterPart* pCustomCharacterPartHat;
-
+	static SDK::UCustomCharacterPart* m_pCustomCharacterPartHead;
+	static SDK::UCustomCharacterPart* m_pCustomCharacterPartBody;
+	static SDK::UCustomCharacterPart* m_pCustomCharacterPartHat;
 	std::map<std::string, std::string> mPickaxeAsWid
 	{
 		{"DefaultPickaxe", "FortWeaponMeleeItemDefinition WID_Harvest_Pickaxe_Athena_C_T01.WID_Harvest_Pickaxe_Athena_C_T01"},
@@ -83,17 +74,17 @@ namespace polaris
 	{
 		auto pPlayerState = static_cast<SDK::AFortPlayerStateAthena*>(Globals::gpPlayerController->PlayerState);
 		
-		if (!pCustomCharacterPartHead)
-			pCustomCharacterPartHead = FindObject<SDK::UCustomCharacterPart>("CustomCharacterPart", "Head");
-		if (!pCustomCharacterPartBody)
-			pCustomCharacterPartBody = FindObject<SDK::UCustomCharacterPart>("CustomCharacterPart", "Body");
-		if (!pCustomCharacterPartHat)
-			pCustomCharacterPartHat = FindObject<SDK::UCustomCharacterPart>("CustomCharacterPart", "Hat_");
+		if (!m_pCustomCharacterPartHead)
+			m_pCustomCharacterPartHead = FindObject<SDK::UCustomCharacterPart>("CustomCharacterPart", "Head");
+		if (!m_pCustomCharacterPartBody)
+			m_pCustomCharacterPartBody = FindObject<SDK::UCustomCharacterPart>("CustomCharacterPart", "Body");
+		if (!m_pCustomCharacterPartHat)
+			m_pCustomCharacterPartHat = FindObject<SDK::UCustomCharacterPart>("CustomCharacterPart", "Hat_");
 
 		// Assign custom character parts to the player.
-		pPlayerState->CharacterParts[0] = pCustomCharacterPartHead;
-		pPlayerState->CharacterParts[1] = pCustomCharacterPartBody;
-		pPlayerState->CharacterParts[3] = pCustomCharacterPartHat;
+		pPlayerState->CharacterParts[0] = m_pCustomCharacterPartHead;
+		pPlayerState->CharacterParts[1] = m_pCustomCharacterPartBody;
+		pPlayerState->CharacterParts[3] = m_pCustomCharacterPartHat;
 
 		// If no head was found, force Ramirez's head.
 		if (!pPlayerState->CharacterParts[0])

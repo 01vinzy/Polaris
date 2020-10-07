@@ -1,11 +1,14 @@
 #ifndef PLAYER_H
 #define PLAYER_H
 
-#include <Windows.h>
+#include <windows.h>
 #include <string>
+#include <iostream>
+#include <map>
 
 #include "SDK.hpp"
-#include "globals.h"
+#include "mainwindow.h"
+#include "util.h"
 
 namespace polaris
 {
