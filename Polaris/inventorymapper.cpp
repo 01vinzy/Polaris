@@ -4,7 +4,9 @@ namespace polaris
 {
 	InventoryMapper::InventoryMapper()
 	{
-		inventoryItems.push_back(gpAthena->m_pPlayerPawnPolaris->m_pPlayerPawn->CustomizationLoadout.Character->GetFullName());
+		// This harvesting tool line will crash the game.
+		// Make PlayerPawnPolaris insert the harvesting tool.
+		//inventoryItems.push_back(gpAthena->m_pPlayerPawnPolaris->m_pPlayerPawn->CustomizationLoadout.Character->GetFullName());
 		inventoryItems.push_back("FortWeaponRangedItemDefinition WID_Shotgun_Standard_Athena_UC_Ore_T03.WID_Shotgun_Standard_Athena_UC_Ore_T03");
 		inventoryItems.push_back("FortWeaponRangedItemDefinition WID_Assault_AutoHigh_Athena_SR_Ore_T03.WID_Assault_AutoHigh_Athena_SR_Ore_T03");
 		inventoryItems.push_back("FortWeaponRangedItemDefinition WID_Shotgun_SemiAuto_Athena_VR_Ore_T03.WID_Shotgun_SemiAuto_Athena_VR_Ore_T03");
