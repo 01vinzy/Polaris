@@ -105,7 +105,7 @@
     <ClCompile Include="inventorymapper.cpp" />
     <ClCompile Include="mainwindow.cpp" />
     <ClCompile Include="objectcache.cpp" />
-    <ClCompile Include="playerpawn_polaris.cpp" />
+    <ClCompile Include="player.cpp" />
     <ClCompile Include="renderer.cpp" />
     <ClCompile Include="SDK\FN_AthenaHUD_functions.cpp" />
     <ClCompile Include="SDK\FN_Athena_PlayerController_functions.cpp" />
@@ -134,7 +134,7 @@
     <ClInclude Include="mainwindow.h" />
     <ClInclude Include="objectcache.h" />
     <ClInclude Include="platform.h" />
-    <ClInclude Include="playerpawn_polaris.h" />
+    <ClInclude Include="player.h" />
     <ClInclude Include="polarisflags.h" />
     <ClInclude Include="renderer.h" />
     <ClInclude Include="SDK.hpp" />

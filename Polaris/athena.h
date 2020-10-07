@@ -2,7 +2,7 @@
 #define ATHENA_H
 
 #include "common.h"
-#include "playerpawn_polaris.h"
+#include "player.h"
 
 namespace polaris
 {
@@ -15,7 +15,7 @@ namespace polaris
 		bool m_bGameOver;
 
 		// Variables for Athena_Terrain
-		PlayerPawnPolaris* m_pPlayerPawnPolaris;
+		Player* m_pPlayer;
 		SDK::UFortWeaponItemDefinition* m_pTacticalShotgunDefinition;
 		SDK::UFortWeaponItemDefinition* m_pHarvestingToolDefinition;
 		SDK::UFortWeaponItemDefinition* m_pJackOLauncherDefinition;

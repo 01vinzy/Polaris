@@ -1,4 +1,4 @@
-#include "playerpawn_polaris.h"
+#include "player.h"
 #include "util.h"
 #include "SDK.hpp"
 
@@ -45,7 +45,7 @@ namespace polaris
 		return nullptr;
 	}
 
-	PlayerPawnPolaris::PlayerPawnPolaris()
+	Player::Player()
 	{
 		// Summon a new PlayerPawn.
 		std::string sPawnClassName = "PlayerPawn_Athena_C";
@@ -79,7 +79,7 @@ namespace polaris
 	}
 	
 	// FIXME (irma) Replace this with a proper Skin Loader.
-	void PlayerPawnPolaris::InitializeHero()
+	void Player::InitializeHero()
 	{
 		auto pPlayerState = static_cast<SDK::AFortPlayerStateAthena*>(Globals::gpPlayerController->PlayerState);
 		
@@ -103,12 +103,11 @@ namespace polaris
 		if (!pPlayerState->CharacterParts[1])
 			pPlayerState->CharacterParts[1] = SDK::UObject::FindObject<SDK::UCustomCharacterPart>("CustomCharacterPart F_Med_Soldier_01.F_Med_Soldier_01");
 
-
 		static_cast<SDK::AFortPlayerStateAthena*>(Globals::gpPlayerController->PlayerState)->OnRep_CharacterParts();
 	}
 
 	// Equip a weapon.
-	void PlayerPawnPolaris::EquipWeapon(const char* cItemDef, int iGuid)
+	void Player::EquipWeapon(const char* cItemDef, int iGuid)
 	{
 		SDK::FGuid guid;
 		guid.A = iGuid;

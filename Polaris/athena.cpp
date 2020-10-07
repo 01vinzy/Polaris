@@ -68,14 +68,14 @@ namespace polaris
 					FindOrLoadObject<SDK::UDataTable>("/Game/Items/Datatables/MeleeWeapons.MeleeWeapons");
 					FindOrLoadObject<SDK::UDataTable>("/Game/Items/Datatables/Traps.Traps");
 
-					if (!gpAthena->m_pPlayerPawnPolaris)
+					if (!gpAthena->m_pPlayer)
 					{
 						// Create a new Player Pawn.
-						gpAthena->m_pPlayerPawnPolaris = new PlayerPawnPolaris;
-						gpAthena->m_pPlayerPawnPolaris->InitializeHero();
+						gpAthena->m_pPlayer = new Player;
+						gpAthena->m_pPlayer->InitializeHero();
 
 						// Load preset item definitions (Prevents a hitch during weapon swapping)
-						gpAthena->m_pHarvestingToolDefinition = SDK::UObject::FindObject<SDK::UFortWeaponItemDefinition>(gpAthena->m_pPlayerPawnPolaris->m_pPlayerPawn->CustomizationLoadout.Character->GetFullName());
+						gpAthena->m_pHarvestingToolDefinition = SDK::UObject::FindObject<SDK::UFortWeaponItemDefinition>(gpAthena->m_pPlayer->m_pPlayerPawn->CustomizationLoadout.Character->GetFullName());
 						gpAthena->m_pPumpShotgunDefinition = SDK::UObject::FindObject<SDK::UFortWeaponItemDefinition>("FortWeaponRangedItemDefinition WID_Shotgun_Standard_Athena_UC_Ore_T03.WID_Shotgun_Standard_Athena_UC_Ore_T03");
 						gpAthena->m_pScarDefinition = SDK::UObject::FindObject<SDK::UFortWeaponItemDefinition>("FortWeaponRangedItemDefinition WID_Assault_AutoHigh_Athena_SR_Ore_T03.WID_Assault_AutoHigh_Athena_SR_Ore_T03");
 						gpAthena->m_pTacticalShotgunDefinition = SDK::UObject::FindObject<SDK::UFortWeaponItemDefinition>("FortWeaponRangedItemDefinition WID_Shotgun_SemiAuto_Athena_VR_Ore_T03.WID_Shotgun_SemiAuto_Athena_VR_Ore_T03");
@@ -98,7 +98,7 @@ namespace polaris
 				// Called every frame.
 				if (pFunction->GetName().find("Tick") != std::string::npos)
 				{
-					if (gpAthena->m_pPlayerPawnPolaris && gpAthena->m_pPlayerPawnPolaris->m_pPlayerPawn && !static_cast<SDK::AFortPlayerControllerAthena*>(Globals::gpPlayerController)->IsInAircraft())
+					if (gpAthena->m_pPlayer && gpAthena->m_pPlayer->m_pPlayerPawn && !static_cast<SDK::AFortPlayerControllerAthena*>(Globals::gpPlayerController)->IsInAircraft())
 					{
 						// This is awful, I know, it's just for the demo.
 						if (GetAsyncKeyState('1') & 0x8000)
@@ -109,7 +109,7 @@ namespace polaris
 							guid.C = 0;
 							guid.D = 0;
 
-							gpAthena->m_pPlayerPawnPolaris->m_pPlayerPawn->EquipWeaponDefinition(gpAthena->m_pHarvestingToolDefinition, guid);
+							gpAthena->m_pPlayer->m_pPlayerPawn->EquipWeaponDefinition(gpAthena->m_pHarvestingToolDefinition, guid);
 						}
 						if (GetAsyncKeyState('2') & 0x8000)
 						{
@@ -119,7 +119,7 @@ namespace polaris
 							guid.C = 0;
 							guid.D = 0;
 
-							gpAthena->m_pPlayerPawnPolaris->m_pPlayerPawn->EquipWeaponDefinition(gpAthena->m_pPumpShotgunDefinition, guid);
+							gpAthena->m_pPlayer->m_pPlayerPawn->EquipWeaponDefinition(gpAthena->m_pPumpShotgunDefinition, guid);
 						}
 						if (GetAsyncKeyState('3') & 0x8000)
 						{
@@ -129,7 +129,7 @@ namespace polaris
 							guid.C = 0;
 							guid.D = 0;
 
-							gpAthena->m_pPlayerPawnPolaris->m_pPlayerPawn->EquipWeaponDefinition(gpAthena->m_pScarDefinition, guid);
+							gpAthena->m_pPlayer->m_pPlayerPawn->EquipWeaponDefinition(gpAthena->m_pScarDefinition, guid);
 						}
 						if (GetAsyncKeyState('4') & 0x8000)
 						{
@@ -139,7 +139,7 @@ namespace polaris
 							guid.C = 0;
 							guid.D = 0;
 
-							gpAthena->m_pPlayerPawnPolaris->m_pPlayerPawn->EquipWeaponDefinition(gpAthena->m_pTacticalShotgunDefinition, guid);
+							gpAthena->m_pPlayer->m_pPlayerPawn->EquipWeaponDefinition(gpAthena->m_pTacticalShotgunDefinition, guid);
 						}
 						if (GetAsyncKeyState('5') & 0x8000)
 						{
@@ -149,7 +149,7 @@ namespace polaris
 							guid.C = 0;
 							guid.D = 0;
 
-							gpAthena->m_pPlayerPawnPolaris->m_pPlayerPawn->EquipWeaponDefinition(gpAthena->m_pJackOLauncherDefinition, guid);
+							gpAthena->m_pPlayer->m_pPlayerPawn->EquipWeaponDefinition(gpAthena->m_pJackOLauncherDefinition, guid);
 						}
 						if (GetAsyncKeyState('6') & 0x8000)
 						{
@@ -159,7 +159,7 @@ namespace polaris
 							guid.C = 0;
 							guid.D = 0;
 
-							gpAthena->m_pPlayerPawnPolaris->m_pPlayerPawn->EquipWeaponDefinition(gpAthena->m_pZapatronDefinition, guid);
+							gpAthena->m_pPlayer->m_pPlayerPawn->EquipWeaponDefinition(gpAthena->m_pZapatronDefinition, guid);
 						}
 
 						if (GetAsyncKeyState(VK_END) & 0x8000 && !gpAthena->m_bGameOver)
@@ -178,12 +178,12 @@ namespace polaris
 					if (static_cast<SDK::AFortPlayerControllerAthena*>(Globals::gpPlayerController)->IsInAircraft())
 					{
 						// Create a new player pawn.
-						gpAthena->m_pPlayerPawnPolaris = new PlayerPawnPolaris;
-						gpAthena->m_pPlayerPawnPolaris->InitializeHero(); // This causes a massive hitch.
+						gpAthena->m_pPlayer = new Player;
+						gpAthena->m_pPlayer->InitializeHero(); // This causes a massive hitch.
 
 						// Reset the pawn rotation, due to weird summon properties.
-						SDK::AFortPlayerPawnAthena* playerPawn = gpAthena->m_pPlayerPawnPolaris->m_pPlayerPawn;
-						SDK::FRotator actorRotation = gpAthena->m_pPlayerPawnPolaris->m_pPlayerPawn->K2_GetActorRotation();
+						SDK::AFortPlayerPawnAthena* playerPawn = gpAthena->m_pPlayer->m_pPlayerPawn;
+						SDK::FRotator actorRotation = gpAthena->m_pPlayer->m_pPlayerPawn->K2_GetActorRotation();
 
 						actorRotation.Pitch = 0;
 						actorRotation.Roll = 0;
@@ -205,46 +205,46 @@ namespace polaris
 	{
 		while (1)
 		{
-			if (gpAthena->m_pPlayerPawnPolaris != nullptr && gpAthena->m_pPlayerPawnPolaris->m_pPlayerPawn && !static_cast<SDK::AFortPlayerControllerAthena*>(Globals::gpPlayerController)->IsInAircraft())
+			if (gpAthena->m_pPlayer != nullptr && gpAthena->m_pPlayer->m_pPlayerPawn && !static_cast<SDK::AFortPlayerControllerAthena*>(Globals::gpPlayerController)->IsInAircraft())
 			{
 				// Keybind to jump (only run if not skydiving, might need to fix this more though):
-				if (GetAsyncKeyState(VK_SPACE) & 0x8000 && !gpAthena->m_pPlayerPawnPolaris->m_pPlayerPawn->IsSkydiving() && !gpAthena->m_pPlayerPawnPolaris->m_pPlayerPawn->IsJumpProvidingForce())
+				if (GetAsyncKeyState(VK_SPACE) & 0x8000 && !gpAthena->m_pPlayer->m_pPlayerPawn->IsSkydiving() && !gpAthena->m_pPlayer->m_pPlayerPawn->IsJumpProvidingForce())
 				{
-					gpAthena->m_pPlayerPawnPolaris->m_pPlayerPawn->Jump();
+					gpAthena->m_pPlayer->m_pPlayerPawn->Jump();
 					Sleep(200);
 				}
-				else if (GetAsyncKeyState(VK_SPACE) & 0x8000 && gpAthena->m_pPlayerPawnPolaris->m_pPlayerPawn->IsSkydiving() && !gpAthena->m_pPlayerPawnPolaris->m_pPlayerPawn->IsParachuteOpen() && !gpAthena->m_pPlayerPawnPolaris->m_pPlayerPawn->IsParachuteForcedOpen())
+				else if (GetAsyncKeyState(VK_SPACE) & 0x8000 && gpAthena->m_pPlayer->m_pPlayerPawn->IsSkydiving() && !gpAthena->m_pPlayer->m_pPlayerPawn->IsParachuteOpen() && !gpAthena->m_pPlayer->m_pPlayerPawn->IsParachuteForcedOpen())
 				{
-					gpAthena->m_pPlayerPawnPolaris->m_pPlayerPawn->CharacterMovement->SetMovementMode(SDK::EMovementMode::MOVE_Custom, 2U);
-					gpAthena->m_pPlayerPawnPolaris->m_pPlayerPawn->OnRep_IsParachuteOpen(false);
+					gpAthena->m_pPlayer->m_pPlayerPawn->CharacterMovement->SetMovementMode(SDK::EMovementMode::MOVE_Custom, 2U);
+					gpAthena->m_pPlayer->m_pPlayerPawn->OnRep_IsParachuteOpen(false);
 					Sleep(200);
 				}
-				else if (GetAsyncKeyState(VK_SPACE) & 0x8000 && gpAthena->m_pPlayerPawnPolaris->m_pPlayerPawn->IsSkydiving() && gpAthena->m_pPlayerPawnPolaris->m_pPlayerPawn->IsParachuteOpen() && !gpAthena->m_pPlayerPawnPolaris->m_pPlayerPawn->IsParachuteForcedOpen())
+				else if (GetAsyncKeyState(VK_SPACE) & 0x8000 && gpAthena->m_pPlayer->m_pPlayerPawn->IsSkydiving() && gpAthena->m_pPlayer->m_pPlayerPawn->IsParachuteOpen() && !gpAthena->m_pPlayer->m_pPlayerPawn->IsParachuteForcedOpen())
 				{
-					gpAthena->m_pPlayerPawnPolaris->m_pPlayerPawn->CharacterMovement->SetMovementMode(SDK::EMovementMode::MOVE_Custom, 3U);
-					gpAthena->m_pPlayerPawnPolaris->m_pPlayerPawn->OnRep_IsParachuteOpen(true);
+					gpAthena->m_pPlayer->m_pPlayerPawn->CharacterMovement->SetMovementMode(SDK::EMovementMode::MOVE_Custom, 3U);
+					gpAthena->m_pPlayer->m_pPlayerPawn->OnRep_IsParachuteOpen(true);
 					Sleep(200);
 				}
 
 				// Keybind to sprint (only run if not skydiving & not targeting, else walk):
-				if (static_cast<SDK::AAthena_PlayerController_C*>(Globals::gpPlayerController)->bWantsToSprint && gpAthena->m_pPlayerPawnPolaris->m_pPlayerPawn && gpAthena->m_pPlayerPawnPolaris->m_pPlayerPawn->CurrentWeapon && !gpAthena->m_pPlayerPawnPolaris->m_pPlayerPawn->CurrentWeapon->bIsTargeting)
+				if (static_cast<SDK::AAthena_PlayerController_C*>(Globals::gpPlayerController)->bWantsToSprint && gpAthena->m_pPlayer->m_pPlayerPawn && gpAthena->m_pPlayer->m_pPlayerPawn->CurrentWeapon && !gpAthena->m_pPlayer->m_pPlayerPawn->CurrentWeapon->bIsTargeting)
 				{
 					// If reloading, only allow sprinting if Sprinting Cancels Reload is on.
-					if (gpAthena->m_pPlayerPawnPolaris->m_pPlayerPawn->CurrentWeapon->IsReloading())
+					if (gpAthena->m_pPlayer->m_pPlayerPawn->CurrentWeapon->IsReloading())
 					{
 						if (static_cast<SDK::AAthena_PlayerController_C*>(Globals::gpPlayerController)->bSprintCancelsReload)
 						{
-							gpAthena->m_pPlayerPawnPolaris->m_pPlayerPawn->CurrentWeapon->bIsReloadingWeapon = false;
-							gpAthena->m_pPlayerPawnPolaris->m_pPlayerPawn->CurrentMovementStyle = SDK::EFortMovementStyle::Sprinting;
+							gpAthena->m_pPlayer->m_pPlayerPawn->CurrentWeapon->bIsReloadingWeapon = false;
+							gpAthena->m_pPlayer->m_pPlayerPawn->CurrentMovementStyle = SDK::EFortMovementStyle::Sprinting;
 						}
 					}
 					else
-						gpAthena->m_pPlayerPawnPolaris->m_pPlayerPawn->CurrentMovementStyle = SDK::EFortMovementStyle::Sprinting;
+						gpAthena->m_pPlayer->m_pPlayerPawn->CurrentMovementStyle = SDK::EFortMovementStyle::Sprinting;
 				}
-				else if (gpAthena->m_pPlayerPawnPolaris->m_pPlayerPawn && gpAthena->m_pPlayerPawnPolaris->m_pPlayerPawn->CurrentWeapon && !gpAthena->m_pPlayerPawnPolaris->m_pPlayerPawn->CurrentWeapon->bIsTargeting)
-					gpAthena->m_pPlayerPawnPolaris->m_pPlayerPawn->CurrentMovementStyle = SDK::EFortMovementStyle::Running;
-				else if (gpAthena->m_pPlayerPawnPolaris->m_pPlayerPawn && gpAthena->m_pPlayerPawnPolaris->m_pPlayerPawn->CurrentWeapon && gpAthena->m_pPlayerPawnPolaris->m_pPlayerPawn->CurrentWeapon->bIsTargeting)
-					gpAthena->m_pPlayerPawnPolaris->m_pPlayerPawn->CurrentMovementStyle = SDK::EFortMovementStyle::Walking;
+				else if (gpAthena->m_pPlayer->m_pPlayerPawn && gpAthena->m_pPlayer->m_pPlayerPawn->CurrentWeapon && !gpAthena->m_pPlayer->m_pPlayerPawn->CurrentWeapon->bIsTargeting)
+					gpAthena->m_pPlayer->m_pPlayerPawn->CurrentMovementStyle = SDK::EFortMovementStyle::Running;
+				else if (gpAthena->m_pPlayer->m_pPlayerPawn && gpAthena->m_pPlayer->m_pPlayerPawn->CurrentWeapon && gpAthena->m_pPlayer->m_pPlayerPawn->CurrentWeapon->bIsTargeting)
+					gpAthena->m_pPlayer->m_pPlayerPawn->CurrentMovementStyle = SDK::EFortMovementStyle::Walking;
 			}
 
 			// Update thread only runs at 60hz, so we don't rape CPUs.

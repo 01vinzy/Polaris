@@ -1,5 +1,5 @@
-#ifndef PLAYERPAWN_POLARIS_H
-#define PLAYERPAWN_POLARIS_H
+#ifndef PLAYER_H
+#define PLAYER_H
 
 #include <Windows.h>
 #include <string>
@@ -9,17 +9,16 @@
 
 namespace polaris
 {
-	class PlayerPawnPolaris
+	class Player
 	{
 	public:
 		SDK::AFortPlayerPawnAthena* m_pPlayerPawn;
 
-		PlayerPawnPolaris();
+		Player();
 
 		void InitializeHero();
 		void EquipWeapon(const char* cItemDef, int guid = 0);
-		void EquipSkin(const char* cHeroDef);
 	};
 }
 
-#endif
+#endif // PLAYER_H
