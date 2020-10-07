@@ -24,7 +24,7 @@ __declspec(dllexport) LRESULT CALLBACK WndProcHook(HWND hWnd, UINT Msg, WPARAM w
 		bLockFortInput = !bLockFortInput;
 
 		ImGui::GetIO().MouseDrawCursor = bLockFortInput;
-		pMainWindow->bShowWindow = bLockFortInput;
+		pMainWindow->m_bShowWindow = bLockFortInput;
 	}
 
 	if (bLockFortInput)
@@ -93,7 +93,7 @@ __declspec(dllexport) HRESULT PresentHook(IDXGISwapChain* pInstance, UINT SyncIn
 	// Invoke the Draw event on all subscribed Uis.
 	for (polaris::Window* ui : polaris::Renderer::pUiInstances)
 	{
-		if (ui->bShowWindow)
+		if (ui->m_bShowWindow)
 		{
 			if (!bLockFortInput)
 				ImGui::SetNextWindowBgAlpha(0.5f);

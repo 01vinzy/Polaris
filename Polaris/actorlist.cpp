@@ -6,15 +6,15 @@ namespace polaris
 {
 	bool highFpsMode = false;
 
+	// Even though this is empty, it's still required.
 	ActorList::ActorList()
 	{
-		Console::Log("Initializing ActorList");
 	}
 
 	void ActorList::Draw()
 	{
 		ImGui::SetNextWindowSize(ImVec2(820, 440), ImGuiCond_Appearing);
-		ImGui::Begin("Actors", &bShowWindow, ImGuiWindowFlags_Modal);
+		ImGui::Begin("Actors", &m_bShowWindow, ImGuiWindowFlags_Modal);
 		{
 			ImGui::Checkbox("FPS Saver mode", &highFpsMode);
 

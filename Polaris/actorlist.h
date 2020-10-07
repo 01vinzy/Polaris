@@ -12,7 +12,6 @@ namespace polaris
 	{
 	public:
 		ActorList();
-		~ActorList();
 		void Draw() override;
 	};
 }

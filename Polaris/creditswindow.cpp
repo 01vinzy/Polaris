@@ -11,7 +11,7 @@ namespace polaris
 
 	void CreditsWindow::Draw()
 	{
-		ImGui::Begin("Credits", &bShowWindow, ImGuiWindowFlags_Modal);
+		ImGui::Begin("Credits", &m_bShowWindow, ImGuiWindowFlags_Modal);
 		{
 			for (const char* credit : credits)
 			{

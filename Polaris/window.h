@@ -8,7 +8,7 @@ namespace polaris
 	class Window
 	{
 	public:
-		bool bShowWindow = false;
+		bool m_bShowWindow = false;
 
 		Window();
 		virtual void Draw();

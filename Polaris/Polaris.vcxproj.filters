@@ -125,6 +125,9 @@
     <ClCompile Include="SDK\FN_UMG_functions.cpp">
       <Filter>Third Party\SDK</Filter>
     </ClCompile>
+    <ClCompile Include="inventorymapper.cpp">
+      <Filter>Renderer\Windows\CPP</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="common.h">
@@ -174,6 +177,9 @@
     </ClInclude>
     <ClInclude Include="platform.h">
       <Filter>Utilities</Filter>
+    </ClInclude>
+    <ClInclude Include="inventorymapper.h">
+      <Filter>Renderer\Windows\H</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

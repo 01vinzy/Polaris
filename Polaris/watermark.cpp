@@ -21,7 +21,7 @@ namespace polaris
 	Watermark::Watermark()
 	{
 		Console::Log("Initializing Watermark");
-		bShowWindow = true;
+		m_bShowWindow = true;
 	}
 
 	void Watermark::Draw()

@@ -15,7 +15,7 @@ namespace polaris
 		auto pObjectCache = SDK::UObject::GetGlobalObjects();
 
 		ImGui::SetNextWindowSize(ImVec2(820, 440), ImGuiCond_Appearing);
-		ImGui::Begin("Object Cache", &bShowWindow, ImGuiWindowFlags_Modal);
+		ImGui::Begin("Object Cache", &m_bShowWindow, ImGuiWindowFlags_Modal);
 		{
 			// Actor Hierarchy
 			static int selected = 0;

@@ -5,17 +5,18 @@
 #include "renderer.h"
 #include "objectcache.h"
 #include "watermark.h"
+#include "inventorymapper.h"
 #include "playerpawn_polaris.h"
 
 #include <imgui.h>
 
 namespace polaris
 {
-	// These are 
 	ActorList* pActorList = nullptr;
 	CreditsWindow* pCreditsWindow = nullptr;
 	ObjectCache* pObjectCache = nullptr;
 	Watermark* pWatermark = nullptr;
+	InventoryMapper* pInventoryMapper = nullptr;
 
 	MainWindow::MainWindow()
 	{
@@ -25,7 +26,6 @@ namespace polaris
 		if (ENABLE_DEBUGGING_TOOLS)
 		{
 			pActorList = new polaris::ActorList;
-			pCreditsWindow = new polaris::CreditsWindow;
 
 			// This is an highly experimental tool.
 			if(ENABLE_EXPERIMENTAL_DEBUGGING_TOOLS)
@@ -40,7 +40,9 @@ namespace polaris
 		gpMainWindow = this;
 
 		// Create window instances.
-		pWatermark = new polaris::Watermark;
+		pWatermark = new Watermark;
+		pInventoryMapper = new InventoryMapper;
+		pCreditsWindow = new CreditsWindow;
 	}
 
 	void MainWindow::Draw()
@@ -52,7 +54,10 @@ namespace polaris
 				// Only give the user this option if experimental & debugging tools are enabled.
 				if (ENABLE_DEBUGGING_TOOLS && ENABLE_EXPERIMENTAL_DEBUGGING_TOOLS)
 					if (ImGui::MenuItem("Object Cache (Experimental)"))
-						pObjectCache->bShowWindow = true;
+						pObjectCache->m_bShowWindow = !pObjectCache->m_bShowWindow;
+				
+				if (ImGui::MenuItem("Inventory Mapper"))
+					pInventoryMapper->m_bShowWindow = !pInventoryMapper->m_bShowWindow;
 
 				if (!Globals::gpLocalPlayer->ViewportClient->ViewportConsole)
 				{
@@ -75,7 +80,7 @@ namespace polaris
 				if (ImGui::BeginMenu("World"))
 				{
 					if (ImGui::MenuItem("Actor Inspector"))
-						pActorList->bShowWindow = true;
+						pActorList->m_bShowWindow = !pActorList->m_bShowWindow;
 
 					ImGui::EndMenu();
 				}
@@ -83,7 +88,7 @@ namespace polaris
 			if (ImGui::BeginMenu("Help"))
 			{
 				if (ImGui::MenuItem("Credits"))
-					pCreditsWindow->bShowWindow = true;
+					pCreditsWindow->m_bShowWindow = !pCreditsWindow->m_bShowWindow;
 
 				if (ImGui::MenuItem("Irma Burger"))
 					system("start https://www.youtube.com/watch?v=fC7oUOUEEi4");

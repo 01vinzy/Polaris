@@ -102,6 +102,7 @@
     <ClCompile Include="imgui\imgui.cpp" />
     <ClCompile Include="imgui\imgui_draw.cpp" />
     <ClCompile Include="imgui\imgui_widgets.cpp" />
+    <ClCompile Include="inventorymapper.cpp" />
     <ClCompile Include="mainwindow.cpp" />
     <ClCompile Include="objectcache.cpp" />
     <ClCompile Include="playerpawn_polaris.cpp" />
@@ -129,6 +130,7 @@
     <ClInclude Include="console.h" />
     <ClInclude Include="globals.h" />
     <ClInclude Include="creditswindow.h" />
+    <ClInclude Include="inventorymapper.h" />
     <ClInclude Include="mainwindow.h" />
     <ClInclude Include="objectcache.h" />
     <ClInclude Include="platform.h" />
