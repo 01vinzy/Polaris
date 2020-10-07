@@ -75,9 +75,6 @@ namespace polaris
 
 			// Give the player a pickaxe.
 			EquipWeapon(mPickaxeAsWid[m_pPlayerPawn->CustomizationLoadout.Character->GetName()].c_str());
-
-			auto athenaController = static_cast<SDK::AFortPlayerControllerAthena*>(Globals::gpPlayerController);
-			athenaController->ToggleInventory();
 		}
 	}
 	
