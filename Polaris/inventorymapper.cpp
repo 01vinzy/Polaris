@@ -53,22 +53,6 @@ namespace polaris
 		gpInventoryMapper = this;
 	}
 
-	DWORD WINAPI LoadItemThread(LPVOID lpParam)
-	{
-		for (int i = 0; i < SDK::UObject::GetGlobalObjects().Num(); ++i)
-		{
-			auto pObject = SDK::UObject::GetGlobalObjects().GetByIndex(i);
-			if (pObject != nullptr && pObject->GetFullName().find("FortniteGame") == std::string::npos)
-			{
-				if (pObject->GetFullName().rfind("FortWeaponRangedItemDefinition", 0) == 0)
-				{
-					gpInventoryMapper->m_lItemsInMemory.push_back(static_cast<SDK::UFortWeaponRangedItemDefinition*>(pObject));
-					Sleep(1000 / 60);
-				}
-			}
-		}
-	}
-
 	void InventoryMapper::Draw()
 	{
 		ImGui::Begin("Inventory Mapper", &m_bShowWindow, ImGuiWindowFlags_NoResize);
@@ -98,8 +82,19 @@ namespace polaris
 		{
 			if (m_bHasLoadedItemList == false)
 			{
+				for (int i = 0; i < SDK::UObject::GetGlobalObjects().Num(); ++i)
+				{
+					auto pObject = SDK::UObject::GetGlobalObjects().GetByIndex(i);
+					if (pObject != nullptr && pObject->GetFullName().find("FortniteGame") == std::string::npos)
+					{
+						if (pObject->GetFullName().rfind("FortWeaponRangedItemDefinition", 0) == 0)
+						{
+							gpInventoryMapper->m_lItemsInMemory.push_back(static_cast<SDK::UFortWeaponRangedItemDefinition*>(pObject));
+						}
+					}
+				}
+
 				m_bHasLoadedItemList = true;
-				CreateThread(0, 0, LoadItemThread, 0, 0, 0);
 			}
 		
 			// Hacky code for the window title.
