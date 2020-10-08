@@ -70,6 +70,11 @@ namespace polaris
 		gpInventoryMapper = this;
 	}
 
+	DWORD WINAPI LoadItemThread(LPVOID lpParam)
+	{
+		gpInventoryMapper->m_lItemsInMemory = FindObject<SDK::UFortWeaponRangedItemDefinition>("FortWeaponRangedItemDefinition");
+	}
+
 	void InventoryMapper::Draw()
 	{
 		ImGui::Begin("Inventory Mapper", &m_bShowWindow, ImGuiWindowFlags_NoResize);
@@ -78,14 +83,15 @@ namespace polaris
 			{
 				char buffer[7];
 				const char* windowTitle = "Slot %i";
-				int thing = i + 1;
-				sprintf_s(buffer, sizeof(buffer), windowTitle, thing);
+				sprintf_s(buffer, sizeof(buffer), windowTitle, (i + 1));
+
 				if (ImGui::Button(buffer, ImVec2(70, 70)) && i > 0)
 				{
 					m_bInteractable = false;
 					m_bPickingNewWID = true;
 					m_iPickingNewWIDFor = i;
 				}
+
 				if (ImGui::IsItemHovered())
 					ImGui::SetTooltip(m_aInventoryItemNames[i].c_str());
 
@@ -97,12 +103,12 @@ namespace polaris
 		if (m_iPickingNewWIDFor > 0)
 		{
 			if (m_lItemsInMemory.size() == 0)
-				m_lItemsInMemory = FindObject<SDK::UFortWeaponRangedItemDefinition>("FortWeaponRangedItemDefinition");
+				CreateThread(0, 0, LoadItemThread, 0, 0, 0);
 		
 			// Hacky code for the window title.
 			char buffer[26];
 			const char* windowTitle = "Select an item for Slot %i";
-			sprintf_s(buffer, sizeof(buffer), windowTitle, m_iPickingNewWIDFor);
+			sprintf_s(buffer, sizeof(buffer), windowTitle, (m_iPickingNewWIDFor + 1));
 
 			ImGui::SetNextWindowSize(ImVec2(540, 525), ImGuiCond_Appearing);
 			ImGui::Begin(buffer, &m_bPickingNewWID, ImGuiWindowFlags_NoResize);
