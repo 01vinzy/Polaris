@@ -4,7 +4,6 @@
 
 namespace polaris
 {
-	bool bPreloadWeapons = false;
 	static SDK::UObject* (*StaticLoadObject)(SDK::UClass* ObjectClass, SDK::UObject* InOuter, const TCHAR* InName, const TCHAR* Filename, uint32_t LoadFlags, SDK::UPackageMap* Sandbox, bool bAllowObjectReconciliation);
 	template<class T>
 	static T* LoadObject(SDK::UObject* Outer, const TCHAR* Name, const TCHAR* Filename = nullptr, uint32_t LoadFlags = 0, SDK::UPackageMap* Sandbox = nullptr)
@@ -57,15 +56,20 @@ namespace polaris
 					Util::InitPatches();
 
 					StaticLoadObject = reinterpret_cast<decltype(StaticLoadObject)>(Util::BaseAddress() + 0x142E560);
-					//load le shit
+
+					// Load UPackages required for Polaris to properly function
 					FindOrLoadObject<SDK::UBlueprintGeneratedClass>("/Game/Weapons/FORT_BuildingTools/Blueprints/DefaultBuildingTool.DefaultBuildingTool_C");
 					FindOrLoadObject<SDK::UDataTable>("/Game/Items/Datatables/AthenaTraps.AthenaTraps");
+					FindOrLoadObject<SDK::UCurveTable>("/Game/Items/Datatables/AthenaProjectiles.AthenaProjectiles");
 					FindOrLoadObject<SDK::UDataTable>("/Game/Athena/Items/Weapons/AthenaMeleeWeapons.AthenaMeleeWeapons");
 					FindOrLoadObject<SDK::UDataTable>("/Game/Athena/Items/Weapons/AthenaRangedWeapons.AthenaRangedWeapons");
 					FindOrLoadObject<SDK::UDataTable>("/Game/Items/Datatables/RangedWeapons.RangedWeapons");
 					FindOrLoadObject<SDK::UDataTable>("/Game/Items/Datatables/MeleeWeapons.MeleeWeapons");
 					FindOrLoadObject<SDK::UDataTable>("/Game/Items/Datatables/Traps.Traps");
-					FindOrLoadObject<SDK::UCurveTable>("/Game/Items/Datatables/AthenaProjectiles.AthenaProjectiles");
+
+					// to wiktor: if you want your polaris compile to automatically load in all husk variants,
+					// please add ENABLE_THE_FUNNY_HUSK to your preprocessor definitions
+#ifdef ENABLE_THE_FUNNY_HUSK
 					FindOrLoadObject<SDK::UBlueprintGeneratedClass>("/Game/Characters/Enemies/Husk/Blueprints/HuskPawn.HuskPawn_C");
 					FindOrLoadObject<SDK::UBlueprintGeneratedClass>("/Game/Characters/Enemies/Husk/Blueprints/HuskPawn_Beehive.HuskPawn_Beehive_C");
 					FindOrLoadObject<SDK::UBlueprintGeneratedClass>("/Game/Characters/Enemies/Husk/Blueprints/HuskPawn_Bombshell.HuskPawn_Bombshell_C");
@@ -80,6 +84,7 @@ namespace polaris
 					FindOrLoadObject<SDK::UBlueprintGeneratedClass>("/Game/Characters/Enemies/Husk/Blueprints/HuskPawn_Pitcher.HuskPawn_Pitcher_C");
 					FindOrLoadObject<SDK::UBlueprintGeneratedClass>("/Game/Characters/Enemies/Husk/Blueprints/HuskPawn_Sploder.HuskPawn_Sploder_C");
 					FindOrLoadObject<SDK::UBlueprintGeneratedClass>("/Game/Missions/Secondary/Mimic/HuskPawn_Mimic.HuskPawn_Mimic_C");
+#endif // ENABLE_THE_FUNNY_HUSK
 
 					if (!gpAthena->m_pPlayer)
 					{
@@ -109,6 +114,42 @@ namespace polaris
 						// Turn on basic cheats
 						static_cast<SDK::UFortCheatManager*>(Globals::gpPlayerController->CheatManager)->ToggleInfiniteAmmo();
 
+						// Preload the base Polaris weapon inventory in order to prevent a hitch
+						if (!gpAthena->m_bHasPreloadedWeapons) {
+							SDK::FGuid guid;
+							guid.A = 1;
+							guid.B = 0;
+							guid.C = 0;
+							guid.D = 0;
+							gpAthena->m_pPlayer->m_pPlayerPawn->EquipWeaponDefinition(gpAthena->m_pSlot2Definition, guid);
+							guid.A = 2;
+							guid.B = 0;
+							guid.C = 0;
+							guid.D = 0;
+							gpAthena->m_pPlayer->m_pPlayerPawn->EquipWeaponDefinition(gpAthena->m_pSlot3Definition, guid);
+							guid.A = 3;
+							guid.B = 0;
+							guid.C = 0;
+							guid.D = 0;
+							gpAthena->m_pPlayer->m_pPlayerPawn->EquipWeaponDefinition(gpAthena->m_pSlot4Definition, guid);
+							guid.A = 4;
+							guid.B = 0;
+							guid.C = 0;
+							guid.D = 0;
+							gpAthena->m_pPlayer->m_pPlayerPawn->EquipWeaponDefinition(gpAthena->m_pSlot5Definition, guid);
+							guid.A = 5;
+							guid.B = 0;
+							guid.C = 0;
+							guid.D = 0;
+							gpAthena->m_pPlayer->m_pPlayerPawn->EquipWeaponDefinition(gpAthena->m_pSlot6Definition, guid);
+							guid.A = 0;
+							guid.B = 0;
+							guid.C = 0;
+							guid.D = 0;
+							gpAthena->m_pPlayer->m_pPlayerPawn->EquipWeaponDefinition(gpAthena->m_pHarvestingToolDefinition, guid);
+							gpAthena->m_bHasPreloadedWeapons = true;
+						}
+
 						auto minimapWidget = SDK::UObject::FindObject<SDK::UFortLegacySlateBridgeWidget>("FortLegacySlateBridgeWidget AthenaDeathWidget.WidgetArchetype.WidgetTree_1.MinimapContainer.WidgetTree_16.FortSlateWidgetMinimap");
 						auto minimapBrush = SDK::UObject::FindObject<SDK::USlateBrushAsset>("SlateBrushAsset TutorialGlow_Brush.TutorialGlow_Brush");
 
@@ -136,42 +177,6 @@ namespace polaris
 				// Called every frame.
 				if (pFunction->GetName().find("Tick") != std::string::npos)
 				{
-					//Consume the cum chalice v2
-					//Preload Default items to prevent hitch for equipping default items
-					if (bPreloadWeapons == false) {
-						SDK::FGuid guid;
-						guid.A = 1;
-						guid.B = 0;
-						guid.C = 0;
-						guid.D = 0;
-						gpAthena->m_pPlayer->m_pPlayerPawn->EquipWeaponDefinition(gpAthena->m_pSlot2Definition, guid);
-						guid.A = 2;
-						guid.B = 0;
-						guid.C = 0;
-						guid.D = 0;
-						gpAthena->m_pPlayer->m_pPlayerPawn->EquipWeaponDefinition(gpAthena->m_pSlot3Definition, guid);
-						guid.A = 3;
-						guid.B = 0;
-						guid.C = 0;
-						guid.D = 0;
-						gpAthena->m_pPlayer->m_pPlayerPawn->EquipWeaponDefinition(gpAthena->m_pSlot4Definition, guid);
-						guid.A = 4;
-						guid.B = 0;
-						guid.C = 0;
-						guid.D = 0;
-						gpAthena->m_pPlayer->m_pPlayerPawn->EquipWeaponDefinition(gpAthena->m_pSlot5Definition, guid);
-						guid.A = 5;
-						guid.B = 0;
-						guid.C = 0;
-						guid.D = 0;
-						gpAthena->m_pPlayer->m_pPlayerPawn->EquipWeaponDefinition(gpAthena->m_pSlot6Definition, guid);
-						guid.A = 0;
-						guid.B = 0;
-						guid.C = 0;
-						guid.D = 0;
-						gpAthena->m_pPlayer->m_pPlayerPawn->EquipWeaponDefinition(gpAthena->m_pHarvestingToolDefinition, guid);
-						bPreloadWeapons = true;
-					}
 					if (gpAthena->m_pPlayer && gpAthena->m_pPlayer->m_pPlayerPawn && !static_cast<SDK::AFortPlayerControllerAthena*>(Globals::gpPlayerController)->IsInAircraft() && gpInventoryMapper != nullptr)
 					{
 
