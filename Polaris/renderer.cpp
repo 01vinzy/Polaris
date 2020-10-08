@@ -1,5 +1,5 @@
 #include "renderer.h"
-#include "common.h"
+#include "mainwindow.h"
 
 #include <windows.h>
 
@@ -8,27 +8,26 @@
 #include <imgui_impl_win32.h>
 #include <imgui_internal.h>
 
-#include <tchar.h>
-#include <stdio.h>
+#include "platform.h"
+
+polaris::MainWindow* pMainWindow;
+bool bLockFortInput;
+std::list<polaris::Window*> polaris::Renderer::pUiInstances;
 
 WNDPROC lpPrevWndFunc;
-bool bShowMenu;
 static HWND hWnd = 0;
-std::list<polaris::Ui*> polaris::Renderer::pUiInstances;
 
 // Forward declare message handler from imgui_impl_win32.cpp
 extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
-
 __declspec(dllexport) LRESULT CALLBACK WndProcHook(HWND hWnd, UINT Msg, WPARAM wParam, LPARAM lParam) {
-	// Handle application-specific workload.
+	if (Msg == WM_KEYUP && (wParam == VK_HOME || (bLockFortInput && wParam == VK_ESCAPE))) {
+		bLockFortInput = !bLockFortInput;
 
-	if (Msg == WM_KEYUP && (wParam == VK_INSERT || (bShowMenu && wParam == VK_ESCAPE))) {
-		bShowMenu = !bShowMenu;
-
-		ImGui::GetIO().MouseDrawCursor = bShowMenu;
+		ImGui::GetIO().MouseDrawCursor = bLockFortInput;
+		pMainWindow->m_bShowWindow = bLockFortInput;
 	}
 
-	if (bShowMenu)
+	if (bLockFortInput)
 	{
 		ImGui_ImplWin32_WndProcHandler(hWnd, Msg, wParam, lParam);
 
@@ -38,8 +37,8 @@ __declspec(dllexport) LRESULT CALLBACK WndProcHook(HWND hWnd, UINT Msg, WPARAM w
 	return CallWindowProc(lpPrevWndFunc, hWnd, Msg, wParam, lParam);
 }
 
+// Rendering hook used to draw on top of the Fortnite window.
 HRESULT(*Present)(IDXGISwapChain* pInstance, UINT SyncInterval, UINT Flags) = nullptr;
-
 __declspec(dllexport) HRESULT PresentHook(IDXGISwapChain* pInstance, UINT SyncInterval, UINT Flags)
 {
 	static float fWidth = 0;
@@ -87,32 +86,42 @@ __declspec(dllexport) HRESULT PresentHook(IDXGISwapChain* pInstance, UINT SyncIn
 		ImGui_ImplDX11_CreateDeviceObjects();
 	}
 
-	if (bShowMenu)
-	{
-		ImGui_ImplDX11_NewFrame();
-		ImGui_ImplWin32_NewFrame();
-		ImGui::NewFrame();
-		
-		// Invoke the Draw event on all subscribed Uis.
-		for (polaris::Ui* ui : polaris::Renderer::pUiInstances)
-		{
-			ui->Draw();
-		}
+	ImGui_ImplDX11_NewFrame();
+	ImGui_ImplWin32_NewFrame();
+	ImGui::NewFrame();
 
-		ImGui::Render();
-		gpRenderer->pCurrentContext->OMSetRenderTargets(1, &gpRenderer->pCurrentView, NULL);
-		ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
+	// Invoke the Draw event on all subscribed Uis.
+	for (polaris::Window* ui : polaris::Renderer::pUiInstances)
+	{
+		if (ui->m_bShowWindow)
+		{
+			if (!bLockFortInput || !ui->m_bInteractable)
+			{
+				ImGui::PushItemFlag(ImGuiItemFlags_Disabled, true);
+				ImGui::SetNextWindowBgAlpha(0.5f);
+			}
+
+			ui->Draw();
+			if (!bLockFortInput || !ui->m_bInteractable)
+				ImGui::PopItemFlag();
+		}
 	}
+
+	ImGui::SetNextWindowBgAlpha(1);
+
+	ImGui::Render();
+	gpRenderer->pCurrentContext->OMSetRenderTargets(1, &gpRenderer->pCurrentView, NULL);
+	ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
 
 	return Present(pInstance, SyncInterval, Flags);
 }
 
+// Resize hook.
 HRESULT(*ResizeBuffers)(IDXGISwapChain* pInstance, UINT BufferCount, UINT Width, UINT Height, DXGI_FORMAT NewFormat, UINT SwapChainFlags) = nullptr;
-
 __declspec(dllexport) HRESULT ResizeBuffersHook(IDXGISwapChain* pInstance, UINT BufferCount, UINT Width, UINT Height, DXGI_FORMAT NewFormat, UINT SwapChainFlags)
 {
 	// Invoke the Resize event on all subscribed Uis.
-	for (polaris::Ui* ui : polaris::Renderer::pUiInstances)
+	for (polaris::Window* ui : polaris::Renderer::pUiInstances)
 	{
 		ui->Resize();
 	}
@@ -134,11 +143,12 @@ namespace polaris
 	{
 		Console::Log("Initializing Renderer");
 
+		pMainWindow = new polaris::MainWindow;
+
 		// Check if our renderer is already initialized.
 		if (gpRenderer)
 		{
-			MessageBox(0, L"Renderer is already initialized.", L"Error", MB_ICONERROR);
-			ExitProcess(EXIT_FAILURE);
+			Util::ThrowFatalError(L"Renderer is already initialized!");
 		}
 
 		gpRenderer = this;
@@ -156,8 +166,6 @@ namespace polaris
 		desc.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
 		desc.BufferCount = 1;
 
-		Console::Log("Attempting to find Fortnite window");
-
 		hWnd = FindWindow(L"UnrealWindow", L"Fortnite ");
 
 		desc.OutputWindow = hWnd;
@@ -166,11 +174,9 @@ namespace polaris
 		desc.Flags = DXGI_SWAP_CHAIN_FLAG_ALLOW_MODE_SWITCH;
 
 		// Initialize and check if we failed to initialize our DirectX 11 device.
-		HRESULT hResult = D3D11CreateDeviceAndSwapChain(nullptr, D3D_DRIVER_TYPE_HARDWARE, 0, 0, &featureLevel, 1, D3D11_SDK_VERSION, &desc, &pSwapChain, &pDevice, nullptr, &pContext);
-		if (FAILED(hResult))
+		if (FAILED(D3D11CreateDeviceAndSwapChain(nullptr, D3D_DRIVER_TYPE_HARDWARE, 0, 0, &featureLevel, 1, D3D11_SDK_VERSION, &desc, &pSwapChain, &pDevice, nullptr, &pContext)))
 		{
-			MessageBox(0, L"Failed to create DirectX 11 device.", L"Error", MB_ICONERROR);
-			ExitProcess(EXIT_FAILURE);
+			Util::ThrowFatalError(L"Failed to create DX11 device.");
 		}
 
 		auto pTable = *reinterpret_cast<PVOID**>(pSwapChain);
@@ -182,9 +188,8 @@ namespace polaris
 		ImGui::CreateContext();
 		ImGuiIO& io = ImGui::GetIO(); (void)io;
 
-		// Enable keyboard input and load Segoe UI as font.
-		io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;
-		io.Fonts->AddFontFromFileTTF("C:\\Windows\\Fonts\\segoeui.ttf", 18);
+		// Load Segoe UI as font.
+		io.Fonts->AddFontFromFileTTF(Util::GetConcatPath(Platform::GetFontsDir(), "segoeui.ttf").c_str(), 20);
 
 		pSwapChain->Release();
 		pDevice->Release();

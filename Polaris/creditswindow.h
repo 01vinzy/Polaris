@@ -2,32 +2,32 @@
 #define CREDITSWINDOW_H
 
 #include "common.h"
-#include "ui.h"
+#include "window.h"
 
 namespace polaris
 {
-	class CreditsWindow : public Ui
+	class CreditsWindow : public Window
 	{
 	public:
 		const char* credits[18] = {
-			"Polaris Lead:",
-			"Cyuubi",
+			"Creator:",
+			"@uguuCyuubi",
 			"",
-			"Developers:",
-			"kanner",
+			"Developer:",
+			"@omairma",
 			"",
 			"Contributors:",
-			"BigBoiTaj2005",
-			"Chase",
-			"irma",
-			"pivotman319",
-			"Samicc",
-			"wiktorwiktor12",
+			"@BattleDashBR",
+			"@kann3r",
+			"@pivotman319",
+			"@wiktorwiktor12a",
 			"",
-			"Relation:",
-			"Crush",
-			"Darkblade",
-			"Slushia"
+			"Special Thanks:",
+			"@crusherrrz",
+			"@DarkbladeEU",
+			"@doshisgone",
+			"@notsamiccc",
+			"@Slushia"
 		};
 
 		CreditsWindow();

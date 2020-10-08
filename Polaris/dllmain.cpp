@@ -1,51 +1,38 @@
 #include <windows.h>
-
-#include "common.h"
-#include "renderer.h"
-#include "ui.h"
-#include "frontendmanager.h"
-#include "mainwindow.h"
-#include "SDK.hpp"
-
 #include <stdio.h>
-#include <fcntl.h>
-#include <io.h>
-
 #include <cstdio>
+
+#include "polarisflags.h"
+#include "renderer.h"
+#include "console.h"
+#include "athena.h"
+#include "util.h"
 
 DWORD WINAPI Main(LPVOID lpParam)
 {
-    AllocConsole();
+	// If MinHook failed to properly initialize, prompt the user to restart the game.
+	if (MH_Initialize() != MH_OK)
+	{
+		polaris::Util::ThrowFatalError(L"Failed to initialize MinHook.");
+	}
 
-    FILE* pFile;
-    freopen_s(&pFile, "CONOUT$", "w", stdout);
+	// Initialize modules.
+	new polaris::Console;
+	new polaris::Renderer;
+	new polaris::Athena;
 
-    if (MH_Initialize() != MH_OK)
-    {
-        MessageBox(0, L"Failed to initialize MinHook.", L"Error", MB_ICONERROR);
-        ExitProcess(EXIT_FAILURE);
-    }
-
-    polaris::Console::LogRaw("Welcome to Polaris!", 11);
-    new polaris::Renderer; // Initialize renderer.
-    new polaris::MainWindow; // Initialize UI.
-
-    return FALSE;
+	return FALSE;
 }
 
-BOOL APIENTRY DllMain(HMODULE hModule, DWORD dwReason,
-    LPVOID lpReserved)
+// The entry point of the DLL. Called when the DLL is injected.
+BOOL APIENTRY DllMain(HMODULE hModule, DWORD dwReason, LPVOID lpReserved)
 {
-    switch (dwReason)
-    {
-    case DLL_PROCESS_ATTACH:
-        CreateThread(0, 0, Main, hModule, 0, 0);
-        break;
+	switch (dwReason)
+	{
+	case DLL_PROCESS_ATTACH:
+		CreateThread(0, 0, Main, hModule, 0, 0);
+		break;
+	}
 
-    case DLL_PROCESS_DETACH:
-        // TODO: Handle deconstruction.
-        break;
-    }
-
-    return TRUE;
+	return TRUE;
 }

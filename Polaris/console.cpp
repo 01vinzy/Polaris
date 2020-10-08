@@ -1,9 +1,32 @@
 #include "console.h"
+#include "polarisflags.h"
+
+#include <iostream>
 
 HANDLE hConsole;
 
 namespace polaris
 {
+	Console::Console()
+	{
+		Util::InitConsole();
+
+#ifdef POLARIS_RELEASE
+		std::string versionString = VERSION;
+#else
+		std::string versionString = "Pre-release build, do not redistribute!";
+#endif
+
+		// Draw fancy thing :D
+		for (int i = 0; i < 18; i++)
+		{
+			char buffer[2000];
+			sprintf_s(buffer, sizeof(buffer), Console::sAscii[i], versionString.c_str());
+
+			polaris::Console::LogRaw(buffer, 11);
+		}
+	}
+
 	// Log a message to console
 	void Console::Log(const char* msg)
 	{

@@ -6,17 +6,12 @@ namespace polaris
 {
 	CreditsWindow::CreditsWindow()
 	{
-		Console::Log("Creating a credits window");
-	}
-
-	CreditsWindow::~CreditsWindow()
-	{
-		//TODO: unload CreditsWindow
+		Console::Log("Initializing CreditsWindow");
 	}
 
 	void CreditsWindow::Draw()
 	{
-		ImGui::Begin("Credits", reinterpret_cast<bool*>(true), ImGuiWindowFlags_Modal);
+		ImGui::Begin("Credits", &m_bShowWindow, ImGuiWindowFlags_Modal);
 		{
 			for (const char* credit : credits)
 			{

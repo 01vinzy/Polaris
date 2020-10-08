@@ -2,11 +2,11 @@
 #define MAINWINDOW_H
 
 #include "common.h"
-#include "ui.h"
+#include "window.h"
 
 namespace polaris
 {
-	class MainWindow : public Ui
+	class MainWindow : public Window
 	{
 	public:
 		MainWindow();
@@ -14,5 +14,7 @@ namespace polaris
 		void Draw() override;
 	};
 }
+
+static polaris::MainWindow* gpMainWindow;
 
 #endif // MAINWINDOW_H
