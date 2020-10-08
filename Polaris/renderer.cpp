@@ -95,7 +95,7 @@ __declspec(dllexport) HRESULT PresentHook(IDXGISwapChain* pInstance, UINT SyncIn
 	{
 		if (ui->m_bShowWindow)
 		{
-			if (!bLockFortInput || !ui->m_bInteractable)
+			if (!bLockFortInput)
 			{
 				ImGui::SetNextWindowBgAlpha(0.5f);
 			}

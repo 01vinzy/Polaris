@@ -65,7 +65,6 @@ namespace polaris
 
 				if (ImGui::Button(buffer, ImVec2(70, 70)) && i > 0)
 				{
-					m_bInteractable = false;
 					m_bPickingNewWID = true;
 					m_iPickingNewWIDFor = i;
 				}
@@ -122,7 +121,6 @@ namespace polaris
 							m_aInventoryItems[m_iPickingNewWIDFor] = (*wimIterator)->GetFullName();
 							m_aInventoryItemNames[m_iPickingNewWIDFor] = (*wimIterator)->GetName();
 
-							m_bInteractable = true;
 							m_bPickingNewWID = false;
 							m_iPickingNewWIDFor = 0;
 						}
