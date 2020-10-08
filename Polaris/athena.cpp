@@ -302,7 +302,7 @@ namespace polaris
 
 							gpAthena->m_pPlayer->m_pPlayerPawn->EquipWeaponDefinition(gpAthena->m_pWallBuildDef, guid);
 							if (gpAthena->pAthenaHud) {
-								gpAthena->pAthenaHud->QuickbarPrimary->OnQuickbarSlotFocusChanged(qbSecondary, 0);
+								gpAthena->pAthenaHud->QuickbarSecondary->OnQuickbarSlotFocusChanged(qbSecondary, 0);
 								gpAthena->pAthenaHud->HandleQuickbarSlotFocusSlotChanged(qbSecondary, 0);
 							}
 							else {
@@ -324,7 +324,7 @@ namespace polaris
 
 							gpAthena->m_pPlayer->m_pPlayerPawn->EquipWeaponDefinition(gpAthena->m_pFloorBuildDef, guid);
 							if (gpAthena->pAthenaHud) {
-								gpAthena->pAthenaHud->QuickbarPrimary->OnQuickbarSlotFocusChanged(qbSecondary, 3);
+								gpAthena->pAthenaHud->QuickbarSecondary->OnQuickbarSlotFocusChanged(qbSecondary, 3);
 								gpAthena->pAthenaHud->HandleQuickbarSlotFocusSlotChanged(qbSecondary, 3);
 							}
 							else {
@@ -346,7 +346,7 @@ namespace polaris
 
 							gpAthena->m_pPlayer->m_pPlayerPawn->EquipWeaponDefinition(gpAthena->m_pStairBuildDef, guid);
 							if (gpAthena->pAthenaHud) {
-								gpAthena->pAthenaHud->QuickbarPrimary->OnQuickbarSlotFocusChanged(qbSecondary, 3);
+								gpAthena->pAthenaHud->QuickbarSecondary->OnQuickbarSlotFocusChanged(qbSecondary, 3);
 								gpAthena->pAthenaHud->HandleQuickbarSlotFocusSlotChanged(qbSecondary, 3);
 							}
 							else {
@@ -368,7 +368,7 @@ namespace polaris
 
 							gpAthena->m_pPlayer->m_pPlayerPawn->EquipWeaponDefinition(gpAthena->m_pRoofBuildDef, guid);
 							if (gpAthena->pAthenaHud) {
-								gpAthena->pAthenaHud->QuickbarPrimary->OnQuickbarSlotFocusChanged(qbSecondary, 4);
+								gpAthena->pAthenaHud->QuickbarSecondary->OnQuickbarSlotFocusChanged(qbSecondary, 4);
 								gpAthena->pAthenaHud->HandleQuickbarSlotFocusSlotChanged(qbSecondary, 4);
 							}
 							else {
