@@ -44,7 +44,7 @@ namespace polaris
 				}
 
 				// This gets called once the loading screen is ready to drop.
-				// We reinitialize the SDK, Core and update memory to fix the abilities.
+				// We reinitialize the SDK, Core and update memory to fix weapon attack abilities.
 				if (pFunction->GetName().find("ReadyToStartMatch") != std::string::npos && gpAthena->m_bIsWaitingForLoadingScreen)
 				{
 					gpAthena->m_bIsInFrontend = false;
