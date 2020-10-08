@@ -28,7 +28,7 @@ namespace polaris
 	{
 		ImGuiIO& io = ImGui::GetIO();
 
-		ImGui::SetNextWindowBgAlpha(0.45); // Make window background invisible.
+		ImGui::SetNextWindowBgAlpha(0.45f); // Make window background invisible.
 
 		// Position the window
 		ImVec2 window_pos = ImVec2((CORNER & 1) ? io.DisplaySize.x - DISTANCE_TO_CORNER : DISTANCE_TO_CORNER, (CORNER & 2) ? io.DisplaySize.y - DISTANCE_TO_CORNER : DISTANCE_TO_CORNER);
