@@ -4,23 +4,6 @@ polaris::InventoryMapper* gpInventoryMapper;
 
 namespace polaris
 {
-	template<typename T>
-	static std::list<T*> FindObject(const std::string& sClassName)
-	{
-		std::list<T*> results;
-		for (int i = 0; i < SDK::UObject::GetGlobalObjects().Num(); ++i)
-		{
-			auto pObject = SDK::UObject::GetGlobalObjects().GetByIndex(i);
-			if (pObject != nullptr && pObject->GetFullName().find("FortniteGame") == std::string::npos)
-			{
-				if (pObject->GetFullName().rfind(sClassName, 0) == 0)
-					results.push_back(static_cast<T*>(pObject));
-			}
-		}
-
-		return results;
-	}
-
 	std::string InventoryMapper::GetRarityString(SDK::EFortRarity rarity)
 	{
 		switch (rarity)
@@ -72,7 +55,18 @@ namespace polaris
 
 	DWORD WINAPI LoadItemThread(LPVOID lpParam)
 	{
-		gpInventoryMapper->m_lItemsInMemory = FindObject<SDK::UFortWeaponRangedItemDefinition>("FortWeaponRangedItemDefinition");
+		for (int i = 0; i < SDK::UObject::GetGlobalObjects().Num(); ++i)
+		{
+			auto pObject = SDK::UObject::GetGlobalObjects().GetByIndex(i);
+			if (pObject != nullptr && pObject->GetFullName().find("FortniteGame") == std::string::npos)
+			{
+				if (pObject->GetFullName().rfind("FortWeaponRangedItemDefinition", 0) == 0)
+				{
+					gpInventoryMapper->m_lItemsInMemory.push_back(static_cast<SDK::UFortWeaponRangedItemDefinition*>(pObject));
+					Sleep(1000 / 60);
+				}
+			}
+		}
 	}
 
 	void InventoryMapper::Draw()
@@ -102,8 +96,11 @@ namespace polaris
 
 		if (m_iPickingNewWIDFor > 0)
 		{
-			if (m_lItemsInMemory.size() == 0)
+			if (m_bHasLoadedItemList == false)
+			{
+				m_bHasLoadedItemList = true;
 				CreateThread(0, 0, LoadItemThread, 0, 0, 0);
+			}
 		
 			// Hacky code for the window title.
 			char buffer[26];
