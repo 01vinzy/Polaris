@@ -95,10 +95,15 @@ __declspec(dllexport) HRESULT PresentHook(IDXGISwapChain* pInstance, UINT SyncIn
 	{
 		if (ui->m_bShowWindow)
 		{
-			if (!bLockFortInput)
+			if (!bLockFortInput || !ui->m_bInteractable)
+			{
+				ImGui::PushItemFlag(ImGuiItemFlags_Disabled, true);
 				ImGui::SetNextWindowBgAlpha(0.5f);
+			}
 
 			ui->Draw();
+			if (!bLockFortInput || !ui->m_bInteractable)
+				ImGui::PopItemFlag();
 		}
 	}
 
@@ -183,8 +188,7 @@ namespace polaris
 		ImGui::CreateContext();
 		ImGuiIO& io = ImGui::GetIO(); (void)io;
 
-		// Enable keyboard input and load Segoe UI as font.
-		io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;
+		// Load Segoe UI as font.
 		io.Fonts->AddFontFromFileTTF(Util::GetConcatPath(Platform::GetFontsDir(), "segoeui.ttf").c_str(), 20);
 
 		pSwapChain->Release();

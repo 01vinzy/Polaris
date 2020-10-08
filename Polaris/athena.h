@@ -13,7 +13,7 @@ namespace polaris
 		// Variables for the ProcessEventHook
 		bool m_bIsInFrontend = true;
 		bool m_bIsWaitingForLoadingScreen = false;
-		bool m_bGameOver;
+		bool m_bGameOver = false;
 
 		// Variables for Athena_Terrain
 		Player* m_pPlayer;

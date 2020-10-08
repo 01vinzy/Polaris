@@ -13,9 +13,13 @@ namespace polaris
 	class InventoryMapper : public Window
 	{
 	private:
-		int m_iPickingNewWIDFor;
+		int m_iPickingNewWIDFor = 0;
+		bool m_bPickingNewWID = false;
+
+		std::string GetRarityString(SDK::EFortRarity rarity);
 	public:
-		std::list<std::string> m_lInventoryItems;
+		std::string m_aInventoryItems[6];
+		std::string m_aInventoryItemNames[6];
 		std::list<SDK::UFortWeaponRangedItemDefinition*> m_lItemsInMemory;
 
 		InventoryMapper();

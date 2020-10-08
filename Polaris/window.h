@@ -9,6 +9,7 @@ namespace polaris
 	{
 	public:
 		bool m_bShowWindow = false;
+		bool m_bInteractable = true;
 
 		Window();
 		virtual void Draw();

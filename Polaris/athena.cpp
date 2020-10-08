@@ -38,10 +38,7 @@ namespace polaris
 				if (pFunction->GetName().find("BndEvt__BP_PlayButton_K2Node_ComponentBoundEvent_1_CommonButtonClicked__DelegateSignature") != std::string::npos)
 				{
 					gpAthena->m_bIsWaitingForLoadingScreen = true;
-
 					Globals::gpPlayerController->SwitchLevel(TEXT("Athena_Terrain"));
-
-					return NULL;
 				}
 
 				// This gets called once the loading screen is ready to drop.
@@ -93,6 +90,12 @@ namespace polaris
 
 						// Turn on basic cheats
 						static_cast<SDK::UFortCheatManager*>(Globals::gpPlayerController->CheatManager)->ToggleInfiniteAmmo();
+
+						auto minimapWidget = SDK::UObject::FindObject<SDK::UFortLegacySlateBridgeWidget>("FortLegacySlateBridgeWidget AthenaDeathWidget.WidgetArchetype.WidgetTree_1.MinimapContainer.WidgetTree_16.FortSlateWidgetMinimap");
+						auto minimapBrush = SDK::UObject::FindObject<SDK::USlateBrushAsset>("SlateBrushAsset TutorialGlow_Brush.TutorialGlow_Brush");
+
+						minimapWidget->Visibility = SDK::ESlateVisibility::Hidden;
+						minimapWidget->UpdateSlateWidget(SDK::EFortLegacySlateWidget::AthenaMiniMap);
 					}
 				}
 			}
@@ -134,14 +137,19 @@ namespace polaris
 						}
 						if (GetAsyncKeyState('2') & 0x8000)
 						{
+							if (gpAthena->m_pSlot2Definition->GetFullName() != gpInventoryMapper->m_aInventoryItems[1].c_str())
+							{
+								auto newItemDef = SDK::UObject::FindObject<SDK::UFortWeaponRangedItemDefinition>(gpInventoryMapper->m_aInventoryItems[1]);
+
+								gpAthena->m_pSlot2Definition = newItemDef;
+								gpAthena->m_iSlot2Revision++;
+							}
+
 							SDK::FGuid guid;
 							guid.A = 1;
-							guid.B = 0;
+							guid.B = gpAthena->m_iSlot2Revision;
 							guid.C = 0;
 							guid.D = 0;
-
-							if (gpAthena->m_pSlot2Definition->GetFullName() != (*std::next(gpInventoryMapper->m_lInventoryItems.begin(), 1)).c_str())
-								gpAthena->m_pSlot2Definition = SDK::UObject::FindObject<SDK::UFortWeaponRangedItemDefinition>((*std::next(gpInventoryMapper->m_lInventoryItems.begin(), 1)));
 
 							gpAthena->m_pPlayer->m_pPlayerPawn->EquipWeaponDefinition(gpAthena->m_pSlot2Definition, guid);
 							if (gpAthena->pAthenaHud) {
@@ -160,14 +168,19 @@ namespace polaris
 						}
 						if (GetAsyncKeyState('3') & 0x8000)
 						{
+							if (gpAthena->m_pSlot3Definition->GetFullName() != gpInventoryMapper->m_aInventoryItems[2].c_str())
+							{
+								auto newItemDef = SDK::UObject::FindObject<SDK::UFortWeaponRangedItemDefinition>(gpInventoryMapper->m_aInventoryItems[2]);
+
+								gpAthena->m_pSlot3Definition = newItemDef;
+								gpAthena->m_iSlot4Revision++;
+							}
+
 							SDK::FGuid guid;
 							guid.A = 2;
-							guid.B = 0;
+							guid.B = gpAthena->m_iSlot3Revision;
 							guid.C = 0;
 							guid.D = 0;
-
-							if (gpAthena->m_pSlot2Definition->GetFullName() != (*std::next(gpInventoryMapper->m_lInventoryItems.begin(), 2)).c_str())
-								gpAthena->m_pSlot2Definition = SDK::UObject::FindObject<SDK::UFortWeaponRangedItemDefinition>((*std::next(gpInventoryMapper->m_lInventoryItems.begin(), 2)));
 
 							gpAthena->m_pPlayer->m_pPlayerPawn->EquipWeaponDefinition(gpAthena->m_pSlot3Definition, guid);
 							if (gpAthena->pAthenaHud) {
@@ -186,14 +199,18 @@ namespace polaris
 						}
 						if (GetAsyncKeyState('4') & 0x8000)
 						{
+							if (gpAthena->m_pSlot4Definition->GetFullName() != gpInventoryMapper->m_aInventoryItems[3].c_str())
+							{
+								auto newItemDef = SDK::UObject::FindObject<SDK::UFortWeaponRangedItemDefinition>(gpInventoryMapper->m_aInventoryItems[3]);
+								gpAthena->m_pSlot4Definition = newItemDef;
+								gpAthena->m_iSlot4Revision++;
+							}
+
 							SDK::FGuid guid;
 							guid.A = 3;
-							guid.B = 0;
+							guid.B = gpAthena->m_iSlot4Revision;
 							guid.C = 0;
 							guid.D = 0;
-
-							if (gpAthena->m_pSlot2Definition->GetFullName() != (*std::next(gpInventoryMapper->m_lInventoryItems.begin(), 3)).c_str())
-								gpAthena->m_pSlot2Definition = SDK::UObject::FindObject<SDK::UFortWeaponRangedItemDefinition>((*std::next(gpInventoryMapper->m_lInventoryItems.begin(), 3)));
 
 							gpAthena->m_pPlayer->m_pPlayerPawn->EquipWeaponDefinition(gpAthena->m_pSlot4Definition, guid);
 							if (gpAthena->pAthenaHud) {
@@ -212,15 +229,20 @@ namespace polaris
 						}
 						if (GetAsyncKeyState('5') & 0x8000)
 						{
+							{
+								auto newItemDef = SDK::UObject::FindObject<SDK::UFortWeaponRangedItemDefinition>(gpInventoryMapper->m_aInventoryItems[4]);
+
+								gpAthena->m_pSlot5Definition = newItemDef;
+								gpAthena->m_iSlot5Revision++;
+							}
+
 							SDK::FGuid guid;
 							guid.A = 4;
-							guid.B = 0;
+							guid.B = gpAthena->m_iSlot5Revision;
 							guid.C = 0;
 							guid.D = 0;
 
-							if (gpAthena->m_pSlot2Definition->GetFullName() != (*std::next(gpInventoryMapper->m_lInventoryItems.begin(), 4)).c_str())
-								gpAthena->m_pSlot2Definition = SDK::UObject::FindObject<SDK::UFortWeaponRangedItemDefinition>((*std::next(gpInventoryMapper->m_lInventoryItems.begin(), 4)));
-
+							if (gpAthena->m_pSlot5Definition->GetFullName() != gpInventoryMapper->m_aInventoryItems[4].c_str())
 							gpAthena->m_pPlayer->m_pPlayerPawn->EquipWeaponDefinition(gpAthena->m_pSlot5Definition, guid);
 							if (gpAthena->pAthenaHud) {
 								gpAthena->pAthenaHud->QuickbarPrimary->OnQuickbarSlotFocusChanged(qbPrimary, 4);
@@ -238,14 +260,19 @@ namespace polaris
 						}
 						if (GetAsyncKeyState('6') & 0x8000)
 						{
+							if (gpAthena->m_pSlot6Definition->GetFullName() != gpInventoryMapper->m_aInventoryItems[5].c_str())
+							{
+								auto newItemDef = SDK::UObject::FindObject<SDK::UFortWeaponRangedItemDefinition>(gpInventoryMapper->m_aInventoryItems[5]);
+
+								gpAthena->m_pSlot6Definition = newItemDef;
+								gpAthena->m_iSlot6Revision++;
+							}
+
 							SDK::FGuid guid;
 							guid.A = 5;
-							guid.B = 0;
+							guid.B = gpAthena->m_iSlot6Revision;
 							guid.C = 0;
 							guid.D = 0;
-
-							if (gpAthena->m_pSlot2Definition->GetFullName() != (*std::next(gpInventoryMapper->m_lInventoryItems.begin(), 5)).c_str())
-								gpAthena->m_pSlot2Definition = SDK::UObject::FindObject<SDK::UFortWeaponRangedItemDefinition>((*std::next(gpInventoryMapper->m_lInventoryItems.begin(), 5)));
 
 							gpAthena->m_pPlayer->m_pPlayerPawn->EquipWeaponDefinition(gpAthena->m_pSlot6Definition, guid);
 							if (gpAthena->pAthenaHud) {
