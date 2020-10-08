@@ -4,8 +4,6 @@ polaris::InventoryMapper* gpInventoryMapper;
 
 namespace polaris
 {
-	SDK::UTexture2D* thing;
-
 	template<typename T>
 	static std::list<T*> FindObject(const std::string& sClassName)
 	{
