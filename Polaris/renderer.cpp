@@ -97,13 +97,10 @@ __declspec(dllexport) HRESULT PresentHook(IDXGISwapChain* pInstance, UINT SyncIn
 		{
 			if (!bLockFortInput || !ui->m_bInteractable)
 			{
-				ImGui::PushItemFlag(ImGuiItemFlags_Disabled, true);
 				ImGui::SetNextWindowBgAlpha(0.5f);
 			}
 
 			ui->Draw();
-			if (!bLockFortInput || !ui->m_bInteractable)
-				ImGui::PopItemFlag();
 		}
 	}
 
