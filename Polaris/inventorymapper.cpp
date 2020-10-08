@@ -78,7 +78,7 @@ namespace polaris
 			ImGui::End();
 		}
 
-		if (m_iPickingNewWIDFor > 0)
+		if (m_bPickingNewWID == true)
 		{
 			if (m_bHasLoadedItemList == false)
 			{
