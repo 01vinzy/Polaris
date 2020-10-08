@@ -29,6 +29,11 @@ namespace polaris
 		SDK::UFortWeaponItemDefinition* m_pStairBuildDef;
 		SDK::UFortWeaponItemDefinition* m_pRoofBuildDef;
 		SDK::UAthenaHUD_C* pAthenaHud;
+		int m_iSlot2Revision = 0;
+		int m_iSlot3Revision = 0;
+		int m_iSlot4Revision = 0;
+		int m_iSlot5Revision = 0;
+		int m_iSlot6Revision = 0;
 		Athena();
 	};
 }
