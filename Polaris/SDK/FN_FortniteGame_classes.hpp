@@ -20228,6 +20228,7 @@ public:
 class UFortBuildingItemDefinition : public UFortWeaponItemDefinition
 {
 public:
+	// find out whatever the hell this address is (pivotman)
 	unsigned char                                      UnknownData00[0x20];                                      // 0x0650(0x0020) MISSED OFFSET
 
 	static UClass* StaticClass()
