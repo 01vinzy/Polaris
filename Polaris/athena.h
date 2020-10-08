@@ -23,12 +23,6 @@ namespace polaris
 		SDK::UFortWeaponItemDefinition* m_pSlot4Definition;
 		SDK::UFortWeaponItemDefinition* m_pSlot5Definition;
 		SDK::UFortWeaponItemDefinition* m_pSlot6Definition;
-		SDK::UFortWeaponItemDefinition* m_pEditToolDef;
-		SDK::UFortWeaponItemDefinition* m_pWallBuildDef;
-		SDK::UFortWeaponItemDefinition* m_pFloorBuildDef;
-		SDK::UFortWeaponItemDefinition* m_pStairBuildDef;
-		SDK::UFortWeaponItemDefinition* m_pRoofBuildDef;
-		SDK::UAthenaHUD_C* pAthenaHud;
 		int m_iSlot2Revision = 0;
 		int m_iSlot3Revision = 0;
 		int m_iSlot4Revision = 0;
