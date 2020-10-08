@@ -23,7 +23,7 @@ namespace polaris
 		SDK::UFortWeaponItemDefinition* m_pSlot4Definition;
 		SDK::UFortWeaponItemDefinition* m_pSlot5Definition;
 		SDK::UFortWeaponItemDefinition* m_pSlot6Definition;
-
+		SDK::UAthenaHUD_C* pAthenaHud;
 		Athena();
 	};
 }
