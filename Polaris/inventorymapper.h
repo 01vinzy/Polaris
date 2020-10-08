@@ -15,6 +15,7 @@ namespace polaris
 	private:
 		int m_iPickingNewWIDFor = 0;
 		bool m_bPickingNewWID = false;
+		bool m_bHasLoadedItemList = false;
 
 		std::string GetRarityString(SDK::EFortRarity rarity);
 	public:
