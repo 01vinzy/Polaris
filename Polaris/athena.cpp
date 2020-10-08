@@ -232,6 +232,7 @@ namespace polaris
 						}
 						if (GetAsyncKeyState('5') & 0x8000)
 						{
+							if (gpAthena->m_pSlot5Definition->GetFullName() != gpInventoryMapper->m_aInventoryItems[4].c_str())
 							{
 								auto newItemDef = SDK::UObject::FindObject<SDK::UFortWeaponRangedItemDefinition>(gpInventoryMapper->m_aInventoryItems[4]);
 
@@ -245,7 +246,6 @@ namespace polaris
 							guid.C = 0;
 							guid.D = 0;
 
-							if (gpAthena->m_pSlot5Definition->GetFullName() != gpInventoryMapper->m_aInventoryItems[4].c_str())
 							gpAthena->m_pPlayer->m_pPlayerPawn->EquipWeaponDefinition(gpAthena->m_pSlot5Definition, guid);
 						}
 						if (GetAsyncKeyState('6') & 0x8000)
