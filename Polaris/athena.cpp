@@ -116,6 +116,19 @@ namespace polaris
 
 						// Preload the base Polaris weapon inventory in order to prevent a hitch
 						if (!gpAthena->m_bHasPreloadedWeapons) {
+							// load this giant hunk of assets into memory
+							FindOrLoadObject<SDK::UFortEditToolItemDefinition>("/Game/Items/Weapons/BuildingTools/EditTool.EditTool");
+							FindOrLoadObject<SDK::UFortBuildingItemDefinition>("/Game/Items/Weapons/BuildingTools/BuildingItemData_Wall.BuildingItemData_Wall");
+							FindOrLoadObject<SDK::UFortBuildingItemDefinition>("/Game/Items/Weapons/BuildingTools/BuildingItemData_Floor.BuildingItemData_Floor");
+							FindOrLoadObject<SDK::UFortBuildingItemDefinition>("/Game/Items/Weapons/BuildingTools/BuildingItemData_Floor.BuildingItemData_Floor");
+							FindOrLoadObject<SDK::UFortWeaponItemDefinition>("/Game/Athena/Items/Weapons/" + gpAthena->m_pPlayer->m_pPlayerPawn->CustomizationLoadout.Character->GetName() + "." + gpAthena->m_pPlayer->m_pPlayerPawn->CustomizationLoadout.Character->GetName());
+							FindOrLoadObject<SDK::UFortWeaponRangedItemDefinition>("/Game/Athena/Items/Weapons/WID_Shotgun_Standard_Athena_UC_Ore_T03.WID_Shotgun_Standard_Athena_UC_Ore_T03");
+							FindOrLoadObject<SDK::UFortWeaponRangedItemDefinition>("/Game/Athena/Items/Weapons/WID_Assault_AutoHigh_Athena_SR_Ore_T03.WID_Assault_AutoHigh_Athena_SR_Ore_T03");
+							FindOrLoadObject<SDK::UFortWeaponRangedItemDefinition>("/Game/Athena/Items/Weapons/WID_Shotgun_Standard_Athena_UC_Ore_T03.WID_Shotgun_Standard_Athena_UC_Ore_T03");
+							FindOrLoadObject<SDK::UFortWeaponRangedItemDefinition>("/Game/Athena/Items/Weapons/WID_Shotgun_SemiAuto_Athena_VR_Ore_T03.WID_Shotgun_SemiAuto_Athena_VR_Ore_T03");
+							FindOrLoadObject<SDK::UFortWeaponRangedItemDefinition>("/Game/Athena/Items/Weapons/WID_Sniper_AMR_Athena_SR_Ore_T03.WID_Sniper_AMR_Athena_SR_Ore_T03");
+							
+							// Equip them afterwards
 							SDK::FGuid guid;
 							guid.A = 1;
 							guid.B = 0;
@@ -147,7 +160,28 @@ namespace polaris
 							guid.C = 0;
 							guid.D = 0;
 							gpAthena->m_pPlayer->m_pPlayerPawn->EquipWeaponDefinition(gpAthena->m_pHarvestingToolDefinition, guid);
+							gpAthena->m_pSlotLastUsedDefinition = gpAthena->m_pHarvestingToolDefinition;
+
 							gpAthena->m_bHasPreloadedWeapons = true;
+						}
+
+						gpAthena->m_iLastUsedItem = 0;
+						gpAthena->m_iLastUsedBuildingItem = 6;
+						gpAthena->m_iQuickbarLastUsedBuilding = 0;
+						gpAthena->m_pLastUsedBuildingDef = gpAthena->m_pWallBuildDef;
+						gpAthena->m_pSlotLastUsedDefinition = gpAthena->m_pHarvestingToolDefinition;
+
+						if (gpAthena->pAthenaHud) {
+							gpAthena->pAthenaHud->QuickbarPrimary->OnQuickbarSlotFocusChanged(SDK::EFortQuickBars::Primary, 0); // changes quickbar focus
+							gpAthena->pAthenaHud->HandleQuickbarSlotFocusSlotChanged(SDK::EFortQuickBars::Primary, 0);
+						}
+						else {
+							auto temp = SDK::UObject::FindObject<SDK::UAthenaHUD_C>("AthenaHUD_C Transient.FortEngine_1.FortGameInstance_1.AthenaHUD_C_1"); // do i exist
+							if (temp) {
+								if (!gpAthena->pAthenaHud) {
+									gpAthena->pAthenaHud = SDK::UObject::FindObject<SDK::UAthenaHUD_C>("AthenaHUD_C Transient.FortEngine_1.FortGameInstance_1.AthenaHUD_C_1"); // set me
+								}
+							}
 						}
 
 						auto minimapWidget = SDK::UObject::FindObject<SDK::UFortLegacySlateBridgeWidget>("FortLegacySlateBridgeWidget AthenaDeathWidget.WidgetArchetype.WidgetTree_1.MinimapContainer.WidgetTree_16.FortSlateWidgetMinimap");
@@ -187,8 +221,13 @@ namespace polaris
 							guid.B = 0;
 							guid.C = 0;
 							guid.D = 0;
+
+							gpAthena->m_iLastUsedItem = 0;
+							gpAthena->m_iSlotLastUsedRevision = 0;
+							gpAthena->m_pSlotLastUsedDefinition = gpAthena->m_pHarvestingToolDefinition;
+
 							gpAthena->m_pPlayer->m_pPlayerPawn->EquipWeaponDefinition(gpAthena->m_pHarvestingToolDefinition, guid);
-							// it will hitch the first time called but after it will befine
+							// it will hitch the first time called but afterwards it will be fine
 							if (gpAthena->pAthenaHud) {
 								gpAthena->pAthenaHud->QuickbarPrimary->OnQuickbarSlotFocusChanged(qbPrimary, 0); // changes quickbar focus
 								gpAthena->pAthenaHud->HandleQuickbarSlotFocusSlotChanged(qbPrimary, 0);
@@ -201,8 +240,6 @@ namespace polaris
 									}
 								}
 							}
-
-
 						}
 						if (GetAsyncKeyState('2') & 0x8000)
 						{
@@ -219,6 +256,10 @@ namespace polaris
 							guid.B = gpAthena->m_iSlot2Revision;
 							guid.C = 0;
 							guid.D = 0;
+
+							gpAthena->m_iLastUsedItem = 1;
+							gpAthena->m_iSlotLastUsedRevision = gpAthena->m_iSlot2Revision;
+							gpAthena->m_pSlotLastUsedDefinition = gpAthena->m_pSlot2Definition;
 
 							gpAthena->m_pPlayer->m_pPlayerPawn->EquipWeaponDefinition(gpAthena->m_pSlot2Definition, guid);
 							if (gpAthena->pAthenaHud) {
@@ -251,6 +292,10 @@ namespace polaris
 							guid.C = 0;
 							guid.D = 0;
 
+							gpAthena->m_iLastUsedItem = 2;
+							gpAthena->m_iSlotLastUsedRevision = gpAthena->m_iSlot3Revision;
+							gpAthena->m_pSlotLastUsedDefinition = gpAthena->m_pSlot3Definition;
+
 							gpAthena->m_pPlayer->m_pPlayerPawn->EquipWeaponDefinition(gpAthena->m_pSlot3Definition, guid);
 							if (gpAthena->pAthenaHud) {
 								gpAthena->pAthenaHud->QuickbarPrimary->OnQuickbarSlotFocusChanged(qbPrimary, 2);
@@ -281,6 +326,10 @@ namespace polaris
 							guid.C = 0;
 							guid.D = 0;
 
+							gpAthena->m_iLastUsedItem = 3;
+							gpAthena->m_iSlotLastUsedRevision = gpAthena->m_iSlot4Revision;
+							gpAthena->m_pSlotLastUsedDefinition = gpAthena->m_pSlot4Definition;
+
 							gpAthena->m_pPlayer->m_pPlayerPawn->EquipWeaponDefinition(gpAthena->m_pSlot4Definition, guid);
 							if (gpAthena->pAthenaHud) {
 								gpAthena->pAthenaHud->QuickbarPrimary->OnQuickbarSlotFocusChanged(qbPrimary, 3);
@@ -310,6 +359,10 @@ namespace polaris
 							guid.B = gpAthena->m_iSlot5Revision;
 							guid.C = 0;
 							guid.D = 0;
+
+							gpAthena->m_iLastUsedItem = 4;
+							gpAthena->m_iSlotLastUsedRevision = gpAthena->m_iSlot5Revision;
+							gpAthena->m_pSlotLastUsedDefinition = gpAthena->m_pSlot5Definition;
 
 							if (gpAthena->m_pSlot5Definition->GetFullName() != gpInventoryMapper->m_aInventoryItems[4].c_str())
 							gpAthena->m_pPlayer->m_pPlayerPawn->EquipWeaponDefinition(gpAthena->m_pSlot5Definition, guid);
@@ -343,6 +396,10 @@ namespace polaris
 							guid.C = 0;
 							guid.D = 0;
 
+							gpAthena->m_iLastUsedItem = 5;
+							gpAthena->m_iSlotLastUsedRevision = gpAthena->m_iSlot6Revision;
+							gpAthena->m_pSlotLastUsedDefinition = gpAthena->m_pSlot6Definition;
+
 							gpAthena->m_pPlayer->m_pPlayerPawn->EquipWeaponDefinition(gpAthena->m_pSlot6Definition, guid);
 							if (gpAthena->pAthenaHud) {
 								gpAthena->pAthenaHud->QuickbarPrimary->OnQuickbarSlotFocusChanged(qbPrimary, 5);
@@ -367,6 +424,9 @@ namespace polaris
 							guid.C = 0;
 							guid.D = 0;
 
+							gpAthena->m_iLastUsedBuildingItem = 6;
+							gpAthena->m_iQuickbarLastUsedBuilding = 0;
+
 							gpAthena->m_pPlayer->m_pPlayerPawn->EquipWeaponDefinition(gpAthena->m_pWallBuildDef, guid);
 							if (gpAthena->pAthenaHud) {
 								gpAthena->pAthenaHud->QuickbarSecondary->OnQuickbarSlotFocusChanged(qbSecondary, 0);
@@ -388,6 +448,9 @@ namespace polaris
 							guid.B = 0;
 							guid.C = 0;
 							guid.D = 0;
+
+							gpAthena->m_iLastUsedBuildingItem = 7;
+							gpAthena->m_iQuickbarLastUsedBuilding = 1;
 
 							gpAthena->m_pPlayer->m_pPlayerPawn->EquipWeaponDefinition(gpAthena->m_pFloorBuildDef, guid);
 							if (gpAthena->pAthenaHud) {
@@ -411,6 +474,9 @@ namespace polaris
 							guid.C = 0;
 							guid.D = 0;
 
+							gpAthena->m_iLastUsedBuildingItem = 8;
+							gpAthena->m_iQuickbarLastUsedBuilding = 2;
+
 							gpAthena->m_pPlayer->m_pPlayerPawn->EquipWeaponDefinition(gpAthena->m_pStairBuildDef, guid);
 							if (gpAthena->pAthenaHud) {
 								gpAthena->pAthenaHud->QuickbarSecondary->OnQuickbarSlotFocusChanged(qbSecondary, 2);
@@ -432,6 +498,9 @@ namespace polaris
 							guid.B = 0;
 							guid.C = 0;
 							guid.D = 0;
+
+							gpAthena->m_iLastUsedBuildingItem = 9;
+							gpAthena->m_iQuickbarLastUsedBuilding = 3;
 
 							gpAthena->m_pPlayer->m_pPlayerPawn->EquipWeaponDefinition(gpAthena->m_pRoofBuildDef, guid);
 							if (gpAthena->pAthenaHud) {
@@ -455,6 +524,9 @@ namespace polaris
 							guid.C = 0;
 							guid.D = 0;
 
+							gpAthena->m_iLastUsedBuildingItem = 10;
+							gpAthena->m_iQuickbarLastUsedBuilding = 4;
+
 							gpAthena->m_pPlayer->m_pPlayerPawn->EquipWeaponDefinition(gpAthena->m_pRoofBuildDef, guid);
 							if (gpAthena->pAthenaHud) {
 								gpAthena->pAthenaHud->QuickbarSecondary->OnQuickbarSlotFocusChanged(qbSecondary, 4);
@@ -468,6 +540,66 @@ namespace polaris
 									}
 								}
 							}
+						}
+
+						// Building Quickswitch
+						// 0x51 = Q key
+						if (GetAsyncKeyState(0x51) & 0x0001 && !gpAthena->m_bIsQuickswitchKeyBeingHeldDown)
+						{
+							gpAthena->m_bIsQuickswitchKeyBeingHeldDown = true;
+
+							if (gpAthena->m_bIsInBuildingMode)
+							{
+								SDK::FGuid guid;
+								guid.A = gpAthena->m_iLastUsedItem;
+								guid.B = gpAthena->m_iSlotLastUsedRevision;
+								guid.C = 0;
+								guid.D = 0;
+
+								gpAthena->m_pPlayer->m_pPlayerPawn->EquipWeaponDefinition(gpAthena->m_pSlotLastUsedDefinition, guid);
+								if (gpAthena->pAthenaHud) {
+									gpAthena->pAthenaHud->QuickbarPrimary->OnQuickbarSlotFocusChanged(qbPrimary, gpAthena->m_iLastUsedItem);
+									gpAthena->pAthenaHud->HandleQuickbarSlotFocusSlotChanged(qbPrimary, gpAthena->m_iLastUsedItem);
+								}
+								else {
+									auto temp = SDK::UObject::FindObject<SDK::UAthenaHUD_C>("AthenaHUD_C Transient.FortEngine_1.FortGameInstance_1.AthenaHUD_C_1");
+									if (temp) {
+										if (!gpAthena->pAthenaHud) {
+											gpAthena->pAthenaHud = SDK::UObject::FindObject<SDK::UAthenaHUD_C>("AthenaHUD_C Transient.FortEngine_1.FortGameInstance_1.AthenaHUD_C_1");
+										}
+									}
+								}
+
+								gpAthena->m_bIsInBuildingMode = false;
+							}
+							else if(!gpAthena->m_bIsInBuildingMode){
+								SDK::FGuid guid;
+								
+								guid.A = gpAthena->m_iLastUsedBuildingItem;
+								guid.B = 0;
+								guid.C = 0;
+								guid.D = 0;
+
+								gpAthena->m_pPlayer->m_pPlayerPawn->EquipWeaponDefinition(gpAthena->m_pLastUsedBuildingDef, guid);
+
+								if (gpAthena->pAthenaHud) {
+									gpAthena->pAthenaHud->QuickbarSecondary->OnQuickbarSlotFocusChanged(qbSecondary, gpAthena->m_iQuickbarLastUsedBuilding);
+									gpAthena->pAthenaHud->HandleQuickbarSlotFocusSlotChanged(qbSecondary, gpAthena->m_iQuickbarLastUsedBuilding);
+								}
+								else {
+									auto temp = SDK::UObject::FindObject<SDK::UAthenaHUD_C>("AthenaHUD_C Transient.FortEngine_1.FortGameInstance_1.AthenaHUD_C_1");
+									if (temp) {
+										if (!gpAthena->pAthenaHud) {
+											gpAthena->pAthenaHud = SDK::UObject::FindObject<SDK::UAthenaHUD_C>("AthenaHUD_C Transient.FortEngine_1.FortGameInstance_1.AthenaHUD_C_1");
+										}
+									}
+								}
+								gpAthena->m_bIsInBuildingMode = true;
+							}
+						}
+						else if (!GetAsyncKeyState(0x51) & 0x0001 && gpAthena->m_bIsQuickswitchKeyBeingHeldDown)
+						{
+							gpAthena->m_bIsQuickswitchKeyBeingHeldDown = false;
 						}
 
 						if (GetAsyncKeyState(VK_END) & 0x8000 && !gpAthena->m_bGameOver)
@@ -485,7 +617,7 @@ namespace polaris
 				{
 					if (static_cast<SDK::AFortPlayerControllerAthena*>(Globals::gpPlayerController)->IsInAircraft())
 					{
-						//Destroy all playerpawns.
+						// Destroy all player pawns.
 						Globals::gpPlayerController->CheatManager->DestroyPawns(SDK::APlayerPawn_Athena_C::StaticClass());
 						// Create a new player pawn.
 						gpAthena->m_pPlayer = new Player;
