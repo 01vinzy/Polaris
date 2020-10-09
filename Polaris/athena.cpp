@@ -97,9 +97,16 @@ namespace polaris
 						gpAthena->m_pSlot2Definition = SDK::UObject::FindObject<SDK::UFortWeaponItemDefinition>("FortWeaponRangedItemDefinition WID_Shotgun_Standard_Athena_UC_Ore_T03.WID_Shotgun_Standard_Athena_UC_Ore_T03");
 						gpAthena->m_pSlot3Definition = SDK::UObject::FindObject<SDK::UFortWeaponItemDefinition>("FortWeaponRangedItemDefinition WID_Assault_AutoHigh_Athena_SR_Ore_T03.WID_Assault_AutoHigh_Athena_SR_Ore_T03");
 						gpAthena->m_pSlot4Definition = SDK::UObject::FindObject<SDK::UFortWeaponItemDefinition>("FortWeaponRangedItemDefinition WID_Shotgun_SemiAuto_Athena_VR_Ore_T03.WID_Shotgun_SemiAuto_Athena_VR_Ore_T03");
-						gpAthena->m_pSlot5Definition = SDK::UObject::FindObject<SDK::UFortWeaponItemDefinition>("FortWeaponRangedItemDefinition WID_Launcher_Rocket_Athena_SR_Ore_T03.WID_Launcher_Rocket_Athena_SR_Ore_T03");
+						gpAthena->m_pSlot5Definition = SDK::UObject::FindObject<SDK::UFortWeaponItemDefinition>("FortWeaponRangedItemDefinition WID_Launcher_Rocket_Athena_R_Ore_T03.WID_Launcher_Rocket_Athena_R_Ore_T03");
 						gpAthena->m_pSlot6Definition = SDK::UObject::FindObject<SDK::UFortWeaponItemDefinition>("FortWeaponRangedItemDefinition WID_Sniper_AMR_Athena_SR_Ore_T03.WID_Sniper_AMR_Athena_SR_Ore_T03");
 
+						// load building tools from memory (pivotman)
+						gpAthena->m_pEditToolDef = SDK::UObject::FindObject<SDK::UFortWeaponItemDefinition>("FortEditToolItemDefinition EditTool.EditTool");
+						gpAthena->m_pWallBuildDef = SDK::UObject::FindObject<SDK::UFortWeaponItemDefinition>("FortBuildingItemDefinition BuildingItemData_Wall.BuildingItemData_Wall");
+						gpAthena->m_pFloorBuildDef = SDK::UObject::FindObject<SDK::UFortWeaponItemDefinition>("FortBuildingItemDefinition BuildingItemData_Floor.BuildingItemData_Floor");
+						gpAthena->m_pStairBuildDef = SDK::UObject::FindObject<SDK::UFortWeaponItemDefinition>("FortBuildingItemDefinition BuildingItemData_Stair_W.BuildingItemData_Stair_W");
+						gpAthena->m_pRoofBuildDef = SDK::UObject::FindObject<SDK::UFortWeaponItemDefinition>("FortBuildingItemDefinition BuildingItemData_RoofS.BuildingItemData_RoofS");
+						
 						// Tell the client that we are ready to start the match, this allows the loading screen to drop.
 						static_cast<SDK::AAthena_PlayerController_C*>(Globals::gpPlayerController)->ServerReadyToStartMatch();
 						static_cast<SDK::AGameMode*>((*Globals::gpWorld)->AuthorityGameMode)->StartMatch();
@@ -117,8 +124,8 @@ namespace polaris
 							FindOrLoadObject<SDK::UFortWeaponItemDefinition>("/Game/Athena/Items/Weapons/" + gpAthena->m_pPlayer->m_pPlayerPawn->CustomizationLoadout.Character->GetName() + "." + gpAthena->m_pPlayer->m_pPlayerPawn->CustomizationLoadout.Character->GetName());
 							FindOrLoadObject<SDK::UFortWeaponRangedItemDefinition>("/Game/Athena/Items/Weapons/WID_Shotgun_Standard_Athena_UC_Ore_T03.WID_Shotgun_Standard_Athena_UC_Ore_T03");
 							FindOrLoadObject<SDK::UFortWeaponRangedItemDefinition>("/Game/Athena/Items/Weapons/WID_Assault_AutoHigh_Athena_SR_Ore_T03.WID_Assault_AutoHigh_Athena_SR_Ore_T03");
-							FindOrLoadObject<SDK::UFortWeaponRangedItemDefinition>("/Game/Athena/Items/Weapons/WID_Shotgun_Standard_Athena_UC_Ore_T03.WID_Shotgun_Standard_Athena_UC_Ore_T03");
 							FindOrLoadObject<SDK::UFortWeaponRangedItemDefinition>("/Game/Athena/Items/Weapons/WID_Shotgun_SemiAuto_Athena_VR_Ore_T03.WID_Shotgun_SemiAuto_Athena_VR_Ore_T03");
+							FindOrLoadObject<SDK::UFortWeaponRangedItemDefinition>("/Game/Athena/Items/Weapons/WID_Launcher_Rocket_Athena_SR_Ore_T03.WID_Launcher_Rocket_Athena_SR_Ore_T03");
 							FindOrLoadObject<SDK::UFortWeaponRangedItemDefinition>("/Game/Athena/Items/Weapons/WID_Sniper_AMR_Athena_SR_Ore_T03.WID_Sniper_AMR_Athena_SR_Ore_T03");
 							
 							// Equip them afterwards
@@ -255,6 +262,19 @@ namespace polaris
 							gpAthena->m_iSlotLastUsedRevision = gpAthena->m_iSlot2Revision;
 							gpAthena->m_pSlotLastUsedDefinition = gpAthena->m_pSlot2Definition;
 
+							if (gpAthena->pAthenaHud) {
+								gpAthena->pAthenaHud->QuickbarPrimary->OnQuickbarSlotFocusChanged(qbPrimary, 1);
+								gpAthena->pAthenaHud->HandleQuickbarSlotFocusSlotChanged(qbPrimary, 1);
+							}
+							else {
+								auto temp = SDK::UObject::FindObject<SDK::UAthenaHUD_C>("AthenaHUD_C Transient.FortEngine_1.FortGameInstance_1.AthenaHUD_C_1");
+								if (temp) {
+									if (!gpAthena->pAthenaHud) {
+										gpAthena->pAthenaHud = SDK::UObject::FindObject<SDK::UAthenaHUD_C>("AthenaHUD_C Transient.FortEngine_1.FortGameInstance_1.AthenaHUD_C_1");
+									}
+								}
+							}
+						
 							gpAthena->m_pPlayer->m_pPlayerPawn->EquipWeaponDefinition(gpAthena->m_pSlot2Definition, guid);
 						}
 						if (GetAsyncKeyState('3') & 0x8000)
@@ -276,6 +296,19 @@ namespace polaris
 							gpAthena->m_iLastUsedItem = 2;
 							gpAthena->m_iSlotLastUsedRevision = gpAthena->m_iSlot3Revision;
 							gpAthena->m_pSlotLastUsedDefinition = gpAthena->m_pSlot3Definition;
+							
+							if (gpAthena->pAthenaHud) {
+								gpAthena->pAthenaHud->QuickbarPrimary->OnQuickbarSlotFocusChanged(qbPrimary, 2);
+								gpAthena->pAthenaHud->HandleQuickbarSlotFocusSlotChanged(qbPrimary, 2);
+							}
+							else {
+								auto temp = SDK::UObject::FindObject<SDK::UAthenaHUD_C>("AthenaHUD_C Transient.FortEngine_1.FortGameInstance_1.AthenaHUD_C_1");
+								if (temp) {
+									if (!gpAthena->pAthenaHud) {
+										gpAthena->pAthenaHud = SDK::UObject::FindObject<SDK::UAthenaHUD_C>("AthenaHUD_C Transient.FortEngine_1.FortGameInstance_1.AthenaHUD_C_1");
+									}
+								}
+							}
 
 							gpAthena->m_pPlayer->m_pPlayerPawn->EquipWeaponDefinition(gpAthena->m_pSlot3Definition, guid);
 						}
@@ -298,6 +331,19 @@ namespace polaris
 							gpAthena->m_iLastUsedItem = 3;
 							gpAthena->m_iSlotLastUsedRevision = gpAthena->m_iSlot4Revision;
 							gpAthena->m_pSlotLastUsedDefinition = gpAthena->m_pSlot4Definition;
+							
+							if (gpAthena->pAthenaHud) {
+								gpAthena->pAthenaHud->QuickbarPrimary->OnQuickbarSlotFocusChanged(qbPrimary, 3);
+								gpAthena->pAthenaHud->HandleQuickbarSlotFocusSlotChanged(qbPrimary, 3);
+							}
+							else {
+								auto temp = SDK::UObject::FindObject<SDK::UAthenaHUD_C>("AthenaHUD_C Transient.FortEngine_1.FortGameInstance_1.AthenaHUD_C_1");
+								if (temp) {
+									if (!gpAthena->pAthenaHud) {
+										gpAthena->pAthenaHud = SDK::UObject::FindObject<SDK::UAthenaHUD_C>("AthenaHUD_C Transient.FortEngine_1.FortGameInstance_1.AthenaHUD_C_1");
+									}
+								}
+							}
 
 							gpAthena->m_pPlayer->m_pPlayerPawn->EquipWeaponDefinition(gpAthena->m_pSlot4Definition, guid);
 						}
@@ -320,6 +366,19 @@ namespace polaris
 							gpAthena->m_iLastUsedItem = 4;
 							gpAthena->m_iSlotLastUsedRevision = gpAthena->m_iSlot5Revision;
 							gpAthena->m_pSlotLastUsedDefinition = gpAthena->m_pSlot5Definition;
+							
+							if (gpAthena->pAthenaHud) {
+								gpAthena->pAthenaHud->QuickbarPrimary->OnQuickbarSlotFocusChanged(qbPrimary, 4);
+								gpAthena->pAthenaHud->HandleQuickbarSlotFocusSlotChanged(qbPrimary, 4);
+							}
+							else {
+								auto temp = SDK::UObject::FindObject<SDK::UAthenaHUD_C>("AthenaHUD_C Transient.FortEngine_1.FortGameInstance_1.AthenaHUD_C_1");
+								if (temp) {
+									if (!gpAthena->pAthenaHud) {
+										gpAthena->pAthenaHud = SDK::UObject::FindObject<SDK::UAthenaHUD_C>("AthenaHUD_C Transient.FortEngine_1.FortGameInstance_1.AthenaHUD_C_1");
+									}
+								}
+							}
 
 							gpAthena->m_pPlayer->m_pPlayerPawn->EquipWeaponDefinition(gpAthena->m_pSlot5Definition, guid);
 						}
