@@ -90,7 +90,7 @@ namespace polaris
 					pCreditsWindow->m_bShowWindow = !pCreditsWindow->m_bShowWindow;
 
 				if (ImGui::MenuItem("Irma Burger"))
-					system("start https://www.youtube.com/watch?v=fC7oUOUEEi4");
+					system("start https://www.youtube.com/watch?v=egYTYpleY0U");
 
 				ImGui::EndMenu();
 			}
