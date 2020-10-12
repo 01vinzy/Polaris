@@ -33,7 +33,6 @@ namespace polaris
 		SDK::UFortWeaponItemDefinition* m_pStairBuildDef;
 		SDK::UFortWeaponItemDefinition* m_pRoofBuildDef;
 		SDK::UFortWeaponItemDefinition* m_pLastUsedBuildingDef;
-		SDK::UAthenaHUD_C* pAthenaHud;
 		int m_iLastUsedItem = 0;
 		int m_iLastUsedBuildingItem = 6;
 		int m_iQuickbarLastUsedBuilding = 0;

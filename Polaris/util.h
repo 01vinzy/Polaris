@@ -13,6 +13,106 @@
 
 namespace polaris
 {
+    template<class T>
+    struct TArray
+    {
+        friend struct SDK::FString;
+
+    public:
+        inline TArray()
+        {
+            Data = nullptr;
+            Count = Max = 0;
+        };
+
+        inline int Num() const
+        {
+            return Count;
+        };
+
+        inline T& operator[](int i)
+        {
+            return Data[i];
+        };
+
+        inline const T& operator[](int i) const
+        {
+            return Data[i];
+        };
+
+        inline bool IsValidIndex(int i) const
+        {
+            return i < Num();
+        }
+
+        inline void ResizeGrow(int OldNum)
+        {
+            int Retval;
+
+            SIZE_T Grow = 4; // this is the amount for the first alloc
+            if (Max || (unsigned __int64)(Count) > Grow)
+            {
+                // Allocate slack for the array proportional to its size.
+                Grow = (unsigned __int64)(Count) + 3 * (unsigned __int64)(Count) / 8 + 16;
+            }
+
+            Retval = Grow;
+
+            // NumElements and MaxElements are stored in 32 bit signed integers so we must be careful not to overflow here.
+            if (Count > Retval)
+            {
+                Retval = 0x7fffffff;
+            }
+
+            Max = Retval;
+
+            if (Count)
+            {
+                Data = ::realloc(Data, Count * sizeof(T));
+            }
+            else
+            {
+                ::free(Data);
+
+                Data = nullptr;
+            }
+        }
+
+        inline int AddUninitialized(int NewCount = 1)
+        {
+            const int OldNum = Count;
+            if ((Count += NewCount) > Max)
+            {
+                ResizeGrow(OldNum);
+            }
+            return OldNum;
+        }
+
+        inline void SetNumUninitialized(int NewNum, bool bAllowShrinking = true)
+        {
+            if (NewNum > Num())
+            {
+                AddUninitialized(NewNum - Num());
+            }
+            else if (NewNum < Num())
+            {
+                // TODO
+            }
+        }
+
+        inline TArray(int what)
+        {
+            Data = (T*)::malloc(what * sizeof(T));
+            Count = what;
+            Max = what;
+        }
+
+    private:
+        T* Data;
+        int32_t Count;
+        int32_t Max;
+    };
+
     class Util
     {
     private:
@@ -176,7 +276,8 @@ namespace polaris
         }
 
         // Find an AActor in the current UWorld.
-        static SDK::AActor* FindActor(SDK::UClass* pClass, int iSkip = 0)
+        template<class T>
+        static T* FindActor(int iSkip = 0)
         {
             for (int i = 0, j = 0; i < polaris::Globals::gpActors->Num(); i++)
             {
@@ -184,10 +285,10 @@ namespace polaris
 
                 if (pActor != nullptr)
                 {
-                    if (pActor->IsA(pClass))
+                    if (pActor->IsA(T::StaticClass()))
                     {
                         if (j >= iSkip)
-                            return pActor;
+                            return (T*)pActor;
                         else
                         {
                             j++;

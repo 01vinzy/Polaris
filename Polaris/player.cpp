@@ -1,5 +1,12 @@
 #include "player.h"
 
+struct AFortAsQuickBars
+{
+public:
+	unsigned char                                      UnknownData00[0x1A88];
+	class SDK::AFortQuickBars*                         QuickBars;
+};
+
 namespace polaris
 {
 	static SDK::UCustomCharacterPart* m_pCustomCharacterPartHead;
@@ -38,11 +45,21 @@ namespace polaris
 
 	Player::Player()
 	{
+		std::string sQuickBarsClassName = "FortQuickBars";
+		Globals::gpPlayerController->CheatManager->Summon(SDK::FString(std::wstring(sQuickBarsClassName.begin(), sQuickBarsClassName.end()).c_str()));
+
+		reinterpret_cast<AFortAsQuickBars*>(Globals::gpPlayerController)->QuickBars = static_cast<SDK::AFortQuickBars*>(Util::FindActor<SDK::AFortQuickBars>());
+		reinterpret_cast<AFortAsQuickBars*>(Globals::gpPlayerController)->QuickBars->SetOwner(Globals::gpPlayerController);
+
+		static_cast<SDK::AAthena_PlayerController_C*>(Globals::gpPlayerController)->Role = SDK::ENetRole::ROLE_None;
+		static_cast<SDK::AAthena_PlayerController_C*>(Globals::gpPlayerController)->OnRep_QuickBar();
+		static_cast<SDK::AAthena_PlayerController_C*>(Globals::gpPlayerController)->Role = SDK::ENetRole::ROLE_Authority;
+
 		// Summon a new PlayerPawn.
 		std::string sPawnClassName = "PlayerPawn_Athena_C";
 		Globals::gpPlayerController->CheatManager->Summon(SDK::FString(std::wstring(sPawnClassName.begin(), sPawnClassName.end()).c_str()));
 
-		m_pPlayerPawn = static_cast<SDK::APlayerPawn_Athena_C*>(Util::FindActor(SDK::APlayerPawn_Athena_C::StaticClass()));
+		m_pPlayerPawn = static_cast<SDK::APlayerPawn_Athena_C*>(Util::FindActor<SDK::APlayerPawn_Athena_C>());
 		if (!m_pPlayerPawn)
 		{
 			Util::ThrowFatalError(L"Failed to spawn PlayerPawn!");

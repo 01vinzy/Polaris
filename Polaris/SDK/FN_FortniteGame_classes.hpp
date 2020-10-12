@@ -19549,7 +19549,7 @@ public:
 	bool                                               bPendingPersistentDelete;                                 // 0x01D2(0x0001) (ZeroConstructor, IsPlainOldData)
 	unsigned char                                      UnknownData01[0x5];                                       // 0x01D3(0x0005) MISSED OFFSET
 	class AFortInventory*                              OwnerInventory;                                           // 0x01D8(0x0008) (ZeroConstructor, IsPlainOldData)
-	struct FFortItemEntry                            ;                                                // 0x01E0(0x00A8)
+	struct FFortItemEntry                              ItemEntry;                                                // 0x01E0(0x00A8)
 	unsigned char                                      UnknownData02[0x28];                                      // 0x0288(0x0028) MISSED OFFSET
 
 	static UClass* StaticClass()

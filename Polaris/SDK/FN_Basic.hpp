@@ -125,7 +125,7 @@ public:
 		return i < Num();
 	}
 
-private:
+public:
 	T* Data;
 	int32_t Count;
 	int32_t Max;
