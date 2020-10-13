@@ -75,7 +75,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>NDEBUG;POLARIS_EXPORTS;_WINDOWS;_USRDLL;ENABLE_THE_FUNNY_HUSK;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>NDEBUG;POLARIS_EXPORTS;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
@@ -114,7 +114,6 @@
     <ClCompile Include="SDK\FN_FortniteGame_functions.cpp" />
     <ClCompile Include="SDK\FN_FortniteUI_functions.cpp" />
     <ClCompile Include="SDK\FN_GameplayAbilities_functions.cpp" />
-    <ClCompile Include="SDK\FN_HUD_functions.cpp" />
     <ClCompile Include="SDK\FN_PlayerPawn_Athena_functions.cpp" />
     <ClCompile Include="SDK\FN_PlayerPawn_Athena_Generic_functions.cpp" />
     <ClCompile Include="SDK\FN_PlayerPawn_Athena_Generic_Parent_functions.cpp" />

@@ -15,7 +15,7 @@ namespace polaris
 	class Player
 	{
 	public:
-		SDK::AFortPlayerPawn* m_pPlayerPawn;
+		SDK::AFortPlayerPawnAthena* m_pPlayerPawn;
 
 		Player();
 

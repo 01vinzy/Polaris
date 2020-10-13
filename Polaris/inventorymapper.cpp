@@ -90,14 +90,6 @@ namespace polaris
 						{
 							gpInventoryMapper->m_lItemsInMemory.push_back(static_cast<SDK::UFortWeaponRangedItemDefinition*>(pObject));
 						}
-						if (pObject->GetFullName().rfind("FortWeaponMeleeItemDefinition", 0) == 0)
-						{
-							gpInventoryMapper->m_lMeleeItemsInMemory.push_back(static_cast<SDK::UFortWeaponMeleeItemDefinition*>(pObject));
-						}
-						if (pObject->GetFullName().rfind("FortWeaponItemDefinition", 0) == 0)
-						{
-							gpInventoryMapper->m_lUncategorizedItemsInMemory.push_back(static_cast<SDK::UFortWeaponItemDefinition*>(pObject));
-						}
 					}
 				}
 
@@ -116,29 +108,23 @@ namespace polaris
 				{
 					std::string fullName = (*std::next(m_lItemsInMemory.begin(), i))->GetFullName();
 					std::string name = (*std::next(m_lItemsInMemory.begin(), i))->GetName() + " (" + GetRarityString((*std::next(m_lItemsInMemory.begin(), i))->GetRarity()) + ")";
-					std::string meleeFullName = (*std::next(m_lMeleeItemsInMemory.begin(), i))->GetFullName();
-					std::string meleeName = (*std::next(m_lMeleeItemsInMemory.begin(), i))->GetName() + " (" + GetRarityString((*std::next(m_lItemsInMemory.begin(), i))->GetRarity()) + ")";
 
 					// Block out StW released weapons, cus piracy n shit.
 					// The || condition at the end just prevents dev weapons from being excluded.
-					//if (fullName.find("WID") != std::string::npos && (fullName.find("Athena") != std::string::npos || fullName.find("Test") != std::string::npos) || fullName.find("WID") == std::string::npos)
-					//{
+					if (fullName.find("WID") != std::string::npos && (fullName.find("Athena") != std::string::npos || fullName.find("Test") != std::string::npos) || fullName.find("WID") == std::string::npos)
+					{
 						std::list<SDK::UFortWeaponRangedItemDefinition*>::iterator wimIterator = m_lItemsInMemory.begin();
-						std::list<SDK::UFortWeaponMeleeItemDefinition*>::iterator wimMeleeIterator = m_lMeleeItemsInMemory.begin();
 						std::advance(wimIterator, i);
-						std::advance(wimMeleeIterator, i);
 
 						if (ImGui::Selectable(name.c_str()))
 						{
 							m_aInventoryItems[m_iPickingNewWIDFor] = (*wimIterator)->GetFullName();
 							m_aInventoryItemNames[m_iPickingNewWIDFor] = (*wimIterator)->GetName();
-							m_aInventoryItems[m_iPickingNewWIDFor] = (*wimMeleeIterator)->GetFullName();
-							m_aInventoryItemNames[m_iPickingNewWIDFor] = (*wimMeleeIterator)->GetName();
 
 							m_bPickingNewWID = false;
 							m_iPickingNewWIDFor = 0;
 						}
-					//}
+					}
 				}
 				ImGui::End();
 			}
