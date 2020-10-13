@@ -22,6 +22,8 @@ namespace polaris
 		std::string m_aInventoryItems[6];
 		std::string m_aInventoryItemNames[6];
 		std::list<SDK::UFortWeaponRangedItemDefinition*> m_lItemsInMemory;
+		std::list<SDK::UFortWeaponMeleeItemDefinition*> m_lMeleeItemsInMemory;
+		std::list<SDK::UFortWeaponItemDefinition*> m_lUncategorizedItemsInMemory;
 
 		InventoryMapper();
 		void Draw() override;

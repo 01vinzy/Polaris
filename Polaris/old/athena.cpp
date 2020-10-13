@@ -40,7 +40,7 @@ namespace polaris
 				if (pFunction->GetName().find("BndEvt__BP_PlayButton_K2Node_ComponentBoundEvent_1_CommonButtonClicked__DelegateSignature") != std::string::npos)
 				{
 					gpAthena->m_bIsWaitingForLoadingScreen = true;
-					Globals::gpPlayerController->SwitchLevel(TEXT("Zone_Onboarding_FarmsteadFort?game=athena"));
+					Globals::gpPlayerController->SwitchLevel(TEXT("Athena_Terrain"));
 				}
 
 				// This gets called once the loading screen is ready to drop.
@@ -70,7 +70,6 @@ namespace polaris
 					// to wiktor: if you want your polaris compile to automatically load in all husk variants,
 					// please add ENABLE_THE_FUNNY_HUSK to your preprocessor definitions
 #ifdef ENABLE_THE_FUNNY_HUSK
-					FindOrLoadObject<SDK::UFortWeaponMeleeItemDefinition>("/Game/Items/Weapons/Melee/Harvest/WID_Harvest_Pickaxe_SR_T06.WID_Harvest_Pickaxe_SR_T06");
 					FindOrLoadObject<SDK::UBlueprintGeneratedClass>("/Game/Characters/Enemies/Husk/Blueprints/HuskPawn.HuskPawn_C");
 					FindOrLoadObject<SDK::UBlueprintGeneratedClass>("/Game/Characters/Enemies/Husk/Blueprints/HuskPawn_Beehive.HuskPawn_Beehive_C");
 					FindOrLoadObject<SDK::UBlueprintGeneratedClass>("/Game/Characters/Enemies/Husk/Blueprints/HuskPawn_Bombshell.HuskPawn_Bombshell_C");
@@ -94,7 +93,7 @@ namespace polaris
 						gpAthena->m_pPlayer->InitializeHero();
 
 						// Load preset item definitions (Prevents a hitch during weapon swapping)
-						gpAthena->m_pHarvestingToolDefinition = SDK::UObject::FindObject<SDK::UFortWeaponItemDefinition>("FortWeaponMeleeItemDefinition WID_Harvest_Pickaxe_SR_T06.WID_Harvest_Pickaxe_SR_T06");
+						gpAthena->m_pHarvestingToolDefinition = SDK::UObject::FindObject<SDK::UFortWeaponItemDefinition>(gpAthena->m_pPlayer->m_pPlayerPawn->CustomizationLoadout.Character->GetFullName());
 						gpAthena->m_pSlot2Definition = SDK::UObject::FindObject<SDK::UFortWeaponItemDefinition>("FortWeaponRangedItemDefinition WID_Shotgun_Standard_Athena_UC_Ore_T03.WID_Shotgun_Standard_Athena_UC_Ore_T03");
 						gpAthena->m_pSlot3Definition = SDK::UObject::FindObject<SDK::UFortWeaponItemDefinition>("FortWeaponRangedItemDefinition WID_Assault_AutoHigh_Athena_SR_Ore_T03.WID_Assault_AutoHigh_Athena_SR_Ore_T03");
 						gpAthena->m_pSlot4Definition = SDK::UObject::FindObject<SDK::UFortWeaponItemDefinition>("FortWeaponRangedItemDefinition WID_Shotgun_SemiAuto_Athena_VR_Ore_T03.WID_Shotgun_SemiAuto_Athena_VR_Ore_T03");
@@ -107,40 +106,13 @@ namespace polaris
 						gpAthena->m_pFloorBuildDef = SDK::UObject::FindObject<SDK::UFortWeaponItemDefinition>("FortBuildingItemDefinition BuildingItemData_Floor.BuildingItemData_Floor");
 						gpAthena->m_pStairBuildDef = SDK::UObject::FindObject<SDK::UFortWeaponItemDefinition>("FortBuildingItemDefinition BuildingItemData_Stair_W.BuildingItemData_Stair_W");
 						gpAthena->m_pRoofBuildDef = SDK::UObject::FindObject<SDK::UFortWeaponItemDefinition>("FortBuildingItemDefinition BuildingItemData_RoofS.BuildingItemData_RoofS");
-
+						
 						// Tell the client that we are ready to start the match, this allows the loading screen to drop.
-						Console::Log("AFortPlayerController::ServerReadyToStartMatch() called");
-						static_cast<SDK::AFortPlayerControllerAthena*>(Globals::gpPlayerController)->ServerReadyToStartMatch();
-						Console::Log("AFortGameModeZone::StartMatch() called");
-						static_cast<SDK::AFortGameMode*>((*Globals::gpWorld)->AuthorityGameMode)->StartMatch();
-
-						// do stuff
-						static_cast<SDK::AFortPlayerControllerAthena*>(Globals::gpPlayerController)->bHasClientFinishedLoading = true;
-						static_cast<SDK::AFortPlayerControllerAthena*>(Globals::gpPlayerController)->bHasServerFinishedLoading = true;
-						static_cast<SDK::AFortPlayerControllerAthena*>(Globals::gpPlayerController)->bReadyToStartMatch = true;
-
-						static_cast<SDK::AFortPlayerControllerAthena*>(Globals::gpPlayerController)->bHasInitializedWorldInventory = true;
-						static_cast<SDK::AFortPlayerControllerAthena*>(Globals::gpPlayerController)->bHasInitializedHeroInventory = true;
-						static_cast<SDK::AFortPlayerControllerAthena*>(Globals::gpPlayerController)->bAccountInventoryWasUpdated = true;
-
-						// summon gamestate + ai director
-						std::string sFortGameStateClassName = "FortGameStateZone";
-						//Console::Log("Summoning AFortGameStateZone");
-						//Globals::gpPlayerController->CheatManager->Summon(SDK::FString(std::wstring(sFortGameStateClassName.begin(), sFortGameStateClassName.end()).c_str()));
-						std::string sAIDirectorClassName = "FortAIDirector";
-						Console::Log("Summoning AFortAIDirector");
-						Globals::gpPlayerController->CheatManager->Summon(SDK::FString(std::wstring(sAIDirectorClassName.begin(), sAIDirectorClassName.end()).c_str()));
-						std::string sAIGoalManagerClassName = "FortAIGoalManager";
-						Console::Log("Summoning AFortAIGoalManager");
-						Globals::gpPlayerController->CheatManager->Summon(SDK::FString(std::wstring(sAIGoalManagerClassName.begin(), sAIGoalManagerClassName.end()).c_str()));
-						std::string sAIGoalProviderClassName = "FortAIGoalProvider";
-						Globals::gpPlayerController->CheatManager->Summon(SDK::FString(std::wstring(sAIGoalProviderClassName.begin(), sAIGoalProviderClassName.end()).c_str()));
+						static_cast<SDK::AAthena_PlayerController_C*>(Globals::gpPlayerController)->ServerReadyToStartMatch();
+						static_cast<SDK::AGameMode*>((*Globals::gpWorld)->AuthorityGameMode)->StartMatch();
 
 						// Turn on basic cheats
-						// static_cast<SDK::UFortCheatManager*>(Globals::gpPlayerController->CheatManager)->Slomo(0.0f);
 						static_cast<SDK::UFortCheatManager*>(Globals::gpPlayerController->CheatManager)->ToggleInfiniteAmmo();
-						static_cast<SDK::UFortCheatManager*>(Globals::gpPlayerController->CheatManager)->ToggleCharacterBackpack();
-						static_cast<SDK::UFortCheatManager*>(Globals::gpPlayerController->CheatManager)->ToggleCharacterBackpack();
 
 						// Preload the base Polaris weapon inventory in order to prevent a hitch
 						if (!gpAthena->m_bHasPreloadedWeapons) {
@@ -148,8 +120,8 @@ namespace polaris
 							FindOrLoadObject<SDK::UFortEditToolItemDefinition>("/Game/Items/Weapons/BuildingTools/EditTool.EditTool");
 							FindOrLoadObject<SDK::UFortBuildingItemDefinition>("/Game/Items/Weapons/BuildingTools/BuildingItemData_Wall.BuildingItemData_Wall");
 							FindOrLoadObject<SDK::UFortBuildingItemDefinition>("/Game/Items/Weapons/BuildingTools/BuildingItemData_Floor.BuildingItemData_Floor");
-							FindOrLoadObject<SDK::UFortBuildingItemDefinition>("/Game/Items/Weapons/BuildingTools/BuildingItemData_Stair_W.BuildingItemData_Stair_W");
-							FindOrLoadObject<SDK::UFortBuildingItemDefinition>("/Game/Items/Weapons/BuildingTools/BuildingItemData_RoofS.BuildingItemData_RoofS");
+							FindOrLoadObject<SDK::UFortBuildingItemDefinition>("/Game/Items/Weapons/BuildingTools/BuildingItemData_Floor.BuildingItemData_Stair_W");
+							FindOrLoadObject<SDK::UFortBuildingItemDefinition>("/Game/Items/Weapons/BuildingTools/BuildingItemData_Floor.BuildingItemData_RoofS");
 							FindOrLoadObject<SDK::UFortWeaponRangedItemDefinition>("/Game/Athena/Items/Weapons/WID_Shotgun_Standard_Athena_UC_Ore_T03.WID_Shotgun_Standard_Athena_UC_Ore_T03");
 							FindOrLoadObject<SDK::UFortWeaponRangedItemDefinition>("/Game/Athena/Items/Weapons/WID_Assault_AutoHigh_Athena_SR_Ore_T03.WID_Assault_AutoHigh_Athena_SR_Ore_T03");
 							FindOrLoadObject<SDK::UFortWeaponRangedItemDefinition>("/Game/Athena/Items/Weapons/WID_Shotgun_SemiAuto_Athena_VR_Ore_T03.WID_Shotgun_SemiAuto_Athena_VR_Ore_T03");
@@ -217,7 +189,6 @@ namespace polaris
 
 						minimapWidget->Visibility = SDK::ESlateVisibility::Hidden;
 						minimapWidget->UpdateSlateWidget(SDK::EFortLegacySlateWidget::AthenaMiniMap);
-
 					}
 				}
 			}
@@ -240,7 +211,7 @@ namespace polaris
 				// Called every frame.
 				if (pFunction->GetName().find("Tick") != std::string::npos)
 				{
-					if (gpAthena->m_pPlayer && gpAthena->m_pPlayer->m_pPlayerPawn && gpInventoryMapper != nullptr)
+					if (gpAthena->m_pPlayer && gpAthena->m_pPlayer->m_pPlayerPawn && !static_cast<SDK::AFortPlayerControllerAthena*>(Globals::gpPlayerController)->IsInAircraft() && gpInventoryMapper != nullptr)
 					{
 
 						if (GetAsyncKeyState('1') & 0x8000)
@@ -270,7 +241,6 @@ namespace polaris
 									}
 								}
 							}
-
 						}
 						if (GetAsyncKeyState('2') & 0x8000)
 						{
@@ -291,36 +261,10 @@ namespace polaris
 							gpAthena->m_iLastUsedItem = 1;
 							gpAthena->m_iSlotLastUsedRevision = gpAthena->m_iSlot2Revision;
 							gpAthena->m_pSlotLastUsedDefinition = gpAthena->m_pSlot2Definition;
-						
-							gpAthena->m_pPlayer->m_pPlayerPawn->EquipWeaponDefinition(gpAthena->m_pSlot2Definition, guid);
 
-							// it will hitch the first time called but afterwards it will be fine
 							if (gpAthena->pAthenaHud) {
-								gpAthena->pAthenaHud->QuickbarPrimary->OnQuickbarSlotFocusChanged(qbPrimary, 1); // changes quickbar focus
+								gpAthena->pAthenaHud->QuickbarPrimary->OnQuickbarSlotFocusChanged(qbPrimary, 1);
 								gpAthena->pAthenaHud->HandleQuickbarSlotFocusSlotChanged(qbPrimary, 1);
-							}
-							else {
-								auto temp = SDK::UObject::FindObject<SDK::UAthenaHUD_C>("AthenaHUD_C Transient.FortEngine_1.FortGameInstance_1.AthenaHUD_C_1"); // do i exist
-								if (temp) { // yes i exist
-									if (!gpAthena->pAthenaHud) {
-										gpAthena->pAthenaHud = SDK::UObject::FindObject<SDK::UAthenaHUD_C>("AthenaHUD_C Transient.FortEngine_1.FortGameInstance_1.AthenaHUD_C_1"); // set me
-									}
-								}
-							}
-
-							auto mum = Util::FindActor<SDK::AFortInventory>();
-							auto mum2 = Util::FindActor<SDK::AFortInventory>(1);
-							SDK::AFortInventory* actualInv = nullptr;
-
-							// joe nuts
-							if (mum && mum->InventoryType == SDK::EFortInventoryType::World)
-							{
-								actualInv = mum;
-							}
-
-							if (mum2 && mum2->InventoryType == SDK::EFortInventoryType::World)
-							{
-								actualInv = mum2;
 							}
 							else {
 								auto temp = SDK::UObject::FindObject<SDK::UAthenaHUD_C>("AthenaHUD_C Transient.FortEngine_1.FortGameInstance_1.AthenaHUD_C_1");
@@ -329,46 +273,9 @@ namespace polaris
 										gpAthena->pAthenaHud = SDK::UObject::FindObject<SDK::UAthenaHUD_C>("AthenaHUD_C Transient.FortEngine_1.FortGameInstance_1.AthenaHUD_C_1");
 									}
 								}
-
 							}
-
-							if (actualInv)
-							{
-								auto myInventory = actualInv;
-
-								SDK::FFortItemList* inv = &myInventory->Inventory;
-
-								SDK::TArray<struct SDK::FFortItemEntry>* repentries = &inv->ReplicatedEntries;
-								repentries->Count = 1;
-								repentries->Max = 1;
-								repentries->Data = (struct SDK::FFortItemEntry*)::malloc(repentries->Count * sizeof(SDK::FFortItemEntry));
-
-								auto w00t = new SDK::FFortItemEntry;
-								w00t->Count = 1;
-								w00t->ItemDefinition = gpAthena->m_pSlot2Definition;
-								w00t->Durability = 1;
-								w00t->Level = 1;
-								w00t->ItemGuid = guid;
-
-								repentries->operator[](0) = *w00t;
-
-								printf("repentries = %i %i\n", repentries->Num(), repentries->Max);
-
-								SDK::TArray<class SDK::UFortWorldItem*>* iteminst = &inv->ItemInstances;
-								iteminst->Count = 1;
-								iteminst->Max = 1;
-								iteminst->Data = (class SDK::UFortWorldItem**)::malloc(iteminst->Count * sizeof(SDK::UFortWorldItem*));
-
-								auto lolwhat = SDK::UFortWorldItem::StaticClass()->CreateDefaultObject<SDK::UFortWorldItem>();
-								lolwhat->OwnerInventory = myInventory;
-								lolwhat->ItemEntry = *w00t;
-
-								iteminst->operator[](0) = lolwhat;
-
-								printf("iteminst = %i %i\n", iteminst->Num(), iteminst->Max);
-
-								static_cast<SDK::AFortPlayerControllerAthena*>(Globals::gpPlayerController)->bHasInitializedWorldInventory = true;
-							}
+						
+							gpAthena->m_pPlayer->m_pPlayerPawn->EquipWeaponDefinition(gpAthena->m_pSlot2Definition, guid);
 						}
 						if (GetAsyncKeyState('3') & 0x8000)
 						{
@@ -389,8 +296,6 @@ namespace polaris
 							gpAthena->m_iLastUsedItem = 2;
 							gpAthena->m_iSlotLastUsedRevision = gpAthena->m_iSlot3Revision;
 							gpAthena->m_pSlotLastUsedDefinition = gpAthena->m_pSlot3Definition;
-
-
 							
 							if (gpAthena->pAthenaHud) {
 								gpAthena->pAthenaHud->QuickbarPrimary->OnQuickbarSlotFocusChanged(qbPrimary, 2);
@@ -404,7 +309,6 @@ namespace polaris
 									}
 								}
 							}
-
 
 							gpAthena->m_pPlayer->m_pPlayerPawn->EquipWeaponDefinition(gpAthena->m_pSlot3Definition, guid);
 						}
@@ -427,8 +331,6 @@ namespace polaris
 							gpAthena->m_iLastUsedItem = 3;
 							gpAthena->m_iSlotLastUsedRevision = gpAthena->m_iSlot4Revision;
 							gpAthena->m_pSlotLastUsedDefinition = gpAthena->m_pSlot4Definition;
-
-
 							
 							if (gpAthena->pAthenaHud) {
 								gpAthena->pAthenaHud->QuickbarPrimary->OnQuickbarSlotFocusChanged(qbPrimary, 3);
@@ -442,7 +344,6 @@ namespace polaris
 									}
 								}
 							}
-
 
 							gpAthena->m_pPlayer->m_pPlayerPawn->EquipWeaponDefinition(gpAthena->m_pSlot4Definition, guid);
 						}
@@ -479,7 +380,6 @@ namespace polaris
 								}
 							}
 
-
 							gpAthena->m_pPlayer->m_pPlayerPawn->EquipWeaponDefinition(gpAthena->m_pSlot5Definition, guid);
 						}
 						if (GetAsyncKeyState('6') & 0x8000)
@@ -503,424 +403,10 @@ namespace polaris
 							gpAthena->m_pSlotLastUsedDefinition = gpAthena->m_pSlot6Definition;
 
 							gpAthena->m_pPlayer->m_pPlayerPawn->EquipWeaponDefinition(gpAthena->m_pSlot6Definition, guid);
-						}
-					}
-
-					// Building tool keybinds
-					if (GetAsyncKeyState(VK_F1) & 0x8000)
-					{
-						SDK::FGuid guid;
-						guid.A = 6;
-						guid.B = 0;
-						guid.C = 0;
-						guid.D = 0;
-
-						gpAthena->m_iLastUsedBuildingItem = 6;
-						gpAthena->m_iQuickbarLastUsedBuilding = 0;
-
-						gpAthena->m_pPlayer->m_pPlayerPawn->EquipWeaponDefinition(gpAthena->m_pWallBuildDef, guid);
-						if (gpAthena->pAthenaHud) {
-							gpAthena->pAthenaHud->QuickbarSecondary->OnQuickbarSlotFocusChanged(qbSecondary, 0);
-							gpAthena->pAthenaHud->HandleQuickbarSlotFocusSlotChanged(qbSecondary, 0);
-						}
-						else {
-							auto temp = SDK::UObject::FindObject<SDK::UAthenaHUD_C>("AthenaHUD_C Transient.FortEngine_1.FortGameInstance_1.AthenaHUD_C_1");
-							if (temp) {
-								if (!gpAthena->pAthenaHud) {
-									gpAthena->pAthenaHud = SDK::UObject::FindObject<SDK::UAthenaHUD_C>("AthenaHUD_C Transient.FortEngine_1.FortGameInstance_1.AthenaHUD_C_1");
-								}
-							}
-						}
-
-						std::string sBuildWithThing = "Wood";
-						static_cast<SDK::UFortCheatManager*>(Globals::gpPlayerController->CheatManager)->BuildWith(SDK::FString(std::wstring(sBuildWithThing.begin(), sBuildWithThing.end()).c_str()));
-
-						auto mum = Util::FindActor<SDK::AFortInventory>();
-						auto mum2 = Util::FindActor<SDK::AFortInventory>(1);
-						SDK::AFortInventory* actualInv = nullptr;
-
-						// joe nuts
-						if (mum && mum->InventoryType == SDK::EFortInventoryType::World)
-						{
-							actualInv = mum;
-						}
-
-						if (mum2 && mum2->InventoryType == SDK::EFortInventoryType::World)
-						{
-							actualInv = mum2;
-						}
-						else {
-							auto temp = SDK::UObject::FindObject<SDK::UAthenaHUD_C>("AthenaHUD_C Transient.FortEngine_1.FortGameInstance_1.AthenaHUD_C_1");
-							if (temp) {
-								if (!gpAthena->pAthenaHud) {
-									gpAthena->pAthenaHud = SDK::UObject::FindObject<SDK::UAthenaHUD_C>("AthenaHUD_C Transient.FortEngine_1.FortGameInstance_1.AthenaHUD_C_1");
-								}
-							}
-
-						}
-
-						if (actualInv)
-						{
-							auto myInventory = actualInv;
-
-							SDK::FFortItemList* inv = &myInventory->Inventory;
-
-							SDK::TArray<struct SDK::FFortItemEntry>* repentries = &inv->ReplicatedEntries;
-							repentries->Count = 1;
-							repentries->Max = 1;
-							repentries->Data = (struct SDK::FFortItemEntry*)::malloc(repentries->Count * sizeof(SDK::FFortItemEntry));
-
-							auto w00t = new SDK::FFortItemEntry;
-							w00t->Count = 1;
-							w00t->ItemDefinition = gpAthena->m_pWallBuildDef;
-							w00t->Durability = 1;
-							w00t->Level = 1;
-							w00t->ItemGuid = guid;
-
-							repentries->operator[](0) = *w00t;
-
-							printf("repentries = %i %i\n", repentries->Num(), repentries->Max);
-
-							SDK::TArray<class SDK::UFortWorldItem*>* iteminst = &inv->ItemInstances;
-							iteminst->Count = 1;
-							iteminst->Max = 1;
-							iteminst->Data = (class SDK::UFortWorldItem**)::malloc(iteminst->Count * sizeof(SDK::UFortWorldItem*));
-
-							auto lolwhat = SDK::UFortWorldItem::StaticClass()->CreateDefaultObject<SDK::UFortWorldItem>();
-							lolwhat->OwnerInventory = myInventory;
-							lolwhat->ItemEntry = *w00t;
-
-							iteminst->operator[](0) = lolwhat;
-
-							printf("iteminst = %i %i\n", iteminst->Num(), iteminst->Max);
-
-							static_cast<SDK::AFortPlayerControllerAthena*>(Globals::gpPlayerController)->bHasInitializedWorldInventory = true;
-							static_cast<SDK::AFortPlayerControllerAthena*>(Globals::gpPlayerController)->bHasInitializedHeroInventory = true;
-							static_cast<SDK::AFortPlayerControllerAthena*>(Globals::gpPlayerController)->bAccountInventoryWasUpdated = true;
-							static_cast<SDK::AFortPlayerControllerAthena*>(Globals::gpPlayerController)->HandleWorldInventoryLocalUpdate();
-						}
-					}
-					if (GetAsyncKeyState(VK_F2) & 0x8000)
-					{
-						SDK::FGuid guid;
-						guid.A = 7;
-						guid.B = 0;
-						guid.C = 0;
-						guid.D = 0;
-
-						gpAthena->m_iLastUsedBuildingItem = 7;
-						gpAthena->m_iQuickbarLastUsedBuilding = 1;
-
-						gpAthena->m_pPlayer->m_pPlayerPawn->EquipWeaponDefinition(gpAthena->m_pFloorBuildDef, guid);
-						if (gpAthena->pAthenaHud) {
-							gpAthena->pAthenaHud->QuickbarSecondary->OnQuickbarSlotFocusChanged(qbSecondary, 1);
-							gpAthena->pAthenaHud->HandleQuickbarSlotFocusSlotChanged(qbSecondary, 1);
-						}
-						else {
-							auto temp = SDK::UObject::FindObject<SDK::UAthenaHUD_C>("AthenaHUD_C Transient.FortEngine_1.FortGameInstance_1.AthenaHUD_C_1");
-							if (temp) {
-								if (!gpAthena->pAthenaHud) {
-									gpAthena->pAthenaHud = SDK::UObject::FindObject<SDK::UAthenaHUD_C>("AthenaHUD_C Transient.FortEngine_1.FortGameInstance_1.AthenaHUD_C_1");
-								}
-							}
-						}
-
-						std::string sBuildWithThing = "Wood";
-						static_cast<SDK::UFortCheatManager*>(Globals::gpPlayerController->CheatManager)->BuildWith(SDK::FString(std::wstring(sBuildWithThing.begin(), sBuildWithThing.end()).c_str()));
-
-						auto mum = Util::FindActor<SDK::AFortInventory>();
-						auto mum2 = Util::FindActor<SDK::AFortInventory>(1);
-						SDK::AFortInventory* actualInv = nullptr;
-
-						// joe nuts
-						if (mum && mum->InventoryType == SDK::EFortInventoryType::World)
-						{
-							actualInv = mum;
-						}
-
-						if (mum2 && mum2->InventoryType == SDK::EFortInventoryType::World)
-						{
-							actualInv = mum2;
-						}
-						else {
-							auto temp = SDK::UObject::FindObject<SDK::UAthenaHUD_C>("AthenaHUD_C Transient.FortEngine_1.FortGameInstance_1.AthenaHUD_C_1");
-							if (temp) {
-								if (!gpAthena->pAthenaHud) {
-									gpAthena->pAthenaHud = SDK::UObject::FindObject<SDK::UAthenaHUD_C>("AthenaHUD_C Transient.FortEngine_1.FortGameInstance_1.AthenaHUD_C_1");
-								}
-							}
-						}
-
-						if (actualInv)
-						{
-							auto myInventory = actualInv;
-
-							SDK::FFortItemList* inv = &myInventory->Inventory;
-
-							SDK::TArray<struct SDK::FFortItemEntry>* repentries = &inv->ReplicatedEntries;
-							repentries->Count = 1;
-							repentries->Max = 1;
-							repentries->Data = (struct SDK::FFortItemEntry*)::malloc(repentries->Count * sizeof(SDK::FFortItemEntry));
-
-							auto w00t = new SDK::FFortItemEntry;
-							w00t->Count = 1;
-							w00t->ItemDefinition = gpAthena->m_pFloorBuildDef;
-							w00t->Durability = 1;
-							w00t->Level = 1;
-							w00t->ItemGuid = guid;
-
-							repentries->operator[](0) = *w00t;
-
-							printf("repentries = %i %i\n", repentries->Num(), repentries->Max);
-
-							SDK::TArray<class SDK::UFortWorldItem*>* iteminst = &inv->ItemInstances;
-							iteminst->Count = 1;
-							iteminst->Max = 1;
-							iteminst->Data = (class SDK::UFortWorldItem**)::malloc(iteminst->Count * sizeof(SDK::UFortWorldItem*));
-
-							auto lolwhat = SDK::UFortWorldItem::StaticClass()->CreateDefaultObject<SDK::UFortWorldItem>();
-							lolwhat->OwnerInventory = myInventory;
-							lolwhat->ItemEntry = *w00t;
-
-							iteminst->operator[](0) = lolwhat;
-
-							printf("iteminst = %i %i\n", iteminst->Num(), iteminst->Max);
-
-							static_cast<SDK::AFortPlayerControllerAthena*>(Globals::gpPlayerController)->bHasInitializedWorldInventory = true;
-							static_cast<SDK::AFortPlayerControllerAthena*>(Globals::gpPlayerController)->bHasInitializedHeroInventory = true;
-							static_cast<SDK::AFortPlayerControllerAthena*>(Globals::gpPlayerController)->bAccountInventoryWasUpdated = true;
-							static_cast<SDK::AFortPlayerControllerAthena*>(Globals::gpPlayerController)->HandleWorldInventoryLocalUpdate();
-						}
-					}
-					if (GetAsyncKeyState(VK_F3) & 0x8000)
-					{
-						SDK::FGuid guid;
-						guid.A = 8;
-						guid.B = 0;
-						guid.C = 0;
-						guid.D = 0;
-
-						gpAthena->m_iLastUsedBuildingItem = 8;
-						gpAthena->m_iQuickbarLastUsedBuilding = 2;
-
-						gpAthena->m_pPlayer->m_pPlayerPawn->EquipWeaponDefinition(gpAthena->m_pStairBuildDef, guid);
-						if (gpAthena->pAthenaHud) {
-							gpAthena->pAthenaHud->QuickbarSecondary->OnQuickbarSlotFocusChanged(qbSecondary, 2);
-							gpAthena->pAthenaHud->HandleQuickbarSlotFocusSlotChanged(qbSecondary, 2);
-						}
-						else {
-							auto temp = SDK::UObject::FindObject<SDK::UAthenaHUD_C>("AthenaHUD_C Transient.FortEngine_1.FortGameInstance_1.AthenaHUD_C_1");
-							if (temp) {
-								if (!gpAthena->pAthenaHud) {
-									gpAthena->pAthenaHud = SDK::UObject::FindObject<SDK::UAthenaHUD_C>("AthenaHUD_C Transient.FortEngine_1.FortGameInstance_1.AthenaHUD_C_1");
-								}
-							}
-						}
-
-						std::string sBuildWithThing = "Wood";
-						static_cast<SDK::UFortCheatManager*>(Globals::gpPlayerController->CheatManager)->BuildWith(SDK::FString(std::wstring(sBuildWithThing.begin(), sBuildWithThing.end()).c_str()));
-
-						auto mum = Util::FindActor<SDK::AFortInventory>();
-						auto mum2 = Util::FindActor<SDK::AFortInventory>(1);
-						SDK::AFortInventory* actualInv = nullptr;
-
-						// joe nuts
-						if (mum && mum->InventoryType == SDK::EFortInventoryType::World)
-						{
-							actualInv = mum;
-						}
-
-						if (mum2 && mum2->InventoryType == SDK::EFortInventoryType::World)
-						{
-							actualInv = mum2;
-						}
-						else {
-							auto temp = SDK::UObject::FindObject<SDK::UAthenaHUD_C>("AthenaHUD_C Transient.FortEngine_1.FortGameInstance_1.AthenaHUD_C_1");
-							if (temp) {
-								if (!gpAthena->pAthenaHud) {
-									gpAthena->pAthenaHud = SDK::UObject::FindObject<SDK::UAthenaHUD_C>("AthenaHUD_C Transient.FortEngine_1.FortGameInstance_1.AthenaHUD_C_1");
-								}
-							}
-						}
-
-						if (actualInv)
-						{
-							auto myInventory = actualInv;
-
-							SDK::FFortItemList* inv = &myInventory->Inventory;
-
-							SDK::TArray<struct SDK::FFortItemEntry>* repentries = &inv->ReplicatedEntries;
-							repentries->Count = 1;
-							repentries->Max = 1;
-							repentries->Data = (struct SDK::FFortItemEntry*)::malloc(repentries->Count * sizeof(SDK::FFortItemEntry));
-
-							auto w00t = new SDK::FFortItemEntry;
-							w00t->Count = 1;
-							w00t->ItemDefinition = gpAthena->m_pStairBuildDef;
-							w00t->Durability = 1;
-							w00t->Level = 1;
-							w00t->ItemGuid = guid;
-
-							repentries->operator[](0) = *w00t;
-
-							printf("repentries = %i %i\n", repentries->Num(), repentries->Max);
-
-							SDK::TArray<class SDK::UFortWorldItem*>* iteminst = &inv->ItemInstances;
-							iteminst->Count = 1;
-							iteminst->Max = 1;
-							iteminst->Data = (class SDK::UFortWorldItem**)::malloc(iteminst->Count * sizeof(SDK::UFortWorldItem*));
-
-							auto lolwhat = SDK::UFortWorldItem::StaticClass()->CreateDefaultObject<SDK::UFortWorldItem>();
-							lolwhat->OwnerInventory = myInventory;
-							lolwhat->ItemEntry = *w00t;
-
-							iteminst->operator[](0) = lolwhat;
-
-							printf("iteminst = %i %i\n", iteminst->Num(), iteminst->Max);
-
-							static_cast<SDK::AFortPlayerControllerAthena*>(Globals::gpPlayerController)->bHasInitializedWorldInventory = true;
-							static_cast<SDK::AFortPlayerControllerAthena*>(Globals::gpPlayerController)->bHasInitializedHeroInventory = true;
-							static_cast<SDK::AFortPlayerControllerAthena*>(Globals::gpPlayerController)->bAccountInventoryWasUpdated = true;
-							static_cast<SDK::AFortPlayerControllerAthena*>(Globals::gpPlayerController)->HandleWorldInventoryLocalUpdate();
-						}
-					}
-					if (GetAsyncKeyState(VK_F4) & 0x8000)
-					{
-						SDK::FGuid guid;
-						guid.A = 9;
-						guid.B = 0;
-						guid.C = 0;
-						guid.D = 0;
-
-						gpAthena->m_iLastUsedBuildingItem = 9;
-						gpAthena->m_iQuickbarLastUsedBuilding = 3;
-
-						gpAthena->m_pPlayer->m_pPlayerPawn->EquipWeaponDefinition(gpAthena->m_pRoofBuildDef, guid);
-						if (gpAthena->pAthenaHud) {
-							gpAthena->pAthenaHud->QuickbarSecondary->OnQuickbarSlotFocusChanged(qbSecondary, 3);
-							gpAthena->pAthenaHud->HandleQuickbarSlotFocusSlotChanged(qbSecondary, 3);
-						}
-						else {
-							auto temp = SDK::UObject::FindObject<SDK::UAthenaHUD_C>("AthenaHUD_C Transient.FortEngine_1.FortGameInstance_1.AthenaHUD_C_1");
-							if (temp) {
-								if (!gpAthena->pAthenaHud) {
-									gpAthena->pAthenaHud = SDK::UObject::FindObject<SDK::UAthenaHUD_C>("AthenaHUD_C Transient.FortEngine_1.FortGameInstance_1.AthenaHUD_C_1");
-								}
-							}
-						}
-
-						std::string sBuildWithThing = "Wood";
-						static_cast<SDK::UFortCheatManager*>(Globals::gpPlayerController->CheatManager)->BuildWith(SDK::FString(std::wstring(sBuildWithThing.begin(), sBuildWithThing.end()).c_str()));
-
-						auto mum = Util::FindActor<SDK::AFortInventory>();
-						auto mum2 = Util::FindActor<SDK::AFortInventory>(1);
-						SDK::AFortInventory* actualInv = nullptr;
-
-						// joe nuts
-						if (mum && mum->InventoryType == SDK::EFortInventoryType::World)
-						{
-							actualInv = mum;
-						}
-
-						if (mum2 && mum2->InventoryType == SDK::EFortInventoryType::World)
-						{
-							actualInv = mum2;
-						}
-						else {
-							auto temp = SDK::UObject::FindObject<SDK::UAthenaHUD_C>("AthenaHUD_C Transient.FortEngine_1.FortGameInstance_1.AthenaHUD_C_1");
-							if (temp) {
-								if (!gpAthena->pAthenaHud) {
-									gpAthena->pAthenaHud = SDK::UObject::FindObject<SDK::UAthenaHUD_C>("AthenaHUD_C Transient.FortEngine_1.FortGameInstance_1.AthenaHUD_C_1");
-								}
-							}
-						}
-
-						if (actualInv)
-						{
-							auto myInventory = actualInv;
-
-							SDK::FFortItemList* inv = &myInventory->Inventory;
-
-							SDK::TArray<struct SDK::FFortItemEntry>* repentries = &inv->ReplicatedEntries;
-							repentries->Count = 1;
-							repentries->Max = 1;
-							repentries->Data = (struct SDK::FFortItemEntry*)::malloc(repentries->Count * sizeof(SDK::FFortItemEntry));
-
-							auto w00t = new SDK::FFortItemEntry;
-							w00t->Count = 1;
-							w00t->ItemDefinition = gpAthena->m_pRoofBuildDef;
-							w00t->Durability = 1;
-							w00t->Level = 1;
-							w00t->ItemGuid = guid;
-
-							repentries->operator[](0) = *w00t;
-
-							printf("repentries = %i %i\n", repentries->Num(), repentries->Max);
-
-							SDK::TArray<class SDK::UFortWorldItem*>* iteminst = &inv->ItemInstances;
-							iteminst->Count = 1;
-							iteminst->Max = 1;
-							iteminst->Data = (class SDK::UFortWorldItem**)::malloc(iteminst->Count * sizeof(SDK::UFortWorldItem*));
-
-							auto lolwhat = SDK::UFortWorldItem::StaticClass()->CreateDefaultObject<SDK::UFortWorldItem>();
-							lolwhat->OwnerInventory = myInventory;
-							lolwhat->ItemEntry = *w00t;
-
-							iteminst->operator[](0) = lolwhat;
-
-							printf("iteminst = %i %i\n", iteminst->Num(), iteminst->Max);
-
-							static_cast<SDK::AFortPlayerControllerAthena*>(Globals::gpPlayerController)->bHasInitializedWorldInventory = true;
-							static_cast<SDK::AFortPlayerControllerAthena*>(Globals::gpPlayerController)->bHasInitializedHeroInventory = true;
-							static_cast<SDK::AFortPlayerControllerAthena*>(Globals::gpPlayerController)->bAccountInventoryWasUpdated = true;
-							static_cast<SDK::AFortPlayerControllerAthena*>(Globals::gpPlayerController)->HandleWorldInventoryLocalUpdate();
-						}
-					}
-
-					if (GetAsyncKeyState(VK_F5) & 0x8000)
-					{
-						SDK::FGuid guid;
-						guid.A = 10;
-						guid.B = 0;
-						guid.C = 0;
-						guid.D = 0;
-
-						gpAthena->m_iLastUsedBuildingItem = 10;
-						gpAthena->m_iQuickbarLastUsedBuilding = 4;
-
-						gpAthena->m_pPlayer->m_pPlayerPawn->EquipWeaponDefinition(gpAthena->m_pRoofBuildDef, guid);
-						if (gpAthena->pAthenaHud) {
-							gpAthena->pAthenaHud->QuickbarSecondary->OnQuickbarSlotFocusChanged(qbSecondary, 4);
-							gpAthena->pAthenaHud->HandleQuickbarSlotFocusSlotChanged(qbSecondary, 4);
-						}
-						else {
-							auto temp = SDK::UObject::FindObject<SDK::UAthenaHUD_C>("AthenaHUD_C Transient.FortEngine_1.FortGameInstance_1.AthenaHUD_C_1");
-							if (temp) {
-								if (!gpAthena->pAthenaHud) {
-									gpAthena->pAthenaHud = SDK::UObject::FindObject<SDK::UAthenaHUD_C>("AthenaHUD_C Transient.FortEngine_1.FortGameInstance_1.AthenaHUD_C_1");
-								}
-							}
-						}
-					}
-
-					// Building Quickswitch
-					// 0x51 = Q key
-					if (GetAsyncKeyState(0x51) & 0x0001 && !gpAthena->m_bIsQuickswitchKeyBeingHeldDown)
-					{
-						gpAthena->m_bIsQuickswitchKeyBeingHeldDown = true;
-
-						if (gpAthena->m_bIsInBuildingMode)
-						{
-							SDK::FGuid guid;
-							guid.A = gpAthena->m_iLastUsedItem;
-							guid.B = gpAthena->m_iSlotLastUsedRevision;
-							guid.C = 0;
-							guid.D = 0;
-
-							gpAthena->m_pPlayer->m_pPlayerPawn->EquipWeaponDefinition(gpAthena->m_pSlotLastUsedDefinition, guid);
+							
 							if (gpAthena->pAthenaHud) {
-								gpAthena->pAthenaHud->QuickbarPrimary->OnQuickbarSlotFocusChanged(qbPrimary, gpAthena->m_iLastUsedItem);
-								gpAthena->pAthenaHud->HandleQuickbarSlotFocusSlotChanged(qbPrimary, gpAthena->m_iLastUsedItem);
+								gpAthena->pAthenaHud->QuickbarPrimary->OnQuickbarSlotFocusChanged(qbPrimary, 5);
+								gpAthena->pAthenaHud->HandleQuickbarSlotFocusSlotChanged(qbPrimary, 5);
 							}
 							else {
 								auto temp = SDK::UObject::FindObject<SDK::UAthenaHUD_C>("AthenaHUD_C Transient.FortEngine_1.FortGameInstance_1.AthenaHUD_C_1");
@@ -930,22 +416,24 @@ namespace polaris
 									}
 								}
 							}
-
-							gpAthena->m_bIsInBuildingMode = false;
 						}
-						else if (!gpAthena->m_bIsInBuildingMode) {
-							SDK::FGuid guid;
 
-							guid.A = gpAthena->m_iLastUsedBuildingItem;
+						// Building tool keybinds
+						if (GetAsyncKeyState(VK_F1) & 0x8000)
+						{
+							SDK::FGuid guid;
+							guid.A = 6;
 							guid.B = 0;
 							guid.C = 0;
 							guid.D = 0;
 
-							gpAthena->m_pPlayer->m_pPlayerPawn->EquipWeaponDefinition(gpAthena->m_pLastUsedBuildingDef, guid);
+							gpAthena->m_iLastUsedBuildingItem = 6;
+							gpAthena->m_iQuickbarLastUsedBuilding = 0;
 
+							gpAthena->m_pPlayer->m_pPlayerPawn->EquipWeaponDefinition(gpAthena->m_pWallBuildDef, guid);
 							if (gpAthena->pAthenaHud) {
-								gpAthena->pAthenaHud->QuickbarSecondary->OnQuickbarSlotFocusChanged(qbSecondary, gpAthena->m_iQuickbarLastUsedBuilding);
-								gpAthena->pAthenaHud->HandleQuickbarSlotFocusSlotChanged(qbSecondary, gpAthena->m_iQuickbarLastUsedBuilding);
+								gpAthena->pAthenaHud->QuickbarSecondary->OnQuickbarSlotFocusChanged(qbSecondary, 0);
+								gpAthena->pAthenaHud->HandleQuickbarSlotFocusSlotChanged(qbSecondary, 0);
 							}
 							else {
 								auto temp = SDK::UObject::FindObject<SDK::UAthenaHUD_C>("AthenaHUD_C Transient.FortEngine_1.FortGameInstance_1.AthenaHUD_C_1");
@@ -955,18 +443,179 @@ namespace polaris
 									}
 								}
 							}
-							gpAthena->m_bIsInBuildingMode = true;
+						}
+						if (GetAsyncKeyState(VK_F2) & 0x8000)
+						{
+							SDK::FGuid guid;
+							guid.A = 7;
+							guid.B = 0;
+							guid.C = 0;
+							guid.D = 0;
+
+							gpAthena->m_iLastUsedBuildingItem = 7;
+							gpAthena->m_iQuickbarLastUsedBuilding = 1;
+
+							gpAthena->m_pPlayer->m_pPlayerPawn->EquipWeaponDefinition(gpAthena->m_pFloorBuildDef, guid);
+							if (gpAthena->pAthenaHud) {
+								gpAthena->pAthenaHud->QuickbarSecondary->OnQuickbarSlotFocusChanged(qbSecondary, 1);
+								gpAthena->pAthenaHud->HandleQuickbarSlotFocusSlotChanged(qbSecondary, 1);
+							}
+							else {
+								auto temp = SDK::UObject::FindObject<SDK::UAthenaHUD_C>("AthenaHUD_C Transient.FortEngine_1.FortGameInstance_1.AthenaHUD_C_1");
+								if (temp) {
+									if (!gpAthena->pAthenaHud) {
+										gpAthena->pAthenaHud = SDK::UObject::FindObject<SDK::UAthenaHUD_C>("AthenaHUD_C Transient.FortEngine_1.FortGameInstance_1.AthenaHUD_C_1");
+									}
+								}
+							}
+						}
+						if (GetAsyncKeyState(VK_F3) & 0x8000)
+						{
+							SDK::FGuid guid;
+							guid.A = 8;
+							guid.B = 0;
+							guid.C = 0;
+							guid.D = 0;
+
+							gpAthena->m_iLastUsedBuildingItem = 8;
+							gpAthena->m_iQuickbarLastUsedBuilding = 2;
+
+							gpAthena->m_pPlayer->m_pPlayerPawn->EquipWeaponDefinition(gpAthena->m_pStairBuildDef, guid);
+							if (gpAthena->pAthenaHud) {
+								gpAthena->pAthenaHud->QuickbarSecondary->OnQuickbarSlotFocusChanged(qbSecondary, 2);
+								gpAthena->pAthenaHud->HandleQuickbarSlotFocusSlotChanged(qbSecondary, 2);
+							}
+							else {
+								auto temp = SDK::UObject::FindObject<SDK::UAthenaHUD_C>("AthenaHUD_C Transient.FortEngine_1.FortGameInstance_1.AthenaHUD_C_1");
+								if (temp) {
+									if (!gpAthena->pAthenaHud) {
+										gpAthena->pAthenaHud = SDK::UObject::FindObject<SDK::UAthenaHUD_C>("AthenaHUD_C Transient.FortEngine_1.FortGameInstance_1.AthenaHUD_C_1");
+									}
+								}
+							}
+						}
+						if (GetAsyncKeyState(VK_F4) & 0x8000)
+						{
+							SDK::FGuid guid;
+							guid.A = 9;
+							guid.B = 0;
+							guid.C = 0;
+							guid.D = 0;
+
+							gpAthena->m_iLastUsedBuildingItem = 9;
+							gpAthena->m_iQuickbarLastUsedBuilding = 3;
+
+							gpAthena->m_pPlayer->m_pPlayerPawn->EquipWeaponDefinition(gpAthena->m_pRoofBuildDef, guid);
+							if (gpAthena->pAthenaHud) {
+								gpAthena->pAthenaHud->QuickbarSecondary->OnQuickbarSlotFocusChanged(qbSecondary, 3);
+								gpAthena->pAthenaHud->HandleQuickbarSlotFocusSlotChanged(qbSecondary, 3);
+							}
+							else {
+								auto temp = SDK::UObject::FindObject<SDK::UAthenaHUD_C>("AthenaHUD_C Transient.FortEngine_1.FortGameInstance_1.AthenaHUD_C_1");
+								if (temp) {
+									if (!gpAthena->pAthenaHud) {
+										gpAthena->pAthenaHud = SDK::UObject::FindObject<SDK::UAthenaHUD_C>("AthenaHUD_C Transient.FortEngine_1.FortGameInstance_1.AthenaHUD_C_1");
+									}
+								}
+							}
+						}
+						if (GetAsyncKeyState(VK_F5) & 0x8000)
+						{
+							SDK::FGuid guid;
+							guid.A = 10;
+							guid.B = 0;
+							guid.C = 0;
+							guid.D = 0;
+
+							gpAthena->m_iLastUsedBuildingItem = 10;
+							gpAthena->m_iQuickbarLastUsedBuilding = 4;
+
+							gpAthena->m_pPlayer->m_pPlayerPawn->EquipWeaponDefinition(gpAthena->m_pRoofBuildDef, guid);
+							if (gpAthena->pAthenaHud) {
+								gpAthena->pAthenaHud->QuickbarSecondary->OnQuickbarSlotFocusChanged(qbSecondary, 4);
+								gpAthena->pAthenaHud->HandleQuickbarSlotFocusSlotChanged(qbSecondary, 4);
+							}
+							else {
+								auto temp = SDK::UObject::FindObject<SDK::UAthenaHUD_C>("AthenaHUD_C Transient.FortEngine_1.FortGameInstance_1.AthenaHUD_C_1");
+								if (temp) {
+									if (!gpAthena->pAthenaHud) {
+										gpAthena->pAthenaHud = SDK::UObject::FindObject<SDK::UAthenaHUD_C>("AthenaHUD_C Transient.FortEngine_1.FortGameInstance_1.AthenaHUD_C_1");
+									}
+								}
+							}
+						}
+
+						// Building Quickswitch
+						// 0x51 = Q key
+						if (GetAsyncKeyState(0x51) & 0x0001 && !gpAthena->m_bIsQuickswitchKeyBeingHeldDown)
+						{
+							gpAthena->m_bIsQuickswitchKeyBeingHeldDown = true;
+
+							if (gpAthena->m_bIsInBuildingMode)
+							{
+								SDK::FGuid guid;
+								guid.A = gpAthena->m_iLastUsedItem;
+								guid.B = gpAthena->m_iSlotLastUsedRevision;
+								guid.C = 0;
+								guid.D = 0;
+
+								gpAthena->m_pPlayer->m_pPlayerPawn->EquipWeaponDefinition(gpAthena->m_pSlotLastUsedDefinition, guid);
+								if (gpAthena->pAthenaHud) {
+									gpAthena->pAthenaHud->QuickbarPrimary->OnQuickbarSlotFocusChanged(qbPrimary, gpAthena->m_iLastUsedItem);
+									gpAthena->pAthenaHud->HandleQuickbarSlotFocusSlotChanged(qbPrimary, gpAthena->m_iLastUsedItem);
+								}
+								else {
+									auto temp = SDK::UObject::FindObject<SDK::UAthenaHUD_C>("AthenaHUD_C Transient.FortEngine_1.FortGameInstance_1.AthenaHUD_C_1");
+									if (temp) {
+										if (!gpAthena->pAthenaHud) {
+											gpAthena->pAthenaHud = SDK::UObject::FindObject<SDK::UAthenaHUD_C>("AthenaHUD_C Transient.FortEngine_1.FortGameInstance_1.AthenaHUD_C_1");
+										}
+									}
+								}
+
+								gpAthena->m_bIsInBuildingMode = false;
+							}
+							else if(!gpAthena->m_bIsInBuildingMode){
+								SDK::FGuid guid;
+								
+								guid.A = gpAthena->m_iLastUsedBuildingItem;
+								guid.B = 0;
+								guid.C = 0;
+								guid.D = 0;
+
+								gpAthena->m_pPlayer->m_pPlayerPawn->EquipWeaponDefinition(gpAthena->m_pLastUsedBuildingDef, guid);
+
+								if (gpAthena->pAthenaHud) {
+									gpAthena->pAthenaHud->QuickbarSecondary->OnQuickbarSlotFocusChanged(qbSecondary, gpAthena->m_iQuickbarLastUsedBuilding);
+									gpAthena->pAthenaHud->HandleQuickbarSlotFocusSlotChanged(qbSecondary, gpAthena->m_iQuickbarLastUsedBuilding);
+								}
+								else {
+									auto temp = SDK::UObject::FindObject<SDK::UAthenaHUD_C>("AthenaHUD_C Transient.FortEngine_1.FortGameInstance_1.AthenaHUD_C_1");
+									if (temp) {
+										if (!gpAthena->pAthenaHud) {
+											gpAthena->pAthenaHud = SDK::UObject::FindObject<SDK::UAthenaHUD_C>("AthenaHUD_C Transient.FortEngine_1.FortGameInstance_1.AthenaHUD_C_1");
+										}
+									}
+								}
+								gpAthena->m_bIsInBuildingMode = true;
+							}
+						}
+						else if (!GetAsyncKeyState(0x51) & 0x0001 && gpAthena->m_bIsQuickswitchKeyBeingHeldDown)
+						{
+							gpAthena->m_bIsQuickswitchKeyBeingHeldDown = false;
+						}
+
+						if (GetAsyncKeyState(VK_END) & 0x8000 && !gpAthena->m_bGameOver)
+						{
+							gpAthena->m_bGameOver = true;
+							static_cast<SDK::AFortPlayerControllerAthena*>(Globals::gpPlayerController)->ClientNotifyWon();
+							static_cast<SDK::AFortPlayerControllerAthena*>(Globals::gpPlayerController)->PlayWinEffects();
 						}
 					}
-					else if (!GetAsyncKeyState(0x51) & 0x0001 && gpAthena->m_bIsQuickswitchKeyBeingHeldDown)
-					{
-						gpAthena->m_bIsQuickswitchKeyBeingHeldDown = false;
-					}
 				}
-				
 
 				// Called once the player jumps from the battle bus, or when they're supposed to be kicked out.
-				if (pFunction->GetName().find("ServerAttemptAircraftJump") != std::string::npos ||
+				if (pFunction->GetName().find("ServerAttemptAircraftJump") != std::string::npos || 
 					pFunction->GetName().find("OnAircraftExitedDropZone") != std::string::npos)
 				{
 					if (static_cast<SDK::AFortPlayerControllerAthena*>(Globals::gpPlayerController)->IsInAircraft())
@@ -978,7 +627,7 @@ namespace polaris
 						gpAthena->m_pPlayer->InitializeHero(); // This causes a massive hitch.
 
 						// Reset the pawn rotation, due to weird summon properties.
-						SDK::AFortPlayerPawn* playerPawn = gpAthena->m_pPlayer->m_pPlayerPawn;
+						SDK::AFortPlayerPawnAthena* playerPawn = gpAthena->m_pPlayer->m_pPlayerPawn;
 						SDK::FRotator actorRotation = gpAthena->m_pPlayer->m_pPlayerPawn->K2_GetActorRotation();
 
 						actorRotation.Pitch = 0;
@@ -988,23 +637,11 @@ namespace polaris
 						// Don't return null if the aircraft exited drop zone, or the storm won't start.
 						if (pFunction->GetName().find("OnAircraftExitedDropZone") == std::string::npos)
 							return NULL;
-
-						if (gpAthena->pAthenaHud) {
-							gpAthena->pAthenaHud->QuickbarPrimary->OnQuickbarSlotFocusChanged(qbPrimary, 5);
-							gpAthena->pAthenaHud->HandleQuickbarSlotFocusSlotChanged(qbPrimary, 5);
-						}
-						else {
-							auto temp = SDK::UObject::FindObject<SDK::UAthenaHUD_C>("AthenaHUD_C Transient.FortEngine_1.FortGameInstance_1.AthenaHUD_C_1");
-							if (temp) {
-								if (!gpAthena->pAthenaHud) {
-									gpAthena->pAthenaHud = SDK::UObject::FindObject<SDK::UAthenaHUD_C>("AthenaHUD_C Transient.FortEngine_1.FortGameInstance_1.AthenaHUD_C_1");
-								}
-							}
-						}
 					}
 				}
 			}
 		}
+
 		return ProcessEvent(pObject, pFunction, pParams);
 	}
 
@@ -1016,19 +653,31 @@ namespace polaris
 			if (gpAthena->m_pPlayer != nullptr && gpAthena->m_pPlayer->m_pPlayerPawn && !static_cast<SDK::AFortPlayerControllerAthena*>(Globals::gpPlayerController)->IsInAircraft())
 			{
 				// Keybind to jump (only run if not skydiving, might need to fix this more though):
-				if (GetAsyncKeyState(VK_SPACE) & 0x8000 && !gpAthena->m_pPlayer->m_pPlayerPawn->IsJumpProvidingForce())
+				if (GetAsyncKeyState(VK_SPACE) & 0x8000 && !gpAthena->m_pPlayer->m_pPlayerPawn->IsSkydiving() && !gpAthena->m_pPlayer->m_pPlayerPawn->IsJumpProvidingForce())
 				{
 					gpAthena->m_pPlayer->m_pPlayerPawn->Jump();
 					Sleep(200);
 				}
+				else if (GetAsyncKeyState(VK_SPACE) & 0x8000 && gpAthena->m_pPlayer->m_pPlayerPawn->IsSkydiving() && !gpAthena->m_pPlayer->m_pPlayerPawn->IsParachuteOpen() && !gpAthena->m_pPlayer->m_pPlayerPawn->IsParachuteForcedOpen())
+				{
+					gpAthena->m_pPlayer->m_pPlayerPawn->CharacterMovement->SetMovementMode(SDK::EMovementMode::MOVE_Custom, 2U);
+					gpAthena->m_pPlayer->m_pPlayerPawn->OnRep_IsParachuteOpen(false);
+					Sleep(200);
+				}
+				else if (GetAsyncKeyState(VK_SPACE) & 0x8000 && gpAthena->m_pPlayer->m_pPlayerPawn->IsSkydiving() && gpAthena->m_pPlayer->m_pPlayerPawn->IsParachuteOpen() && !gpAthena->m_pPlayer->m_pPlayerPawn->IsParachuteForcedOpen())
+				{
+					gpAthena->m_pPlayer->m_pPlayerPawn->CharacterMovement->SetMovementMode(SDK::EMovementMode::MOVE_Custom, 3U);
+					gpAthena->m_pPlayer->m_pPlayerPawn->OnRep_IsParachuteOpen(true);
+					Sleep(200);
+				}
 
 				// Keybind to sprint (only run if not skydiving & not targeting, else walk):
-				if (static_cast<SDK::AFortPlayerControllerAthena*>(Globals::gpPlayerController)->bWantsToSprint && gpAthena->m_pPlayer->m_pPlayerPawn && gpAthena->m_pPlayer->m_pPlayerPawn->CurrentWeapon && !gpAthena->m_pPlayer->m_pPlayerPawn->CurrentWeapon->bIsTargeting)
+				if (static_cast<SDK::AAthena_PlayerController_C*>(Globals::gpPlayerController)->bWantsToSprint && gpAthena->m_pPlayer->m_pPlayerPawn && gpAthena->m_pPlayer->m_pPlayerPawn->CurrentWeapon && !gpAthena->m_pPlayer->m_pPlayerPawn->CurrentWeapon->bIsTargeting)
 				{
 					// If reloading, only allow sprinting if Sprinting Cancels Reload is on.
 					if (gpAthena->m_pPlayer->m_pPlayerPawn->CurrentWeapon->IsReloading())
 					{
-						if (static_cast<SDK::AFortPlayerControllerAthena*>(Globals::gpPlayerController)->bSprintCancelsReload)
+						if (static_cast<SDK::AAthena_PlayerController_C*>(Globals::gpPlayerController)->bSprintCancelsReload)
 						{
 							gpAthena->m_pPlayer->m_pPlayerPawn->CurrentWeapon->bIsReloadingWeapon = false;
 							gpAthena->m_pPlayer->m_pPlayerPawn->CurrentMovementStyle = SDK::EFortMovementStyle::Sprinting;

@@ -128,6 +128,9 @@
     <ClCompile Include="player.cpp">
       <Filter>Athena\Player</Filter>
     </ClCompile>
+    <ClCompile Include="SDK\FN_HUD_functions.cpp">
+      <Filter>Third Party\SDK</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="common.h">

@@ -1,12 +1,5 @@
 #include "player.h"
 
-struct AFortAsQuickBars
-{
-public:
-	unsigned char                                      UnknownData00[0x1A88];
-	class SDK::AFortQuickBars*                         QuickBars;
-};
-
 namespace polaris
 {
 	static SDK::UCustomCharacterPart* m_pCustomCharacterPartHead;
@@ -59,22 +52,11 @@ namespace polaris
 
 	Player::Player()
 	{
-		std::string sQuickBarsClassName = "FortQuickBars";
-		Globals::gpPlayerController->CheatManager->Summon(SDK::FString(std::wstring(sQuickBarsClassName.begin(), sQuickBarsClassName.end()).c_str()));
-
-		reinterpret_cast<AFortAsQuickBars*>(Globals::gpPlayerController)->QuickBars = static_cast<SDK::AFortQuickBars*>(Util::FindActor<SDK::AFortQuickBars>());
-		reinterpret_cast<AFortAsQuickBars*>(Globals::gpPlayerController)->QuickBars->SetOwner(Globals::gpPlayerController);
-
-		static_cast<SDK::AFortPlayerControllerAthena*>(Globals::gpPlayerController)->Role = SDK::ENetRole::ROLE_None;
-		static_cast<SDK::AFortPlayerControllerAthena*>(Globals::gpPlayerController)->OnRep_QuickBar();
-		static_cast<SDK::AFortPlayerControllerAthena*>(Globals::gpPlayerController)->Role = SDK::ENetRole::ROLE_Authority;
-
 		// Summon a new PlayerPawn.
 		std::string sPawnClassName = "PlayerPawn_Athena_C";
-		Console::Log("Summoning pawn");
 		Globals::gpPlayerController->CheatManager->Summon(SDK::FString(std::wstring(sPawnClassName.begin(), sPawnClassName.end()).c_str()));
 
-		m_pPlayerPawn = static_cast<SDK::AFortPlayerPawnAthena*>(Util::FindActor<SDK::AFortPlayerPawnAthena>());
+		m_pPlayerPawn = static_cast<SDK::APlayerPawn_Athena_C*>(Util::FindActor(SDK::APlayerPawn_Athena_C::StaticClass()));
 		if (!m_pPlayerPawn)
 		{
 			Util::ThrowFatalError(L"Failed to spawn PlayerPawn!");
@@ -87,11 +69,17 @@ namespace polaris
 			controller->bIsLocalPlayerController = true;
 			controller->SetReplicates(false);
 
+			// Tell the PlayerPawn that our customization was replicated.
+			m_pPlayerPawn->OnRep_CustomizationLoadout();
+
 			// Assign our PlayerPawn to a team.
 			auto playerState = static_cast<SDK::AFortPlayerStateAthena*>(Globals::gpPlayerController->PlayerState);
 
+			playerState->TeamIndex = SDK::EFortTeam::HumanPvP_Team1;
+			playerState->OnRep_TeamIndex();
+
 			// Give the player a pickaxe.
-			EquipWeapon("FortWeaponMeleeItemDefinition WID_Harvest_Pickaxe_SR_T06.WID_Harvest_Pickaxe_SR_T06");
+			EquipWeapon(mPickaxeAsWid[m_pPlayerPawn->CustomizationLoadout.Character->GetName()].c_str());
 		}
 	}
 	
